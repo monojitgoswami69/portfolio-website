@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Skills from './components/Skills';
-import SystemMetrics from './components/SystemMetrics';
 import Projects from './components/Projects';
 import AIChat from './components/AIChat';
 import Contact from './components/Contact';
@@ -96,7 +95,6 @@ const App: React.FC = () => {
       <main className="relative z-10">
         <Hero />
         <Skills />
-        <SystemMetrics />
         <Projects />
         <AIChat />
         <Contact />

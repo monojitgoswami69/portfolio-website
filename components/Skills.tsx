@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect, useCallback } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 import { Section } from '../types';
-import { Scan, Activity } from 'lucide-react';
+import { Scan, Activity, Monitor, Code, Terminal } from 'lucide-react';
 import {
   SiPython, SiC, SiCplusplus, SiJavascript, SiTypescript, SiPostgresql
 } from 'react-icons/si';
@@ -23,6 +23,67 @@ const toolsData = [
   , 'Git', 'Linux'
 ];
 
+// System metrics data
+interface Metric {
+  label: string;
+  value: string;
+  icon: React.ElementType;
+  color: string;
+  glowColor: string;
+}
+
+const metrics: Metric[] = [
+  {
+    label: 'OS',
+    value: 'Arch Linux',
+    icon: Monitor,
+    color: '#00FFFF',
+    glowColor: 'rgba(0, 255, 255, 0.5)'
+  },
+  {
+    label: 'Kernel',
+    value: 'linux stable',
+    icon: Monitor,
+    color: '#00FFFF',
+    glowColor: 'rgba(0, 255, 255, 0.5)'
+  },
+  {
+    label: 'DE',
+    value: 'hyprland',
+    icon: Monitor,
+    color: '#00FFFF',
+    glowColor: 'rgba(0, 255, 255, 0.5)'
+  },
+  {
+    label: 'IDE',
+    value: 'VS Code',
+    icon: Code,
+    color: '#00FFFF',
+    glowColor: 'rgba(0, 255, 255, 0.5)'
+  },
+  {
+    label: 'Editor',
+    value: 'Vim',
+    icon: Code,
+    color: '#00FFFF',
+    glowColor: 'rgba(0, 255, 255, 0.5)'
+  },
+  {
+    label: 'Terminal',
+    value: 'kitty',
+    icon: Terminal,
+    color: '#00FFFF',
+    glowColor: 'rgba(0, 255, 255, 0.5)'
+  },
+  {
+    label: 'Shell',
+    value: 'fish',
+    icon: Terminal,
+    color: '#00FFFF',
+    glowColor: 'rgba(0, 255, 255, 0.5)'
+  }
+];
+
 // Icon size and layout constants
 const ICON_SIZE = 48;
 const ICONS_PER_ROW = 4;
@@ -30,11 +91,13 @@ const ICON_GAP = 16;
 
 const Skills: React.FC = () => {
   const ref = useRef<HTMLElement>(null);
+  const metricsRef = useRef<HTMLDivElement>(null);
   const middleColumnRef = useRef<HTMLDivElement>(null);
   const textColumnRef = useRef<HTMLDivElement>(null);
   const [middleColumnHeight, setMiddleColumnHeight] = useState<number | null>(null);
   const [textFontSize, setTextFontSize] = useState(1.2); // Main text font size in rem
   const [quoteFontSize, setQuoteFontSize] = useState(2.5); // Quote font size in rem
+  const isMetricsInView = useInView(metricsRef, { once: true, margin: "-100px" });
 
 
   const { scrollYProgress } = useScroll({
@@ -87,7 +150,7 @@ const Skills: React.FC = () => {
   const PROFILE_IMG = "/assets/profile.jpeg";
 
   return (
-    <section ref={ref} className="pt-24 pb-4 relative z-10 overflow-hidden">
+    <section ref={ref} className="pt-24 pb-20 relative z-10 overflow-hidden">
       {/* Parallax Background Element */}
       <motion.div
         style={{ rotate: rotateBg, opacity: 0.05 }}
@@ -112,7 +175,7 @@ const Skills: React.FC = () => {
 
         <motion.div
           style={{ opacity }}
-          className="flex flex-col lg:flex-row gap-8 items-start justify-center"
+          className="flex flex-col lg:flex-row gap-4 lg:gap-8 items-center lg:items-start justify-center"
         >
 
           {/* Left Column - Text Content (flexible width) */}
@@ -122,7 +185,7 @@ const Skills: React.FC = () => {
               fontSize: `${textFontSize}rem`,
               height: middleColumnHeight ? `${middleColumnHeight}px` : 'auto',
             }}
-            className="flex-1 max-w-2xl space-y-6 text-slate-300 leading-relaxed overflow-hidden pt-[20px]"
+            className="flex-1 max-w-2xl space-y-6 text-slate-300 leading-relaxed overflow-hidden pt-[20px] text-center lg:text-left order-2 lg:order-1"
           >
             <p>
               I am <span className="text-cyan-400 font-bold">Monojit Goswami</span>, a backend engineer driven by the potential of autonomous systems. My architecture philosophy focuses on <span className="text-white font-bold">efficiency</span>, <span className="text-white font-bold">modularity</span>, <span className="text-white font-bold">security</span>, and <span className="text-white font-bold">scalability</span>, building high-performance engines that bridge the gap between architectural stability and artificial intelligence.
@@ -131,7 +194,7 @@ const Skills: React.FC = () => {
               I specialize in developing general-purpose, high-fidelity backend solutions and RAG-based agentic systems. By leveraging Vector databases and embedding models, I build context-aware applications that transform static data into actionable intelligence.
             </p>
             <p
-              className="text-white-400 font-quantico pt-5 block font-bold text-center"
+              className="text-white-400 font-quantico pt-5 font-bold text-center hidden lg:block"
               style={{ fontSize: `${quoteFontSize}rem` }}
             >
               "I use Arch btw"
@@ -141,22 +204,23 @@ const Skills: React.FC = () => {
           {/* Middle Column - Tech Stack (Fixed width based on icons) */}
           <motion.div
             ref={middleColumnRef}
-            style={{ width: `${middleColumnWidth}px` }}
-            className="flex-shrink-0"
+            style={{ width: `${middleColumnWidth}px`, maxWidth: '100%' }}
+            className="flex-shrink-0 order-3 lg:order-2"
           >
             <div className="p-6 bg-slate-900/50 border border-slate-800 rounded-xl flex flex-col">
               {/* Skills Section */}
               <div>
-                <div className="text-cyan-400 font-mono text-sm tracking-wider mb-5">
+                <div className="text-cyan-400 font-mono text-sm tracking-wider mb-5 text-center lg:text-left">
                   SKILLS // 2.1
                 </div>
-                <div
-                  className="grid justify-center"
-                  style={{
-                    gridTemplateColumns: `repeat(${ICONS_PER_ROW}, ${ICON_SIZE}px)`,
-                    gap: `${ICON_GAP}px`
-                  }}
-                >
+                <div className="flex justify-center">
+                  <div
+                    className="grid"
+                    style={{
+                      gridTemplateColumns: `repeat(${ICONS_PER_ROW}, ${ICON_SIZE}px)`,
+                      gap: `${ICON_GAP}px`
+                    }}
+                  >
                   {skillsData.map((skill, index) => (
                     <motion.a
                       key={skill.name}
@@ -171,11 +235,12 @@ const Skills: React.FC = () => {
                       title={skill.name}
                     >
                       <skill.icon
-                        size={ICON_SIZE}
+                        className="lg:!w-12 lg:!h-12 !w-16 !h-16"
                         style={{ color: skill.color }}
                       />
                     </motion.a>
                   ))}
+                </div>
                 </div>
               </div>
 
@@ -184,10 +249,10 @@ const Skills: React.FC = () => {
 
               {/* Tools Section */}
               <div>
-                <div className="text-purple-400 font-mono text-sm tracking-wider mb-5">
+                <div className="text-purple-400 font-mono text-sm tracking-wider mb-5 text-center lg:text-left">
                   TOOLS // 2.2
                 </div>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
                   {toolsData.map((tool, index) => (
                     <motion.span
                       key={tool}
@@ -195,7 +260,7 @@ const Skills: React.FC = () => {
                       whileInView={{ opacity: 1 }}
                       viewport={{ once: true }}
                       transition={{ delay: index * 0.02 }}
-                      className="px-3 py-1.5 text-[11px] font-mono tracking-wide bg-gradient-to-r from-slate-800/90 to-slate-800/60 text-slate-400 rounded border border-slate-700/40 hover:border-purple-500/30 hover:text-purple-300 transition-colors"
+                      className="px-3 py-1.5 text-xs lg:text-[11px] font-mono tracking-wide bg-gradient-to-r from-slate-800/90 to-slate-800/60 text-slate-400 rounded border border-slate-700/40 hover:border-purple-500/30 hover:text-purple-300 transition-colors"
                     >
                       {tool}
                     </motion.span>
@@ -208,7 +273,7 @@ const Skills: React.FC = () => {
           {/* Right Column - Holographic Image Card */}
           <motion.div
             style={{ height: middleColumnHeight ? `${middleColumnHeight}px` : 'auto' }}
-            className="relative flex items-center justify-center flex-shrink-0"
+            className="relative flex items-center justify-center flex-shrink-0 w-full lg:w-auto order-1 lg:order-3"
           >
             <div className="relative group w-full h-full bg-[#0c0c0c] rounded-2xl border border-slate-800 p-2 overflow-hidden shadow-2xl transition-all duration-300 hover:border-cyan-500/40">
 
@@ -257,6 +322,52 @@ const Skills: React.FC = () => {
             <div className="absolute inset-0 bg-cyan-500 rounded-full blur-[120px] opacity-10 -z-10 group-hover:opacity-20 transition-opacity duration-500" />
           </motion.div>
 
+        </motion.div>
+
+        {/* System Metrics Section - Integrated */}
+        <motion.div
+          ref={metricsRef}
+          initial={{ opacity: 0, y: 20 }}
+          animate={isMetricsInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+          transition={{ duration: 0.5 }}
+          className="relative group mt-[20px] hidden lg:block"
+        >
+          {/* Single Card Background */}
+          <div className="relative rounded-xl border border-slate-700/50 bg-slate-900/30 backdrop-blur-sm p-4">
+            {/* All metrics in a single row */}
+            <div className="flex items-stretch divide-x divide-slate-700/30">
+              {metrics.map((metric) => (
+                <div
+                  key={metric.label}
+                  className="flex-1 px-6 first:pl-0 last:pr-0"
+                >
+                  {/* Label */}
+                  <div className="mb-0">
+                    <span className="font-mono text-xs text-slate-400 tracking-wider uppercase">
+                      {metric.label}
+                    </span>
+                  </div>
+
+                  {/* Value */}
+                  <div>
+                    <span className="font-mono text-sm text-cyan-400">
+                      {metric.value}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Subtle grid lines for tech aesthetic */}
+            <div className="absolute inset-0 pointer-events-none opacity-5 rounded-xl overflow-hidden">
+              <div className="h-full w-full" 
+                style={{
+                  backgroundImage: 'linear-gradient(0deg, transparent 24%, rgba(0, 255, 255, 0.05) 25%, rgba(0, 255, 255, 0.05) 26%, transparent 27%, transparent 74%, rgba(0, 255, 255, 0.05) 75%, rgba(0, 255, 255, 0.05) 76%, transparent 77%, transparent)',
+                  backgroundSize: '50px 50px'
+                }}
+              />
+            </div>
+          </div>
         </motion.div>
       </div>
     </section>
