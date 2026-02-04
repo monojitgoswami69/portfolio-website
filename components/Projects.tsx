@@ -272,10 +272,10 @@ const Projects: React.FC = () => {
             viewport={{ once: true }}
             className="mb-8"
           >
-            <h2 className="text-4xl font-bold mb-2 font-averia text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 font-averia text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">
               3.0 // ACTIVE MODULES
             </h2>
-            <p className="text-slate-400 text-sm md:text-base mb-6 font-mono uppercase tracking-widest">
+            <p className="text-slate-400 text-xs sm:text-sm md:text-base mb-6 font-mono uppercase tracking-widest">
               Explore Monojit's Projects & Innovations
             </p>
           </motion.div>

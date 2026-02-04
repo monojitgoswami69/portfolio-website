@@ -161,14 +161,14 @@ const Skills: React.FC = () => {
         {/* Section Title */}
         <motion.h2
           style={{ opacity }}
-          className="text-4xl font-bold mb-2 font-averia text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400"
+          className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 font-averia text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400"
         >
           2.0 // SYSTEM SPECS
         </motion.h2>
 
         <motion.p
           style={{ opacity }}
-          className="text-slate-400 text-sm md:text-base mb-6 font-mono uppercase tracking-widest"
+          className="text-slate-400 text-xs sm:text-sm md:text-base mb-6 font-mono uppercase tracking-widest"
         >
           Technical Capabilities & Core Architecture
         </motion.p>
@@ -221,26 +221,26 @@ const Skills: React.FC = () => {
                       gap: `${ICON_GAP}px`
                     }}
                   >
-                  {skillsData.map((skill, index) => (
-                    <motion.a
-                      key={skill.name}
-                      href={skill.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      initial={{ opacity: 0 }}
-                      whileInView={{ opacity: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: index * 0.05 }}
-                      className="cursor-pointer flex items-center justify-center"
-                      title={skill.name}
-                    >
-                      <skill.icon
-                        className="lg:!w-12 lg:!h-12 !w-16 !h-16"
-                        style={{ color: skill.color }}
-                      />
-                    </motion.a>
-                  ))}
-                </div>
+                    {skillsData.map((skill, index) => (
+                      <motion.a
+                        key={skill.name}
+                        href={skill.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        initial={{ opacity: 0 }}
+                        whileInView={{ opacity: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: index * 0.05 }}
+                        className="cursor-pointer flex items-center justify-center"
+                        title={skill.name}
+                      >
+                        <skill.icon
+                          className="lg:!w-12 lg:!h-12 !w-16 !h-16"
+                          style={{ color: skill.color }}
+                        />
+                      </motion.a>
+                    ))}
+                  </div>
                 </div>
               </div>
 
@@ -360,7 +360,7 @@ const Skills: React.FC = () => {
 
             {/* Subtle grid lines for tech aesthetic */}
             <div className="absolute inset-0 pointer-events-none opacity-5 rounded-xl overflow-hidden">
-              <div className="h-full w-full" 
+              <div className="h-full w-full"
                 style={{
                   backgroundImage: 'linear-gradient(0deg, transparent 24%, rgba(0, 255, 255, 0.05) 25%, rgba(0, 255, 255, 0.05) 26%, transparent 27%, transparent 74%, rgba(0, 255, 255, 0.05) 75%, rgba(0, 255, 255, 0.05) 76%, transparent 77%, transparent)',
                   backgroundSize: '50px 50px'

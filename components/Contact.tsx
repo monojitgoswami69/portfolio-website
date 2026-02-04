@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Mail, Linkedin, Github, Twitter, ChevronUp } from 'lucide-react';
 import { Section } from '../types';
@@ -10,6 +10,24 @@ const Contact: React.FC = () => {
     offset: ["start end", "end end"]
   });
 
+  const [config, setConfig] = useState<{
+    contact: {
+      email: string;
+      socials: {
+        github: string;
+        linkedin: string;
+        twitter: string;
+      }
+    }
+  } | null>(null);
+
+  useEffect(() => {
+    fetch('/contact.json')
+      .then(res => res.json())
+      .then(data => setConfig(data))
+      .catch(err => console.error('Failed to load contact config:', err));
+  }, []);
+
   const opacity = useTransform(scrollYProgress, [0, 0.5], [0, 1]);
 
   const scrollToChat = () => {
@@ -19,13 +37,20 @@ const Contact: React.FC = () => {
     }
   };
 
+  const socialLinks = config ? [
+    { Icon: Github, url: config.contact.socials.github },
+    { Icon: Linkedin, url: config.contact.socials.linkedin },
+    { Icon: Twitter, url: config.contact.socials.twitter },
+    { Icon: Mail, url: `mailto:${config.contact.email}` }
+  ] : [];
+
   return (
-    <section ref={ref} className="min-h-screen relative z-20 bg-slate-950 flex flex-col justify-center overflow-hidden pt-24">
+    <section ref={ref} className="min-h-screen relative z-20 bg-slate-950 flex flex-col justify-center overflow-hidden pt-24 pb-8">
       {/* Upward Arrow at Top */}
       <motion.div
         animate={{ y: [0, -10, 0] }}
         transition={{ duration: 2, repeat: Infinity }}
-        className="absolute top-20 left-0 right-0 flex justify-center z-20"
+        className="w-full flex justify-center z-20 mb-0"
       >
         <button
           onClick={scrollToChat}
@@ -36,7 +61,7 @@ const Contact: React.FC = () => {
         </button>
       </motion.div>
 
-      <motion.div 
+      <motion.div
         style={{ opacity }}
         className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full"
       >
@@ -55,24 +80,18 @@ const Contact: React.FC = () => {
               If you have an interesting proposition or just want to discuss the future of AI, send a transmission.
             </p>
 
-            <div className="space-y-3 lg:space-y-4">
-              <a href="mailto:contact@monojit.dev" className="flex items-center gap-3 lg:gap-4 text-slate-300 hover:text-cyan-400 transition-colors group">
-                <div className="p-2 lg:p-3 bg-slate-900 border border-slate-800 rounded-lg group-hover:border-cyan-500/50 transition-colors">
-                  <Mail size={20} className="lg:w-6 lg:h-6" />
-                </div>
-                <span className="font-mono text-sm lg:text-base">contact@monojit.dev</span>
-              </a>
-              <div className="flex gap-3 lg:gap-4 mt-6 lg:mt-8">
-                {[Github, Linkedin, Twitter].map((Icon, idx) => (
-                  <a
-                    key={idx}
-                    href="#"
-                    className="p-2 lg:p-3 bg-slate-900 border border-slate-800 rounded-lg text-slate-400 hover:text-white hover:border-slate-600 hover:bg-slate-800 transition-all transform hover:scale-110"
-                  >
-                    <Icon size={20} className="lg:w-6 lg:h-6" />
-                  </a>
-                ))}
-              </div>
+            <div className="flex gap-3 lg:gap-4 mt-6 lg:mt-8 justify-center lg:justify-start">
+              {socialLinks.map(({ Icon, url }, idx) => (
+                <a
+                  key={idx}
+                  href={url}
+                  target={url.startsWith('mailto') ? undefined : "_blank"}
+                  rel={url.startsWith('mailto') ? undefined : "noopener noreferrer"}
+                  className="p-2 lg:p-3 bg-slate-900 border border-slate-800 rounded-lg text-slate-400 hover:text-white hover:border-slate-600 hover:bg-slate-800 transition-all transform hover:scale-110"
+                >
+                  <Icon size={20} className="lg:w-6 lg:h-6" />
+                </a>
+              ))}
             </div>
           </div>
 
@@ -102,8 +121,8 @@ const Contact: React.FC = () => {
         </div>
       </motion.div>
 
-      {/* Footer - Absolutely positioned at bottom */}
-      <div className="absolute bottom-10 left-0 right-0 text-center text-slate-600 font-mono text-sm z-30">
+      {/* Footer - Static relative flow */}
+      <div className="w-full text-center text-slate-600 font-mono text-[10px] sm:text-xs z-30 mt-8 sm:mt-12">
         <p>
           &copy; 2026 Monojit Goswami. All Rights Reserved.
         </p>

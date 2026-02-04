@@ -105,7 +105,7 @@ const AIChat: React.FC = () => {
 
   return (
     <section ref={containerRef} className="pb-[120px] relative z-10">
-      <motion.div 
+      <motion.div
         style={{ opacity, y }}
         className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full"
       >
@@ -114,10 +114,10 @@ const AIChat: React.FC = () => {
           <div
             className="mb-2"
           >
-            <h2 className="text-4xl font-bold mb-2 font-averia text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 font-averia text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">
               4.0 // NEXUS
             </h2>
-            <p className="text-slate-400 text-sm md:text-base mb-0 font-mono uppercase tracking-widest">
+            <p className="text-slate-400 text-xs sm:text-sm md:text-base mb-0 font-mono uppercase tracking-widest">
               Direct Neural Link to AI Core
             </p>
           </div>
