@@ -3,7 +3,7 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { Terminal } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { Section, ChatMessage } from '../types';
-import { sendMessage } from '../services/chatService';
+import { sendMessageStream } from '../services/chatService';
 
 const AIChat: React.FC = () => {
   const [history, setHistory] = useState<ChatMessage[]>([
@@ -16,6 +16,7 @@ const AIChat: React.FC = () => {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [streamingMessageIndex, setStreamingMessageIndex] = useState<number | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLElement>(null);
@@ -87,20 +88,48 @@ const AIChat: React.FC = () => {
       return;
     }
 
-    try {
-      const responseText = await sendMessage(cmd);
-      const botMsg: ChatMessage = { role: 'model', text: responseText || "No data received.", timestamp: new Date() };
-      setHistory(prev => [...prev, botMsg]);
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Unknown error occurred";
-      if (errorMessage.includes('Failed to fetch') || errorMessage.includes('network')) {
-        setError("NETWORK ERROR: Unable to connect to backend. Please check your connection.");
-      } else {
-        setError(`CONNECTION ERROR: ${errorMessage}`);
+    // Create placeholder message for streaming
+    const botMsg: ChatMessage = { role: 'model', text: '', timestamp: new Date() };
+    setHistory(prev => {
+      const newHistory = [...prev, botMsg];
+      setStreamingMessageIndex(newHistory.length - 1);
+      return newHistory;
+    });
+
+    // Start streaming
+    sendMessageStream(
+      cmd,
+      (chunk: string) => {
+        // Update the streaming message with new chunk
+        setHistory(prev => {
+          const newHistory = [...prev];
+          const lastIndex = newHistory.length - 1;
+          if (newHistory[lastIndex]?.role === 'model') {
+            newHistory[lastIndex] = {
+              ...newHistory[lastIndex],
+              text: chunk
+            };
+          }
+          return newHistory;
+        });
+      },
+      () => {
+        // Stream completed
+        setIsLoading(false);
+        setStreamingMessageIndex(null);
+      },
+      (err: Error) => {
+        // Stream error
+        const errorMessage = err.message;
+        if (errorMessage.includes('Failed to fetch') || errorMessage.includes('network')) {
+          setError("NETWORK ERROR: Unable to connect to backend. Please check your connection.");
+        } else {
+          setError(`CONNECTION ERROR: ${errorMessage}`);
+        }
+        setIsLoading(false);
+        setStreamingMessageIndex(null);
       }
-    } finally {
-      setIsLoading(false);
-    }
+    );
   };
 
   return (
@@ -133,7 +162,7 @@ const AIChat: React.FC = () => {
               onClick={handleTerminalClick}
             >
               {/* Window Title Bar */}
-              <div className="h-10 bg-[#1e1e1e] px-4 flex items-center justify-between select-none border-b border-slate-700/50">
+              <div className="h-10 bg-[#14171c] px-4 flex items-center justify-between select-none border-b border-slate-700/50">
                 <div className="flex space-x-2">
                   <div className="w-3 h-3 rounded-full bg-red-400 hover:bg-red-500 transition-colors" />
                   <div className="w-3 h-3 rounded-full bg-yellow-400 hover:bg-yellow-500 transition-colors" />
@@ -152,10 +181,10 @@ const AIChat: React.FC = () => {
                 {history.map((msg, i) => (
                   <div key={i} className="break-words">
                     {msg.role === 'user' ? (
-                      <div className="flex gap-2 items-start text-slate-200 opacity-60">
+                      <div className="flex gap-2 items-start">
                         <span className="text-green-400 font-bold shrink-0">➜</span>
                         <span className="text-cyan-400 font-bold shrink-0">~</span>
-                        <span>{msg.text}</span>
+                        <span className="text-[#00ff41]">{msg.text}</span>
                       </div>
                     ) : (
                       <div className="text-slate-300 mt-2 mb-4 space-y-1">
@@ -163,8 +192,9 @@ const AIChat: React.FC = () => {
                           components={{
                             h1: ({ node, ...props }) => <h1 className="text-xl font-bold text-green-400 mb-2" {...props} />,
                             h2: ({ node, ...props }) => <h2 className="text-lg font-bold text-purple-400 mb-2 mt-4" {...props} />,
-                            ul: ({ node, ...props }) => <ul className="list-disc list-inside space-y-1 my-2 text-slate-400" {...props} />,
-                            li: ({ node, ...props }) => <li className="pl-1" {...props} />,
+                            ul: ({ node, ...props }) => <ul className="list-disc list-outside space-y-1 my-2 text-slate-400 marker:text-slate-400 pl-5" {...props} />,
+                            ol: ({ node, ...props }) => <ol className="list-decimal list-outside space-y-1 my-2 text-slate-400 marker:text-slate-400 pl-5" {...props} />,
+                            li: ({ node, ...props }) => <li className="text-slate-400" {...props} />,
                             p: ({ node, ...props }) => <p className="mb-2 leading-relaxed" {...props} />,
                             strong: ({ node, ...props }) => <strong className="text-white font-bold" {...props} />,
                             code: ({ node, className, children, ...props }) => {

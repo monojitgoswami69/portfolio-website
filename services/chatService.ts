@@ -1,52 +1,99 @@
-// Chat API Service - Ready for your backend integration
-// Replace BACKEND_URL with your actual backend endpoint
-
-const BACKEND_URL = import.meta.env.VITE_CHAT_API_URL || '/api/chat';
+// Chat API Service - Connected to backend streaming API
+const BACKEND_URL = import.meta.env.VITE_CHAT_API_URL || 'http://localhost:8000/api/v1/chat';
 
 export interface ChatRequest {
   message: string;
-  history?: { role: string; text: string }[];
+  session_id?: string;
 }
 
 export interface ChatResponse {
-  text: string;
-  error?: string;
+  status: string;
+  response: string;  // Markdown response from backend
+  timestamp: string;
+  cached: boolean;
 }
 
-export const sendMessage = async (message: string, history: { role: string; text: string }[] = []): Promise<string> => {
-  // TODO: Replace this with your actual backend API call
-  // Example implementation:
-  
+// Callback for receiving streaming chunks
+export type StreamCallback = (chunk: string) => void;
+
+export const sendMessageStream = async (
+  message: string,
+  onChunk: StreamCallback,
+  onComplete: () => void,
+  onError: (error: Error) => void
+): Promise<void> => {
   try {
-    const response = await fetch(BACKEND_URL, {
+    const response = await fetch(`${BACKEND_URL}/stream`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ message, history }),
+      body: JSON.stringify({ message }),
     });
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const data: ChatResponse = await response.json();
-    
-    if (data.error) {
-      throw new Error(data.error);
+    const reader = response.body?.getReader();
+    if (!reader) {
+      throw new Error('Response body is not readable');
     }
 
-    return data.text;
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+
+      if (done) {
+        onComplete();
+        break;
+      }
+
+      // Decode the chunk
+      buffer += decoder.decode(value, { stream: true });
+
+      // Process complete SSE messages
+      const lines = buffer.split('\n');
+      buffer = lines.pop() || ''; // Keep incomplete line in buffer
+
+      for (const line of lines) {
+        if (line.startsWith('data: ')) {
+          const jsonStr = line.slice(6); // Remove 'data: ' prefix
+          try {
+            const data = JSON.parse(jsonStr);
+            if (data.chunk) {
+              onChunk(data.chunk);
+            }
+            if (data.done) {
+              onComplete();
+              return;
+            }
+          } catch (e) {
+            console.warn('Failed to parse SSE data:', jsonStr);
+          }
+        }
+      }
+    }
   } catch (error) {
-    // For now, return a placeholder response until backend is connected
+    // Fallback to offline response if backend is unavailable
     if (error instanceof TypeError && error.message.includes('fetch')) {
-      return getOfflineResponse(message);
+      const offlineResponse = getOfflineResponse(message);
+      // Simulate streaming for offline response
+      for (let i = 0; i < offlineResponse.length; i++) {
+        await new Promise(resolve => setTimeout(resolve, 20));
+        onChunk(offlineResponse.slice(0, i + 1));
+      }
+      onComplete();
+      return;
     }
-    
+
     if (error instanceof Error) {
-      throw new Error(`Chat API Error: ${error.message}`);
+      onError(error);
+    } else {
+      onError(new Error('Unknown error occurred'));
     }
-    throw new Error('Unknown error occurred');
   }
 };
 

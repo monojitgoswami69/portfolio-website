@@ -50,4 +50,17 @@
   .terminal-scroll::-webkit-scrollbar-corner {
     background: transparent;
   }
+
+  /* Prevent list markers from flashing during typewriter effect */
+  .terminal-scroll ul {
+    color: #94a3b8; /* slate-400 */
+  }
+
+  .terminal-scroll ul::marker {
+    color: #94a3b8; /* slate-400 */
+  }
+
+  .terminal-scroll li::marker {
+    color: #94a3b8; /* slate-400 */
+  }
 }
