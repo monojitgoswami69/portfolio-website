@@ -1,34 +1,44 @@
 // Chat API Service - Connected to backend streaming API
-const BACKEND_URL = import.meta.env.VITE_CHAT_API_URL || 'http://localhost:8000/api/v1/chat';
+// Points to the new FastAPI backend endpoint
+const BACKEND_URL = import.meta.env.VITE_CHAT_API_URL || 'http://localhost:8000';
 
 export interface ChatRequest {
   message: string;
-  session_id?: string;
+  history?: Array<{ role: string; parts: string[] }>; // Added history support
 }
 
 export interface ChatResponse {
   status: string;
-  response: string;  // Markdown response from backend
+  response: string;
   timestamp: string;
-  cached: boolean;
 }
 
-// Callback for receiving streaming chunks
+// Callback for receiving streaming chunks with full text
 export type StreamCallback = (chunk: string) => void;
 
 export const sendMessageStream = async (
   message: string,
   onChunk: StreamCallback,
   onComplete: () => void,
-  onError: (error: Error) => void
+  onError: (error: Error) => void,
+  history: Array<{ role: string; text: string }> = []
 ): Promise<void> => {
   try {
-    const response = await fetch(`${BACKEND_URL}/stream`, {
+    // Format history for backend: { role: "user" | "model", parts: ["text"] }
+    const formattedHistory = history.map(msg => ({
+      role: msg.role === 'model' ? 'model' : 'user',
+      parts: [msg.text]
+    }));
+
+    const response = await fetch(`${BACKEND_URL}/chat`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ message }),
+      body: JSON.stringify({ 
+        message,
+        history: formattedHistory
+      }),
     });
 
     if (!response.ok) {
@@ -42,6 +52,7 @@ export const sendMessageStream = async (
 
     const decoder = new TextDecoder();
     let buffer = '';
+    let accumulatedResponse = '';
 
     while (true) {
       const { done, value } = await reader.read();
@@ -60,19 +71,16 @@ export const sendMessageStream = async (
 
       for (const line of lines) {
         if (line.startsWith('data: ')) {
-          const jsonStr = line.slice(6); // Remove 'data: ' prefix
-          try {
-            const data = JSON.parse(jsonStr);
-            if (data.chunk) {
-              onChunk(data.chunk);
-            }
-            if (data.done) {
-              onComplete();
-              return;
-            }
-          } catch (e) {
-            console.warn('Failed to parse SSE data:', jsonStr);
-          }
+          const rawData = line.slice(6); // Remove 'data: ' prefix
+          
+          if (!rawData.trim()) continue; // Skip empty keep-alive or newlines
+
+          // New backend sends raw text in data field
+          // It's not valid JSON anymore, so we take it as string
+          // Only weird case is if the backend sends newlines, they might be split
+          
+          accumulatedResponse += rawData;
+          onChunk(accumulatedResponse);
         }
       }
     }

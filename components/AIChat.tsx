@@ -128,7 +128,12 @@ const AIChat: React.FC = () => {
         }
         setIsLoading(false);
         setStreamingMessageIndex(null);
-      }
+      },
+      // Pass history (excluding the current user message handling which is state based)
+      // We filter out the last user message we just added because we handle it in params? 
+      // No, we should pass the history BEFORE the current message + current message is userMsg.
+      // But sendMessageStream param is 'message', so we pass the *previous* history.
+      history 
     );
   };
 
