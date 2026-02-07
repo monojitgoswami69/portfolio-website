@@ -1,6 +1,5 @@
 import { useRef, useState, useEffect, useCallback } from 'react';
 import { motion, useScroll, useTransform, useInView } from 'framer-motion';
-import { Section } from '../types';
 import { Scan, Activity, Monitor, Code, Terminal } from 'lucide-react';
 
 // Skill icons data using static assets
@@ -114,9 +113,6 @@ const Skills: React.FC = () => {
     offset: ["start end", "end start"]
   });
 
-  const yText = useTransform(scrollYProgress, [0, 1], [50, -50]);
-  const yVisual = useTransform(scrollYProgress, [0, 1], [100, -100]);
-  const yTech = useTransform(scrollYProgress, [0, 1], [80, -80]);
   const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
   const rotateBg = useTransform(scrollYProgress, [0, 1], [0, 45]);
 
@@ -215,7 +211,7 @@ const Skills: React.FC = () => {
             ref={middleColumnRef}
             style={{ 
               '--desktop-width': `${middleColumnWidth}px`
-            } as any}
+            } as React.CSSProperties}
             className="flex-shrink-0 order-3 lg:order-2 w-full lg:w-[var(--desktop-width)]"
           >
             <div className="p-6 bg-slate-900/50 border border-slate-800 rounded-xl flex flex-col">
@@ -287,7 +283,7 @@ const Skills: React.FC = () => {
             style={{ 
               height: middleColumnHeight ? `${middleColumnHeight}px` : 'auto',
               '--desktop-width': `${middleColumnWidth}px`
-            } as any}
+            } as React.CSSProperties}
             className="relative flex items-center justify-center flex-shrink-0 w-full lg:w-[var(--desktop-width)] order-1 lg:order-3"
           >
             <div className="relative group w-full h-full bg-[#0c0c0c] rounded-2xl border border-slate-800 p-2 overflow-hidden shadow-2xl transition-all duration-300 hover:border-cyan-500/40">

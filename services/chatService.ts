@@ -1,6 +1,9 @@
 // Chat API Service - Connected to backend streaming API
 // Points to the new FastAPI backend endpoint
+import { createTimeoutController } from '../utils/security';
+
 const BACKEND_URL = import.meta.env.VITE_CHAT_API_URL || 'https://api.nexus.mgbuilds.in';
+const REQUEST_TIMEOUT_MS = 30000; // 30 seconds
 
 export interface ChatRequest {
   message: string;
@@ -19,11 +22,14 @@ export type StreamCallback = (chunk: string) => void;
 // Check backend health
 export const checkHealth = async (): Promise<boolean> => {
   try {
+    const { controller, timeoutId } = createTimeoutController(30000);
     const response = await fetch(`${BACKEND_URL}/`, {
       method: 'GET',
+      signal: controller.signal,
     });
+    clearTimeout(timeoutId);
     return response.ok;
-  } catch (error) {
+  } catch {
     return false;
   }
 };
@@ -43,8 +49,11 @@ export const sendMessage = async (
       parts: [msg.text]
     }));
 
+    const { controller, timeoutId } = createTimeoutController(REQUEST_TIMEOUT_MS);
+    
     const response = await fetch(`${BACKEND_URL}/chat`, {
       method: 'POST',
+      signal: controller.signal,
       headers: {
         'Content-Type': 'application/json',
       },
@@ -53,6 +62,8 @@ export const sendMessage = async (
         history: formattedHistory
       }),
     });
+    
+    clearTimeout(timeoutId);
 
     // Handle rate limiting (429 status)
     if (response.status === 429) {
@@ -68,7 +79,7 @@ export const sendMessage = async (
             limit = String(rateLimitData.limit || 'Unknown');
             errorType = rateLimitData.error || 'unknown';
         }
-      } catch (e) {
+      } catch {
         console.warn("Could not parse 429 JSON body, trying headers...");
       }
 
@@ -131,6 +142,12 @@ export const sendMessage = async (
       return;
     }
 
+    // Handle abort/timeout
+    if (error instanceof Error && error.name === 'AbortError') {
+      onError(new Error('Request timeout - please try again'));
+      return;
+    }
+
     if (error instanceof Error) {
       onError(error);
     } else {
@@ -154,8 +171,11 @@ export const sendMessageStream = async (
       parts: [msg.text]
     }));
 
+    const { controller, timeoutId } = createTimeoutController(REQUEST_TIMEOUT_MS);
+
     const response = await fetch(`${BACKEND_URL}/chat/stream`, {
       method: 'POST',
+      signal: controller.signal,
       headers: {
         'Content-Type': 'application/json',
       },
@@ -164,6 +184,8 @@ export const sendMessageStream = async (
         history: formattedHistory
       }),
     });
+    
+    clearTimeout(timeoutId);
 
     // Handle rate limiting (429 status)
     if (response.status === 429) {
@@ -179,7 +201,7 @@ export const sendMessageStream = async (
             limit = String(rateLimitData.limit || 'Unknown');
             errorType = rateLimitData.error || 'unknown';
         }
-      } catch (e) {
+      } catch {
         console.warn("Could not parse 429 JSON body, trying headers...");
       }
 
@@ -307,6 +329,12 @@ export const sendMessageStream = async (
         onChunk(offlineResponse.slice(0, i + 1));
       }
       onComplete();
+      return;
+    }
+
+    // Handle abort/timeout
+    if (error instanceof Error && error.name === 'AbortError') {
+      onError(new Error('Request timeout - please try again'));
       return;
     }
 

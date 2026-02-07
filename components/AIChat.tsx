@@ -1,9 +1,13 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { Terminal } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
-import { Section, ChatMessage } from '../types';
+import DOMPurify from 'dompurify';
+import { ChatMessage } from '../types';
 import { sendMessage, checkHealth } from '../services/chatService';
+import { RateLimiter } from '../utils/security';
+
+const MAX_MESSAGE_LENGTH = 1000;
+const MESSAGE_RATE_LIMIT_MS = 2000; // 2 seconds between messages
 
 const AIChat: React.FC = () => {
   const [history, setHistory] = useState<ChatMessage[]>([]);
@@ -18,6 +22,7 @@ const AIChat: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLElement>(null);
   const terminalRef = useRef<HTMLDivElement>(null);
+  const rateLimiter = useRef(new RateLimiter(MESSAGE_RATE_LIMIT_MS));
 
   // Boot sequence logic
   useEffect(() => {
@@ -113,6 +118,21 @@ const AIChat: React.FC = () => {
     if (!input.trim() || isLoading || isRateLimited) return;
 
     const cmd = input.trim();
+    
+    // Validate message length
+    if (cmd.length > MAX_MESSAGE_LENGTH) {
+      setError(`Message too long (max ${MAX_MESSAGE_LENGTH} characters)`);
+      return;
+    }
+    
+    // Check rate limit
+    if (!rateLimiter.current.canProceed()) {
+      const remainingMs = rateLimiter.current.getRemainingTime();
+      const remainingSec = Math.ceil(remainingMs / 1000);
+      setError(`Please wait ${remainingSec} second${remainingSec > 1 ? 's' : ''} before sending another message`);
+      return;
+    }
+
     const userMsg: ChatMessage = { role: 'user', text: cmd, timestamp: new Date() };
 
     setHistory(prev => [...prev, userMsg]);
@@ -179,8 +199,8 @@ const AIChat: React.FC = () => {
         if (errorMessage.startsWith('RATE_LIMIT_ERROR:')) {
           // Parse format: RATE_LIMIT_ERROR: {limit details}\n\nRESETS IN: {time} (at {localTime})
           const parts = errorMessage.split('\n\nRESETS IN: ');
-          let limitDetails = parts[0].replace('RATE_LIMIT_ERROR: ', '');
-          let resetDetails = parts[1] || '';
+          const limitDetails = parts[0].replace('RATE_LIMIT_ERROR: ', '');
+          const resetDetails = parts[1] || '';
           
           // Clean up "Global system limit reached" etc to just "user/global request limit reached" if preferred
           // BUT user asked for: 'ACCESS RESTRICTED' user/global request limit reached(50/1000 /day). come back after 'time' ('date + time')
@@ -193,7 +213,6 @@ const AIChat: React.FC = () => {
           
           // Try to extract the time from resetDetails "Xh Ym (at HH:MM AM)"
           const timeMatch = resetDetails.match(/(.*) \((.*)\)/);
-          const timeLeft = timeMatch ? timeMatch[1] : resetDetails;
           const timeAt = timeMatch ? timeMatch[2].replace(/^at\s+/, '') : '';
           
           let displayLimit = limitDetails;
@@ -285,22 +304,29 @@ const AIChat: React.FC = () => {
                       }`}>
                         <ReactMarkdown
                           components={{
-                            h1: ({ node, ...props }) => <h1 className={`text-xl font-bold mb-2 ${msg.isSuccess ? 'text-emerald-500/90' : msg.isError ? 'text-rose-500/90' : 'text-green-400'}`} {...props} />,
-                            h2: ({ node, ...props }) => <h2 className="text-lg font-bold text-purple-400 mb-2 mt-4" {...props} />,
-                            ul: ({ node, ...props }) => <ul className="list-disc list-outside space-y-1 my-2 text-slate-400 marker:text-slate-400 pl-5" {...props} />,
-                            ol: ({ node, ...props }) => <ol className="list-decimal list-outside space-y-1 my-2 text-slate-400 marker:text-slate-400 pl-5" {...props} />,
-                            li: ({ node, ...props }) => <li className="text-slate-400" {...props} />,
-                            a: ({ node, ...props }) => <a className="text-cyan-400 hover:text-cyan-300 underline underline-offset-4 transition-colors" {...props} />,
-                            p: ({ node, ...props }) => <p className={`mb-2 leading-relaxed ${
+                            h1: ({ ...props }) => <h1 className={`text-xl font-bold mb-2 ${msg.isSuccess ? 'text-emerald-500/90' : msg.isError ? 'text-rose-500/90' : 'text-green-400'}`} {...props} />,
+                            h2: ({ ...props }) => <h2 className="text-lg font-bold text-purple-400 mb-2 mt-4" {...props} />,
+                            ul: ({ ...props }) => <ul className="list-disc list-outside space-y-1 my-2 text-slate-400 marker:text-slate-400 pl-5" {...props} />,
+                            ol: ({ ...props }) => <ol className="list-decimal list-outside space-y-1 my-2 text-slate-400 marker:text-slate-400 pl-5" {...props} />,
+                            li: ({ ...props }) => <li className="text-slate-400" {...props} />,
+                            a: ({ ...props }) => {
+                              const href = props.href;
+                              // Block dangerous protocols
+                              if (href?.match(/^(javascript|data|vbscript|file):/i)) {
+                                return <span className="text-red-400">[Blocked URL]</span>;
+                              }
+                              return <a className="text-cyan-400 hover:text-cyan-300 underline underline-offset-4 transition-colors" rel="noopener noreferrer" target="_blank" {...props} />;
+                            },
+                            p: ({ ...props }) => <p className={`mb-2 leading-relaxed ${
                               msg.isError && !msg.isSystem ? 'text-yellow-400' : 
                               ''
                             }`} {...props} />,
-                            strong: ({ node, ...props }) => <strong className={`${
+                            strong: ({ ...props }) => <strong className={`${
                               msg.isSuccess ? 'text-emerald-300' : 
                               msg.isError && msg.isSystem ? 'text-rose-300' : 
                               'text-white'
                             } font-bold`} {...props} />,
-                            code: ({ node, className, children, ...props }) => {
+                            code: ({ className, children, ...props }) => {
                               const match = /language-(\w+)/.exec(className || '');
                               const isInline = !match && !String(children).includes('\n');
                               const text = String(children).trim();
@@ -328,7 +354,10 @@ const AIChat: React.FC = () => {
                             }
                           }}
                         >
-                          {msg.text}
+                          {DOMPurify.sanitize(msg.text, {
+                            ALLOWED_TAGS: ['h1', 'h2', 'p', 'strong', 'em', 'code', 'pre', 'ul', 'ol', 'li', 'a', 'br'],
+                            ALLOWED_ATTR: ['href', 'className', 'class']
+                          })}
                         </ReactMarkdown>
                       </div>
                     )}

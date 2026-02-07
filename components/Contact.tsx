@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Mail, Linkedin, Github, Twitter } from 'lucide-react';
-import { Section } from '../types';
+import { isValidEmail, sanitizeInput, isNonEmpty } from '../utils/security';
 
 const Contact: React.FC = () => {
   const ref = useRef<HTMLElement>(null);
@@ -17,6 +17,7 @@ const Contact: React.FC = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState<string>('');
 
   const [config, setConfig] = useState<{
     contact: {
@@ -41,34 +42,79 @@ const Contact: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.name || !formData.email || !formData.message) {
+    // Validate inputs
+    if (!isNonEmpty(formData.name)) {
       setSubmitStatus('error');
+      setErrorMessage('Please enter your name');
+      setTimeout(() => {
+        setSubmitStatus('idle');
+        setErrorMessage('');
+      }, 3000);
+      return;
+    }
+    
+    if (!isValidEmail(formData.email)) {
+      setSubmitStatus('error');
+      setErrorMessage('Please enter a valid email address');
+      setTimeout(() => {
+        setSubmitStatus('idle');
+        setErrorMessage('');
+      }, 3000);
+      return;
+    }
+    
+    if (!isNonEmpty(formData.message) || formData.message.length < 10) {
+      setSubmitStatus('error');
+      setErrorMessage('Message must be at least 10 characters');
+      setTimeout(() => {
+        setSubmitStatus('idle');
+        setErrorMessage('');
+      }, 3000);
       return;
     }
 
     setIsSubmitting(true);
     setSubmitStatus('idle');
+    setErrorMessage('');
 
     try {
+      // Sanitize inputs before sending
+      const sanitizedData = {
+        name: sanitizeInput(formData.name, 100),
+        email: sanitizeInput(formData.email, 254),
+        message: sanitizeInput(formData.message, 2000)
+      };
+      
       const apiUrl = import.meta.env.VITE_PORTFOLIO_API_URL || 'http://localhost:8000';
       const response = await fetch(`${apiUrl}/api/v1/communication/submit`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(sanitizedData)
       });
 
       if (response.ok) {
         setSubmitStatus('success');
         setFormData({ name: '', email: '', message: '' });
+        setErrorMessage('');
         setTimeout(() => setSubmitStatus('idle'), 5000);
       } else {
         setSubmitStatus('error');
+        setErrorMessage('Failed to send message. Please try again.');
+        setTimeout(() => {
+          setSubmitStatus('idle');
+          setErrorMessage('');
+        }, 5000);
       }
     } catch (error) {
       console.error('Failed to submit contact form:', error);
       setSubmitStatus('error');
+      setErrorMessage('Network error. Please check your connection and try again.');
+      setTimeout(() => {
+        setSubmitStatus('idle');
+        setErrorMessage('');
+      }, 5000);
     } finally {
       setIsSubmitting(false);
     }
@@ -163,7 +209,7 @@ const Contact: React.FC = () => {
               )}
               {submitStatus === 'error' && (
                 <div className="text-sm text-red-400 font-mono">
-                  ✗ Transmission failed. Please try again.
+                  ✗ {errorMessage || 'Transmission failed. Please try again.'}
                 </div>
               )}
               

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Github, ExternalLink, X, Zap, Lightbulb, Target, ChevronRight, Star } from 'lucide-react';
-import { Section } from '../types';
+import { isSafeUrl, sanitizeUrl } from '../utils/security';
 
 // Type for JSON project data
 interface ProjectData {
@@ -24,9 +24,7 @@ interface ProjectData {
 
 // Helper function to check if a link is valid (not empty, null, or "NIL")
 const isValidLink = (link?: string): boolean => {
-  if (!link) return false;
-  const trimmed = link.trim().toUpperCase();
-  return trimmed !== '' && trimmed !== 'NIL' && trimmed !== 'NULL';
+  return isSafeUrl(link);
 };
 
 // Status badge colors
@@ -212,7 +210,7 @@ const ProjectModal: React.FC<{ project: ProjectData; onClose: () => void }> = ({
             >
               {isValidLink(project.demoUrl) && (
                 <a
-                  href={project.demoUrl}
+                  href={sanitizeUrl(project.demoUrl)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-bold rounded-lg transition-all duration-300 text-sm"
@@ -223,7 +221,7 @@ const ProjectModal: React.FC<{ project: ProjectData; onClose: () => void }> = ({
               )}
               {isValidLink(project.githubUrl) && (
                 <a
-                  href={project.githubUrl}
+                  href={sanitizeUrl(project.githubUrl)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex-1 flex items-center justify-center gap-2 px-6 py-3 text-white font-bold rounded-lg border border-slate-400/30 transition-all duration-300 hover:bg-white/10 text-sm"
@@ -401,7 +399,7 @@ const Projects: React.FC = () => {
                       <div className="flex gap-3 pt-4 border-t border-slate-800 mt-auto">
                         {isValidLink(project.demoUrl) && (
                           <a
-                            href={project.demoUrl}
+                            href={sanitizeUrl(project.demoUrl)}
                             target="_blank"
                             rel="noopener noreferrer"
                             onClick={(e) => e.stopPropagation()}
@@ -413,7 +411,7 @@ const Projects: React.FC = () => {
                         )}
                         {isValidLink(project.githubUrl) && (
                           <a
-                            href={project.githubUrl}
+                            href={sanitizeUrl(project.githubUrl)}
                             target="_blank"
                             rel="noopener noreferrer"
                             onClick={(e) => e.stopPropagation()}
