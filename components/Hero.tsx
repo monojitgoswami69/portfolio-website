@@ -60,23 +60,7 @@ const Hero: React.FC = () => {
           Self-taught Backend Developer specializing in RAG-based systems and high-performance Machine Learning pipelines.
         </motion.p>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.2 }}
-          className="mt-12 flex flex-col sm:grid sm:grid-cols-2 gap-4 w-fit mx-auto"
-        >
-          <a href={`#${Section.PROJECTS}`} className="px-8 py-4 bg-white/5 border border-white/10 hover:bg-cyan-500/10 hover:border-cyan-500/50 text-white rounded-lg backdrop-blur-sm transition-all duration-300 font-mono group text-center">
-            <span className="mr-2 text-cyan-400">./</span>
-            PROJECTS
-            <span className="ml-2 group-hover:translate-x-1 inline-block transition-transform">&rarr;</span>
-          </a>
-          <a href={`#${Section.CHAT}`} className="px-8 py-4 bg-white/5 border border-white/10 hover:bg-purple-500/10 hover:border-purple-500/50 text-white rounded-lg backdrop-blur-sm transition-all duration-300 font-mono group text-center">
-            <span className="mr-2 text-purple-400">./</span>
-            NEXUS
-            <span className="ml-2 group-hover:translate-x-1 inline-block transition-transform">&rarr;</span>
-          </a>
-        </motion.div>
+
       </motion.div>
 
       <motion.div

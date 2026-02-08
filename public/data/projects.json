@@ -1,156 +1,180 @@
 [
     {
-        "name": "Project Alpha",
-        "description": "A placeholder project description showcasing the card layout and design.",
-        "longDescription": "This is a detailed placeholder description for Project Alpha. It demonstrates how the modal displays longer content, including multiple paragraphs and formatting.\n\nThe project showcases various technologies and features that would typically be included in a real project portfolio entry.",
+        "name": "Shiksha Saathi",
+        "description": "A production-grade RAG-based SaaS chatbot providing 24x7 student support for college-specific academic information.",
+        "longDescription": "Shiksha Saathi is a production-ready Retrieval-Augmented Generation (RAG) chatbot designed to assist college students with official academic information when administrative staff are unavailable.\nThe system allows institutes to upload and manage knowledge sources such as notices, circulars, and policy documents through a dedicated admin panel. Administrators can update the knowledge base in real time, modify system instructions, monitor usage metrics, and intervene when the chatbot’s confidence falls below a defined safety threshold.\nTo prevent misinformation in high-stakes academic contexts, the chatbot uses confidence-based query gating, handing off ambiguous or unsafe queries to human administrators. Analytics dashboards surface the most confusing topics, frequently missed notices, and unresolved student queries, enabling institutes to proactively address communication gaps.",
         "techStack": [
-            "Technology 1",
-            "Technology 2",
-            "Technology 3",
-            "Technology 4",
-            "Technology 5"
+            "python",
+            "FastAPI",
+            "Firestore",
+            "Transformers",
+            "Gemini API",
+            "Pinecone",
+            "Dropbox",
+            "Vercel",
+            "HTML/CSS",
+            "Vanilla JS"
         ],
-        "imageUrl": "https://picsum.photos/600/400?grayscale&random=1",
-        "screenshots": [],
-        "githubUrl": "#",
-        "demoUrl": "#",
-        "status": "Completed",
+        "imageUrl": "/assets/projects/shiksha-saathi.webp",
+        "githubUrl": "https://github.com/monojitgoswami69/Shiksha_Saathi",
+        "demoUrl": "",
+        "status": "Under Development",
         "features": [
-            "Feature placeholder 1",
-            "Feature placeholder 2",
-            "Feature placeholder 3",
-            "Feature placeholder 4"
+            "Production-grade RAG chatbot for college-specific data",
+            "Real-time knowledge base management and dynamic system prompt control via admin panel",
+            "Confidence-threshold based human handoff to prevent hallucinations",
+            "Analytics dashboard for high-confusion and unresolved queries"
         ],
-        "challenges": "Placeholder text describing the challenges faced during development.",
-        "learnings": "Placeholder text describing key learnings from this project.",
-        "category": "Category A",
+        "challenges": "Preventing hallucinations in high-stakes academic queries while maintaining low response latency, and designing a system that allows real-time knowledge updates without retraining or redeploying the model.",
+        "learnings": "Learned how to design safe RAG systems for production use, implement confidence-aware AI workflows, and build admin-facing tooling for real-time AI system control and observability.",
+        "category": "GenAI/RAG",
         "featured": true
     },
     {
-        "name": "Project Beta",
-        "description": "Another placeholder project to demonstrate the grid layout.",
-        "longDescription": "This is a detailed placeholder description for Project Beta. It shows how the modal handles different content lengths and displays project information in an organized manner.\n\nMultiple sections are available to showcase different aspects of the project.",
+        "name": "Campus Dost",
+        "description": "A multi-tenant SaaS evolution of Shiksha Saathi, providing isolated RAG chatbot instances for multiple educational institutions.",
+        "longDescription": "Campus Dost is a multi-tenant SaaS platform built by extending the core architecture of Shiksha Saathi to support multiple institutions at scale.\nWhile Shiksha Saathi operates as a single-tenant system, Campus Dost introduces strict tenant isolation, allowing each institute to operate its own dedicated chatbot instance with isolated vector stores, configurations, prompts, and access credentials. All infrastructure, hosting, and scaling are centrally managed.\nThe platform provides institute-specific admin panels with multi-role access control, enabling different levels of administrative privileges. This design ensures data security, operational independence, and safe AI behavior across institutions while maintaining a unified and scalable backend architecture.",
         "techStack": [
-            "Technology A",
-            "Technology B",
-            "Technology C",
-            "Technology D"
+            "Python",
+            "FastAPI",
+            "Firestore",
+            "Gemini Embeddings",
+            "Gemini/Groq API",
+            "Firebase Auth",
+            "Pinecone",
+            "Dropbox",
+            "Vercel",
+            "React JS"
         ],
-        "imageUrl": "https://picsum.photos/600/400?grayscale&random=2",
-        "screenshots": [],
-        "githubUrl": "#",
+        "imageUrl": "/assets/projects/campus-dost.webp",
+        "githubUrl": "https://github.com/monojitgoswami69/campus-dost",
         "demoUrl": "",
-        "status": "In Progress",
+        "status": "Under Development",
         "features": [
-            "Feature placeholder 1",
-            "Feature placeholder 2",
-            "Feature placeholder 3"
+            "Multi-tenant SaaS architecture built on Shiksha Saathi core",
+            "Per-institute isolated chatbot instances",
+            "Dedicated vector stores and prompt isolation per tenant",
+            "Role-based access control with multi-role admin system",
+            "Centralized infrastructure, hosting, and scaling",
+            "Secure tenant-aware authentication and authorization"
         ],
-        "challenges": "Placeholder text describing the challenges faced during development.",
-        "learnings": "Placeholder text describing key learnings from this project.",
-        "category": "Category B",
+        "challenges": "Designing strict tenant isolation while reusing shared infrastructure, preventing cross-tenant data leakage, and scaling RAG pipelines efficiently across multiple institutions.",
+        "learnings": "Gained experience in designing multi-tenant SaaS systems, implementing tenant-aware security models, and scaling production RAG architectures without sacrificing safety or data isolation.",
+        "category": "GenAI/RAG",
         "featured": true
     },
     {
-        "name": "Project Gamma",
-        "description": "Placeholder project demonstrating card interactions and hover effects.",
-        "longDescription": "This is a detailed placeholder description for Project Gamma. It demonstrates the full modal experience with all sections populated with placeholder content.\n\nThe layout adapts to the content provided and maintains consistent styling throughout.",
+        "name": "Codalyzer",
+        "description": "An LLM-powered static code analysis tool that infers time and space complexity and suggests optimizations.",
+        "longDescription": "Codalyzer is a static code analysis system that leverages large language models to analyze source code and infer time and space complexity.\nThe tool parses code submissions, evaluates algorithmic patterns, and estimates computational complexity while remaining language-aware. When inefficient patterns are detected, Codalyzer generates targeted suggestions to improve performance, readability, and algorithmic efficiency.\nDesigned for educational and screening use cases, Codalyzer helps developers and students understand complexity trade-offs and improve code quality without relying solely on manual reviews.",
         "techStack": [
-            "Tech Stack 1",
-            "Tech Stack 2",
-            "Tech Stack 3"
+            "Python",
+            "FastAPI",
+            "Gemini/Groq API",
+            "Vercel",
+            "React TS",
+            "Redis"
         ],
-        "imageUrl": "https://picsum.photos/600/400?grayscale&random=3",
-        "screenshots": [],
-        "githubUrl": "#",
-        "demoUrl": "#",
-        "status": "Completed",
+        "imageUrl": "/assets/projects/codalyzer.webp",
+        "githubUrl": "https://github.com/monojitgoswami69/codalyzer",
+        "demoUrl": "https://codalyzer.mgbuilds.in",
+        "status": "Under Development",
         "features": [
-            "Feature placeholder 1",
-            "Feature placeholder 2",
-            "Feature placeholder 3",
-            "Feature placeholder 4",
-            "Feature placeholder 5"
+            "LLM-based static code analysis",
+            "Automatic inference of time and space complexity",
+            "Language-aware code understanding",
+            "Actionable optimization suggestions",
+            "Educational feedback for algorithmic improvement"
         ],
-        "challenges": "Placeholder text describing the challenges faced during development.",
-        "learnings": "Placeholder text describing key learnings from this project.",
-        "category": "Category A",
+        "challenges": "Ensuring consistent and explainable complexity analysis from probabilistic models and minimizing false positives when identifying inefficient algorithmic patterns.",
+        "learnings": "Learned how to combine LLM reasoning with static analysis techniques, design prompts for deterministic technical output, and balance model flexibility with analytical correctness.",
+        "category": "GenAI",
         "featured": false
     },
     {
-        "name": "Project Delta",
-        "description": "Placeholder project for portfolio layout demonstration.",
-        "longDescription": "This is a detailed placeholder description for Project Delta. This entry helps visualize how the portfolio looks with multiple projects displayed in the grid.\n\nEach project card maintains consistent sizing and spacing for a polished appearance.",
+        "name": "NEXUS",
+        "description": "A terminal-style portfolio chatbot with a controlled roast persona and strict conversational constraints.",
+        "longDescription": "NEXUS is a terminal-style chatbot built for my portfolio website to answer queries strictly about my projects and technical experience.\nThe system deliberately avoids RAG and instead operates on a static, tightly scoped context provided through controlled prompts. A constrained roast persona is layered on top of factual responses to maintain engagement without sacrificing correctness.\nTo ensure reliability and prevent abuse, NEXUS implements per-user and global rate limiting using Redis, along with enhanced conversation history management to support multi-turn interactions within a bounded context window.",
         "techStack": [
-            "Framework X",
-            "Library Y",
-            "Tool Z",
-            "Platform W"
+            "Python",
+            "FastAPI",
+            "Gemini/Groq API",
+            "Redis",
+            "React TS",
+            "Vercel"
         ],
-        "imageUrl": "https://picsum.photos/600/400?grayscale&random=4",
-        "screenshots": [],
-        "githubUrl": "#",
-        "demoUrl": "#",
-        "status": "Completed",
-        "features": [
-            "Feature placeholder 1",
-            "Feature placeholder 2",
-            "Feature placeholder 3"
-        ],
-        "challenges": "Placeholder text describing the challenges faced during development.",
-        "learnings": "Placeholder text describing key learnings from this project.",
-        "category": "Category C",
-        "featured": false
-    },
-    {
-        "name": "Project Epsilon",
-        "description": "Fifth placeholder project showcasing the portfolio design system.",
-        "longDescription": "This is a detailed placeholder description for Project Epsilon. It represents how the portfolio handles a larger number of projects while maintaining visual consistency.\n\nThe responsive grid layout adjusts based on screen size.",
-        "techStack": [
-            "Stack A",
-            "Stack B",
-            "Stack C",
-            "Stack D",
-            "Stack E",
-            "Stack F"
-        ],
-        "imageUrl": "https://picsum.photos/600/400?grayscale&random=5",
-        "screenshots": [],
-        "githubUrl": "",
-        "demoUrl": "#",
-        "status": "In Progress",
-        "features": [
-            "Feature placeholder 1",
-            "Feature placeholder 2"
-        ],
-        "challenges": "Placeholder text describing the challenges faced during development.",
-        "learnings": "Placeholder text describing key learnings from this project.",
-        "category": "Category B",
-        "featured": false
-    },
-    {
-        "name": "Project Zeta",
-        "description": "Sixth placeholder project completing the portfolio grid view.",
-        "longDescription": "This is a detailed placeholder description for Project Zeta. The final placeholder project in the grid helps demonstrate the full layout with six project cards.\n\nThis configuration provides a balanced and visually appealing portfolio presentation.",
-        "techStack": [
-            "Primary Tech",
-            "Secondary Tech",
-            "Supporting Tech"
-        ],
-        "imageUrl": "https://picsum.photos/600/400?grayscale&random=6",
-        "screenshots": [],
-        "githubUrl": "#",
+        "imageUrl": "/assets/projects/nexus.webp",
+        "githubUrl": "https://github.com/monojitgoswami69/nexus-backend",
         "demoUrl": "",
         "status": "Completed",
         "features": [
-            "Feature placeholder 1",
-            "Feature placeholder 2",
-            "Feature placeholder 3",
-            "Feature placeholder 4"
+            "Terminal-style conversational interface",
+            "Controlled roast persona layered over factual responses",
+            "Strict prompt-scoped knowledge boundaries",
+            "Per-user and global rate limiting using Redis",
+            "Enhanced multi-turn conversation history management",
+            "Bounded context window to prevent drift and hallucinations"
         ],
-        "challenges": "Placeholder text describing the challenges faced during development.",
-        "learnings": "Placeholder text describing key learnings from this project.",
-        "category": "Category A",
+        "challenges": "Balancing a humorous persona with factual correctness, enforcing strict knowledge boundaries without RAG, and maintaining coherent multi-turn conversations under tight context limits.",
+        "learnings": "Learned how to design constrained LLM personas, enforce safety and scope without retrieval systems, and build production-grade rate limiting and conversation state management.",
+        "category": "GenAI",
+        "featured": false
+    },
+    {
+        "name": "Make-a-Chatbot",
+        "description": "A fully client-side chatbot builder that lets users configure and export LLM chatbots using their own API keys without any backend involvement.",
+        "longDescription": "Make-a-Chatbot is a frontend-only chatbot builder designed to help users quickly prototype LLM-powered chatbots using their own API keys and system instructions.\nThe platform operates with a strict no-backend architecture. All configuration, API calls, and inference requests are executed directly from the client. API keys are never transmitted to or stored on any server and remain confined to the user’s device for the duration of the session.\nUsers can switch between supported LLM providers such as Groq and Gemini, toggle streaming responses, and experiment with system prompts in a secure playground. API keys are stored only in session memory and are immediately cleared, minimizing the attack surface.\nOnce satisfied, users can export production-ready starter code as either a terminal chatbot or a backend server in Python or Node.js. The export includes a configured environment file and test curl scripts, allowing immediate local verification. The generated code intentionally remains minimal, enabling users to extend it with features like RAG, rate limiting, or authentication as they learn.",
+        "techStack": [
+            "React JS",
+            "JavaScript",
+            "Gemini API",
+            "Groq API"
+        ],
+        "imageUrl": "/assets/projects/make-a-chatbot.webp",
+        "githubUrl": "https://github.com/monojitgoswami69/make-a-chatbot",
+        "demoUrl": "",
+        "status": "Under Development",
+        "features": [
+            "Fully client-side architecture with no backend",
+            "API keys never leave the user’s device",
+            "Multi-provider LLM support with provider switching",
+            "User-defined system instructions and streaming toggle",
+            "Session-scoped API key storage with immediate cleanup",
+            "Exportable terminal chatbot or backend server templates",
+            "Auto-generated Python or Node.js servers with env files and test curl scripts"
+        ],
+        "challenges": "Designing a zero-backend architecture while supporting multiple providers, preventing accidental key persistence in the browser, and generating starter code that is minimal yet correct.",
+        "learnings": "Learned how to design privacy-first GenAI tooling, implement secure client-side workflows for sensitive credentials, and build developer onboarding tools that scale learning without abstraction overload.",
+        "category": "Frontend/GenAI",
+        "featured": true
+    },
+    {
+        "name": "Certify",
+        "description": "A frontend-only mass certificate generation tool with template mapping, advanced typography control, and parallelized client-side processing.",
+        "longDescription": "Certify is a frontend-only mass certificate generation assistant designed to create large volumes of personalized certificates without any backend involvement.\nUsers upload a certificate template and a CSV data file, then visually draw and position multiple text boxes over the template. Each box can be mapped to any CSV field and customized with fine-grained controls including horizontal and vertical alignment, font size, and typography selection from the Google Fonts library.\nTo handle scale efficiently, Certify uses configurable web workers based on available CPU cores to parallelize rendering tasks, achieving up to a fivefold speedup compared to single-threaded execution. Certificate generation is split into batches of 3,000 to minimize memory overhead and prevent browser instability.\nAll processing is performed entirely on the client. Templates, CSV data, and generated certificates never leave the user’s device, ensuring privacy and eliminating server-side costs.",
+        "techStack": [
+            "React TS",
+            "JavaScript",
+            "HTML5 Canvas",
+            "Web Workers",
+            "Vercel"
+        ],
+        "imageUrl": "/assets/projects/certify.webp",
+        "githubUrl": "https://github.com/monojitgoswami69/certify",
+        "demoUrl": "https://certify.mgbuilds.in",
+        "status": "Under Development",
+        "features": [
+            "Visual template editor with draggable text boxes",
+            "CSV-to-template field mapping",
+            "Advanced text customization with alignment and font controls",
+            "Access to 1900+ Google Fonts",
+            "Configurable web workers for parallel certificate generation",
+            "Batch-based processing to minimize memory usage",
+            "Fully client-side execution with no backend"
+        ],
+        "challenges": "Managing memory and performance constraints in the browser while generating thousands of certificates, coordinating parallel workers safely, and maintaining layout accuracy across different fonts and alignments.",
+        "learnings": "Learned how to design high-performance client-side systems, leverage web workers for CPU-bound workloads, and build privacy-first tooling that scales without backend infrastructure.",
+        "category": "Frontend",
         "featured": false
     }
 ]

@@ -47,7 +47,7 @@ const AIChat: React.FC = () => {
 
   const runBootSequence = async () => {
     setIsBooting(true);
-    
+
     // Start health check immediately in background
     const healthPromise = checkHealth();
 
@@ -69,7 +69,7 @@ const AIChat: React.FC = () => {
 
     // Wait for health check to complete
     const isHealthy = await healthPromise;
-    
+
     if (isHealthy) {
       // Clear history (buffer) before printing initialized
       setHistory([{
@@ -118,13 +118,13 @@ const AIChat: React.FC = () => {
     if (!input.trim() || isLoading || isRateLimited) return;
 
     const cmd = input.trim();
-    
+
     // Validate message length
     if (cmd.length > MAX_MESSAGE_LENGTH) {
       setError(`Message too long (max ${MAX_MESSAGE_LENGTH} characters)`);
       return;
     }
-    
+
     // Check rate limit
     if (!rateLimiter.current.canProceed()) {
       const remainingMs = rateLimiter.current.getRemainingTime();
@@ -201,24 +201,24 @@ const AIChat: React.FC = () => {
           const parts = errorMessage.split('\n\nRESETS IN: ');
           const limitDetails = parts[0].replace('RATE_LIMIT_ERROR: ', '');
           const resetDetails = parts[1] || '';
-          
+
           // Clean up "Global system limit reached" etc to just "user/global request limit reached" if preferred
           // BUT user asked for: 'ACCESS RESTRICTED' user/global request limit reached(50/1000 /day). come back after 'time' ('date + time')
-          
+
           // Extract limit numbers if possible or just use string
           // limitDetails might be "Global system limit reached (1000/day)."
-          
+
           // Reformat text to user specification
           // "ACCESS RESTRICTED' user/global request limit reached(50/1000 /day). come back after 'time' ('date + time')"
-          
+
           // Try to extract the time from resetDetails "Xh Ym (at HH:MM AM)"
           const timeMatch = resetDetails.match(/(.*) \((.*)\)/);
           const timeAt = timeMatch ? timeMatch[2].replace(/^at\s+/, '') : '';
-          
+
           let displayLimit = limitDetails;
           if (limitDetails.includes('Global')) displayLimit = 'global request limit reached (1,000/day)';
           else displayLimit = 'user request limit reached (50/day)';
-          
+
           const formattedError = `\`ACCESS RESTRICTED\`\n\n${displayLimit}.\n\nresets at \`${timeAt}\``;
 
           setIsRateLimited(true);
@@ -295,13 +295,12 @@ const AIChat: React.FC = () => {
                         <span className="text-[#00ff41]">{msg.text}</span>
                       </div>
                     ) : (
-                      <div className={`mt-2 mb-4 space-y-1 ${
-                        msg.isSuccess ? 'text-slate-300' : 
+                      <div className={`mt-2 mb-4 space-y-1 ${msg.isSuccess ? 'text-slate-300' :
                         msg.isError && msg.isSystem ? 'text-slate-300' :
-                        msg.isError ? 'text-yellow-400 font-mono tracking-wide' : 
-                        msg.isSystem ? 'text-yellow-500/80 font-mono text-xs italic' :
-                        'text-slate-300'
-                      }`}>
+                          msg.isError ? 'text-yellow-400 font-mono tracking-wide' :
+                            msg.isSystem ? 'text-yellow-500/80 font-mono text-xs italic' :
+                              'text-slate-300'
+                        }`}>
                         <ReactMarkdown
                           components={{
                             h1: ({ ...props }) => <h1 className={`text-xl font-bold mb-2 ${msg.isSuccess ? 'text-emerald-500/90' : msg.isError ? 'text-rose-500/90' : 'text-green-400'}`} {...props} />,
@@ -317,20 +316,18 @@ const AIChat: React.FC = () => {
                               }
                               return <a className="text-cyan-400 hover:text-cyan-300 underline underline-offset-4 transition-colors" rel="noopener noreferrer" target="_blank" {...props} />;
                             },
-                            p: ({ ...props }) => <p className={`mb-2 leading-relaxed ${
-                              msg.isError && !msg.isSystem ? 'text-yellow-400' : 
+                            p: ({ ...props }) => <p className={`mb-2 leading-relaxed ${msg.isError && !msg.isSystem ? 'text-yellow-400' :
                               ''
-                            }`} {...props} />,
-                            strong: ({ ...props }) => <strong className={`${
-                              msg.isSuccess ? 'text-emerald-300' : 
-                              msg.isError && msg.isSystem ? 'text-rose-300' : 
-                              'text-white'
-                            } font-bold`} {...props} />,
+                              }`} {...props} />,
+                            strong: ({ ...props }) => <strong className={`${msg.isSuccess ? 'text-emerald-300' :
+                              msg.isError && msg.isSystem ? 'text-rose-300' :
+                                'text-white'
+                              } font-bold`} {...props} />,
                             code: ({ className, children, ...props }) => {
                               const match = /language-(\w+)/.exec(className || '');
                               const isInline = !match && !String(children).includes('\n');
                               const text = String(children).trim();
-                              
+
                               if (msg.isError) {
                                 return <code className="bg-slate-800 text-slate-200 px-1.5 py-0.5 rounded text-xs md:text-sm font-mono border border-slate-700/50">{children}</code>;
                               }
@@ -406,14 +403,13 @@ const AIChat: React.FC = () => {
               <div className="px-4 py-2 border-t border-slate-700/50 bg-[#0c0e14] flex justify-between text-xs font-mono text-slate-600 uppercase tracking-widest">
                 <div className="flex gap-4">
                   <span className="flex items-center gap-2">
-                    <span className={`w-2 h-2 inline-block rounded-full animate-pulse ${
-                      hasInitFailed ? 'bg-red-500' :
+                    <span className={`w-2 h-2 inline-block rounded-full animate-pulse ${hasInitFailed ? 'bg-red-500' :
                       (hasBooted && !isBooting) ? 'bg-green-500' :
-                      'bg-yellow-500'
-                    }`} />
+                        'bg-yellow-500'
+                      }`} />
                     {hasInitFailed ? 'System Offline' :
-                     (hasBooted && !isBooting) ? 'System Stable' : 
-                     'Connecting...'}
+                      (hasBooted && !isBooting) ? 'System Stable' :
+                        'Connecting...'}
                   </span>
                   <span className="hidden sm:inline">Encrypted :: AES-256</span>
                 </div>

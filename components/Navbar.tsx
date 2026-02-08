@@ -22,7 +22,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
     { id: Section.HERO, label: '01. // SYSTEM', icon: <Terminal size={16} /> },
     { id: Section.SKILLS, label: '02. // SPECS', icon: <Cpu size={16} /> },
     { id: Section.PROJECTS, label: '03. // MODULES', icon: <Code2 size={16} /> },
-    { id: Section.CHAT, label: '04. // AI_LINK', icon: <MessageSquare size={16} /> },
+    { id: Section.CHAT, label: '04. // NEXUS', icon: <MessageSquare size={16} /> },
     { id: Section.CONTACT, label: '05. // SIGNAL', icon: <Mail size={16} /> },
   ];
 
@@ -30,11 +30,11 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
     const element = document.getElementById(id);
     if (element) {
       const elementPosition = element.getBoundingClientRect().top;
-      
+
       // Add intentional offset for Skills section (only for PC layout)
       const isDesktop = window.innerWidth >= 768;
       const extraOffset = (id === Section.SKILLS && isDesktop) ? 50 : 0;
-      const offsetPosition = elementPosition + window.pageYOffset - 85 - extraOffset; 
+      const offsetPosition = elementPosition + window.pageYOffset - 85 - extraOffset;
 
       window.scrollTo({
         top: offsetPosition,
@@ -106,9 +106,8 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
 
       {/* Mobile dropdown menu */}
       <div
-        className={`md:hidden absolute top-16 left-0 right-0 overflow-hidden transition-all duration-300 rounded-b-lg ${
-          isOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0 pointer-events-none'
-        }`}
+        className={`md:hidden absolute top-16 left-0 right-0 overflow-hidden transition-all duration-300 rounded-b-lg ${isOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0 pointer-events-none'
+          }`}
         style={{
           backgroundColor: 'rgba(2, 6, 23, 0.97)'
         }}
@@ -118,11 +117,10 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
             <button
               key={item.id}
               onClick={() => scrollToSection(item.id)}
-              className={`w-full text-left flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium font-mono transition-all duration-200 ${
-                activeSection === item.id
+              className={`w-full text-left flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium font-mono transition-all duration-200 ${activeSection === item.id
                   ? 'text-cyan-400 bg-cyan-400/10'
                   : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
-              }`}
+                }`}
             >
               <span className={activeSection === item.id ? 'text-cyan-400' : 'text-slate-400'}>
                 {item.icon}
