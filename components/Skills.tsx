@@ -14,7 +14,7 @@ const skillsData = [
 ];
 
 const toolsData = [
-  'Firebase',"GCP", 'Pinecone', 'ChromaDB',
+  'Firebase', "GCP", 'Pinecone', 'ChromaDB',
   'Langchain', 'Transformers'
   , 'Git', 'Linux'
 ];
@@ -38,7 +38,7 @@ const metrics: Metric[] = [
   },
   {
     label: 'Kernel',
-    value: 'linux stable',
+    value: 'linux standard',
     icon: Monitor,
     color: '#00FFFF',
     glowColor: 'rgba(0, 255, 255, 0.5)'
@@ -101,7 +101,7 @@ const Skills: React.FC = () => {
       // Mobile: 64px (w-16), Desktop: 48px (lg:w-12)
       setResponsiveIconSize(window.innerWidth >= 1024 ? ICON_SIZE : 64);
     };
-    
+
     updateIconSize();
     window.addEventListener('resize', updateIconSize);
     return () => window.removeEventListener('resize', updateIconSize);
@@ -209,7 +209,7 @@ const Skills: React.FC = () => {
           {/* Middle Column - Tech Stack (Fixed width based on icons) */}
           <motion.div
             ref={middleColumnRef}
-            style={{ 
+            style={{
               '--desktop-width': `${middleColumnWidth}px`
             } as React.CSSProperties}
             className="flex-shrink-0 order-3 lg:order-2 w-full lg:w-[var(--desktop-width)]"
@@ -242,6 +242,7 @@ const Skills: React.FC = () => {
                           src={skill.image}
                           alt={skill.name}
                           className="lg:w-12 lg:h-12 w-16 h-16 object-contain"
+                          loading="lazy"
                         />
                         <span className="text-xs lg:text-[11px] font-mono text-slate-400 text-center">
                           {skill.name}
@@ -280,7 +281,7 @@ const Skills: React.FC = () => {
 
           {/* Right Column - Holographic Image Card */}
           <motion.div
-            style={{ 
+            style={{
               height: middleColumnHeight ? `${middleColumnHeight}px` : 'auto',
               '--desktop-width': `${middleColumnWidth}px`
             } as React.CSSProperties}
@@ -296,6 +297,7 @@ const Skills: React.FC = () => {
                   className="w-full h-full object-cover object-[center_30%] transition-all duration-700
                                    filter grayscale sepia hue-rotate-[170deg] contrast-[1.2] brightness-75
                                    group-hover:filter-none group-hover:scale-105"
+                  loading="lazy"
                 />
 
                 {/* Hologram Overlay (Fades on Hover) */}

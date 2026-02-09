@@ -57,7 +57,7 @@ const Hero: React.FC = () => {
           transition={{ delay: 0.8 }}
           className="text-slate-400 text-lg md:text-2xl font-light max-w-2xl mx-auto leading-relaxed"
         >
-          Self-taught Backend Developer specializing in RAG-based systems and high-performance Machine Learning pipelines.
+          Self-taught Backend Developer specializing in RAG based systems and high-performance Machine Learning pipelines.
         </motion.p>
 
 

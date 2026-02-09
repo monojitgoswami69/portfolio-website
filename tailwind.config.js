@@ -11,7 +11,7 @@ export default {
     extend: {
       fontFamily: {
         sans: ['Space Grotesk', 'sans-serif'],
-        mono: ['JetBrains Mono', 'monospace'],
+        mono: ['"JetBrains Mono"', 'monospace'],
         averia: ['"Averia Serif Libre"', 'serif'],
         geo: ['"Geo"', 'sans-serif'],
         quantico: ['"Quantico"', 'sans-serif'],

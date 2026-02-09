@@ -216,6 +216,7 @@ const ProjectModal: React.FC<{ project: ProjectData; onClose: () => void }> = ({
               src={project.imageUrl}
               alt={project.name}
               className="w-full h-full object-cover"
+              loading="lazy"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-slate-900/50 via-slate-900/30 to-transparent" />
 
@@ -485,6 +486,7 @@ const Projects: React.FC = () => {
                       src={project.imageUrl}
                       alt={project.name}
                       className="w-full h-full object-cover transform md:group-hover:scale-110 transition-transform duration-500 md:grayscale md:group-hover:grayscale-0"
+                      loading="lazy"
                     />
                   </div>
 

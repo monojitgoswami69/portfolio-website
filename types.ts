@@ -21,6 +21,12 @@ export interface ChatMessage {
   isError?: boolean;
   isSuccess?: boolean;
   isSystem?: boolean;
+  isMenu?: boolean;
+  menuOptions?: string[];
+  menuOptionDescriptions?: string[];
+  selectedIndex?: number;
+  isNeofetch?: boolean;
+  subtext?: string;
 }
 
 export enum Section {

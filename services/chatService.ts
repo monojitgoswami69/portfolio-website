@@ -7,7 +7,8 @@ const REQUEST_TIMEOUT_MS = 30000; // 30 seconds
 
 export interface ChatRequest {
   message: string;
-  history?: Array<{ role: string; parts: string[] }>; // Added history support
+  history?: Array<{ role: string; parts: string[] }>;
+  roast_level?: string;
 }
 
 export interface ChatResponse {
@@ -18,6 +19,40 @@ export interface ChatResponse {
 
 // Callback for receiving streaming chunks with full text
 export type StreamCallback = (chunk: string) => void;
+
+// Initialize session and get user info
+export const initializeSession = async (): Promise<{ userId: string; userRequestsLeft: string; globalRequestsLeft: string; resetAt?: string } | null> => {
+  try {
+    const { controller, timeoutId } = createTimeoutController(30000);
+    const response = await fetch(`${BACKEND_URL}/initialize`, {
+      method: 'GET',
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+
+    if (!response.ok) return null;
+
+    const data = await response.json();
+
+    // Store in session storage
+    sessionStorage.setItem('nexus_user_id', data.user_id);
+    sessionStorage.setItem('nexus_user_requests', data.user_requests_left);
+    sessionStorage.setItem('nexus_global_requests', data.global_requests_left);
+    if (data.reset_at) {
+      sessionStorage.setItem('nexus_reset_at', data.reset_at);
+    }
+
+    return {
+      userId: data.user_id,
+      userRequestsLeft: data.user_requests_left,
+      globalRequestsLeft: data.global_requests_left,
+      resetAt: data.reset_at
+    };
+  } catch (error) {
+    console.error("Initialization failed:", error);
+    return null;
+  }
+};
 
 // Check backend health
 export const checkHealth = async (): Promise<boolean> => {
@@ -40,7 +75,9 @@ export const sendMessage = async (
   onResponse: (response: string) => void,
   onComplete: () => void,
   onError: (error: Error) => void,
-  history: Array<{ role: string; text: string }> = []
+  history: Array<{ role: string; text: string }> = [],
+  roastLevel?: string,
+  onUpdateLimits?: (limits: { userRequestsLeft: string; globalRequestsLeft: string }) => void
 ): Promise<void> => {
   try {
     // Format history for backend: { role: "user" | "model", parts: ["text"] }
@@ -50,19 +87,25 @@ export const sendMessage = async (
     }));
 
     const { controller, timeoutId } = createTimeoutController(REQUEST_TIMEOUT_MS);
-    
+
+    const payload: any = {
+      message,
+      history: formattedHistory
+    };
+
+    if (roastLevel) {
+      payload["roast_level"] = roastLevel.toLowerCase();
+    }
+
     const response = await fetch(`${BACKEND_URL}/chat`, {
-      method: 'POST',
+      method: "POST",
       signal: controller.signal,
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        message,
-        history: formattedHistory
-      }),
+      body: JSON.stringify(payload),
     });
-    
+
     clearTimeout(timeoutId);
 
     // Handle rate limiting (429 status)
@@ -75,9 +118,9 @@ export const sendMessage = async (
       try {
         const rateLimitData = await response.json();
         if (rateLimitData) {
-            resetAt = rateLimitData.reset_at;
-            limit = String(rateLimitData.limit || 'Unknown');
-            errorType = rateLimitData.error || 'unknown';
+          resetAt = rateLimitData.reset_at;
+          limit = String(rateLimitData.limit || 'Unknown');
+          errorType = rateLimitData.error || 'unknown';
         }
       } catch {
         console.warn("Could not parse 429 JSON body, trying headers...");
@@ -109,13 +152,24 @@ export const sendMessage = async (
       }
 
       const localResetTime = resetTime.toLocaleString(undefined, {
-         weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+        weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
       });
 
       const isGlobalLimit = errorType === 'global_limit' || limit === '1000'; // Inference
       const limitMessage = isGlobalLimit
-          ? `Global system limit reached (${limit}/day).`
-          : `Daily limit reached (${limit}/day).`;
+        ? `Global system limit reached (${limit}/day).`
+        : `Daily limit reached (${limit}/day).`;
+
+      // Set allocation to 0 when rate limited
+      sessionStorage.setItem('nexus_user_requests', '0/50');
+      sessionStorage.setItem('nexus_global_requests', '0/1000');
+
+      if (onUpdateLimits) {
+        onUpdateLimits({
+          userRequestsLeft: '0/50',
+          globalRequestsLeft: '0/1000'
+        });
+      }
 
       const errorMsg = `RATE_LIMIT_ERROR: ${limitMessage}\n\nRESETS IN: ${relativeTimeStr} (at ${localResetTime})`;
       throw new Error(errorMsg);
@@ -123,6 +177,20 @@ export const sendMessage = async (
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    // Extract rate limit info from headers
+    const userRemaining = response.headers.get('X-RateLimit-Remaining');
+    const globalRemaining = response.headers.get('X-RateLimit-Global-Remaining');
+
+    if (userRemaining) sessionStorage.setItem('nexus_user_requests', userRemaining);
+    if (globalRemaining) sessionStorage.setItem('nexus_global_requests', globalRemaining);
+
+    if (onUpdateLimits && userRemaining && globalRemaining) {
+      onUpdateLimits({
+        userRequestsLeft: userRemaining,
+        globalRequestsLeft: globalRemaining
+      });
     }
 
     const data = await response.json();
@@ -184,7 +252,7 @@ export const sendMessageStream = async (
         history: formattedHistory
       }),
     });
-    
+
     clearTimeout(timeoutId);
 
     // Handle rate limiting (429 status)
@@ -197,9 +265,9 @@ export const sendMessageStream = async (
       try {
         const rateLimitData = await response.json();
         if (rateLimitData) {
-            resetAt = rateLimitData.reset_at;
-            limit = String(rateLimitData.limit || 'Unknown');
-            errorType = rateLimitData.error || 'unknown';
+          resetAt = rateLimitData.reset_at;
+          limit = String(rateLimitData.limit || 'Unknown');
+          errorType = rateLimitData.error || 'unknown';
         }
       } catch {
         console.warn("Could not parse 429 JSON body, trying headers...");
@@ -231,13 +299,13 @@ export const sendMessageStream = async (
       }
 
       const localResetTime = resetTime.toLocaleString(undefined, {
-         weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+        weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
       });
 
       const isGlobalLimit = errorType === 'global_limit' || limit === '1000'; // Inference
       const limitMessage = isGlobalLimit
-          ? `Global system limit reached (${limit}/day).`
-          : `Daily limit reached (${limit}/day).`;
+        ? `Global system limit reached (${limit}/day).`
+        : `Daily limit reached (${limit}/day).`;
 
       const errorMsg = `RATE_LIMIT_ERROR: ${limitMessage}\n\nRESETS IN: ${relativeTimeStr} (at ${localResetTime})`;
       throw new Error(errorMsg);
@@ -349,22 +417,22 @@ export const sendMessageStream = async (
 // Temporary offline responses until backend is connected
 const getOfflineResponse = (message: string): string => {
   const lowerMessage = message.toLowerCase();
-  
+
   if (lowerMessage.includes('hello') || lowerMessage.includes('hi')) {
     return "**NEXUS ONLINE**\n\n> Greetings! I'm currently in `OFFLINE_MODE` as the backend is being configured.\n\n Once connected, I'll be able to answer questions about **Monojit's** skills, projects, and experience.";
   }
-  
+
   if (lowerMessage.includes('skill') || lowerMessage.includes('tech')) {
     return "**TECH STACK:**\n\n- **Languages:** `Python`, `C`, `C++`, `JavaScript`, `SQL`\n- **AI/ML:** LangChain, Hugging Face, Transformers\n- **Databases:** MongoDB, Redis, Pinecone, ChromaDB\n- **Cloud:** GCP, Vercel, Render";
   }
-  
+
   if (lowerMessage.includes('project')) {
     return "**ACTIVE MODULES:**\n\n1. **Agentic RAG Knowledge Base** - Context-aware AI with LangChain\n2. **Distributed Analytics Engine** - High-performance data processing\n3. **VisionGuard AI** - Computer vision anomaly detection\n\nScroll to the **MODULES** section for details.";
   }
-  
+
   if (lowerMessage.includes('contact') || lowerMessage.includes('email')) {
     return "**SIGNAL TRANSMISSION:**\n\n> Navigate to the **SIGNAL** section at the bottom to establish contact.\n\nOr transmit directly to: `contact@monojit.dev`";
   }
-  
+
   return "**SYSTEM NOTICE:**\n\n> Backend neural link not yet established.\n> Running in `DEMO_MODE`\n\nTry asking about:\n- `skills` - Technical capabilities\n- `projects` - Active modules\n- `contact` - Transmission protocols";
 };
