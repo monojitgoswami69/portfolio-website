@@ -26,6 +26,8 @@ export interface ChatMessage {
   menuOptionDescriptions?: string[];
   selectedIndex?: number;
   isNeofetch?: boolean;
+  neofetchArt?: string[];
+  neofetchInfo?: { label: string; value: string }[];
   subtext?: string;
 }
 

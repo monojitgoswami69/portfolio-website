@@ -468,15 +468,27 @@ const AIChat: React.FC = () => {
 
       const fetchMsg: ChatMessage = {
         role: 'model',
-        text:
-          " ██████   ██████   █████████     OS: monojit goswami\n" +
-          "▒▒██████ ██████   ███▒▒▒▒▒███    Host: portfolio\n" +
-          " ▒███▒█████▒███  ███     ▒▒▒     Kernel: nexus v2.5.1\n" +
-          " ▒███▒▒███ ▒███ ▒███             Uptime: " + uptime + "\n" +
-          " ▒███ ▒▒▒  ▒███ ▒███    █████    Shell: homo sapiens\n" +
-          " ▒███      ▒███ ▒▒███  ▒▒███     Resolution: " + window.innerWidth + "x" + window.innerHeight + "\n" +
-          " █████     █████ ▒▒█████████     DE: Framer-Motion-Dynamic\n" +
-          "▒▒▒▒▒     ▒▒▒▒▒   ▒▒▒▒▒▒▒▒▒      WM: Tailwind-Static",
+        text: '',
+        neofetchArt: [
+          " ██████   ██████   █████████",
+          "▒▒██████ ██████   ███▒▒▒▒▒███",
+          " ▒███▒█████▒███  ███     ▒▒▒",
+          " ▒███▒▒███ ▒███ ▒███",
+          " ▒███ ▒▒▒  ▒███ ▒███    █████",
+          " ▒███      ▒███ ▒▒███  ▒▒███",
+          " █████     █████ ▒▒█████████",
+          "▒▒▒▒▒     ▒▒▒▒▒   ▒▒▒▒▒▒▒▒▒"
+        ],
+        neofetchInfo: [
+          { label: 'OS', value: 'monojit goswami' },
+          { label: 'Host', value: 'portfolio' },
+          { label: 'Kernel', value: 'nexus v2.5.1' },
+          { label: 'Uptime', value: uptime },
+          { label: 'Shell', value: 'homo sapiens' },
+          { label: 'Resolution', value: `${window.innerWidth}x${window.innerHeight}` },
+          { label: 'DE', value: 'Framer-Motion-Dynamic' },
+          { label: 'WM', value: 'Tailwind-Static' }
+        ],
         timestamp: new Date(),
         isNeofetch: true
       };
@@ -638,21 +650,33 @@ const AIChat: React.FC = () => {
                                 })}
                               </div>
                             ) : msg.isNeofetch ? (
-                              <div className="whitespace-pre font-mono leading-tight text-white/90">
-                                {msg.text.split('\n').map((line, lineIdx) => {
-                                  const match = line.match(/^(.*?)(\b[A-Z]{2,}|Host|Kernel|Uptime|Shell|Resolution)(\s*:\s*)(.*)$/);
-                                  if (match) {
-                                    return (
-                                      <div key={lineIdx} className="flex">
-                                        <span className="text-purple-500/80">{match[1]}</span>
-                                        <span className="text-cyan-400 font-bold">{match[2]}</span>
-                                        <span className="text-slate-500">{match[3]}</span>
-                                        <span className="text-slate-300">{match[4]}</span>
-                                      </div>
-                                    );
-                                  }
-                                  return <div key={lineIdx} className="text-purple-500/80">{line}</div>;
-                                })}
+                              <div className="flex flex-col md:flex-row gap-4 md:gap-8 items-start select-none md:select-text font-mono">
+                                {/* ASCII Art */}
+                                <div className="text-purple-500/80 leading-none whitespace-pre text-[10px] sm:text-xs md:text-sm font-bold shrink-0 ascii-art">
+                                  {msg.neofetchArt?.map((line, idx) => (
+                                    <div key={idx}>{line}</div>
+                                  ))}
+                                </div>
+                                {/* System Info */}
+                                <div className="flex flex-col gap-1 text-xs sm:text-sm">
+                                  {msg.neofetchInfo?.map((info, idx) => (
+                                    <div key={idx} className="flex gap-2">
+                                      <span className="text-cyan-400 font-bold min-w-[80px] md:min-w-[100px]">{info.label}:</span>
+                                      <span className="text-slate-300">{info.value}</span>
+                                    </div>
+                                  ))}
+                                  {/* Color blocks */}
+                                  <div className="flex gap-1 mt-2">
+                                    <div className="w-3 h-3 bg-black"></div>
+                                    <div className="w-3 h-3 bg-red-500"></div>
+                                    <div className="w-3 h-3 bg-green-500"></div>
+                                    <div className="w-3 h-3 bg-yellow-500"></div>
+                                    <div className="w-3 h-3 bg-blue-500"></div>
+                                    <div className="w-3 h-3 bg-purple-500"></div>
+                                    <div className="w-3 h-3 bg-cyan-500"></div>
+                                    <div className="w-3 h-3 bg-white"></div>
+                                  </div>
+                                </div>
                               </div>
                             ) : (
                               <div>

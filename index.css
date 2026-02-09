@@ -10,8 +10,10 @@
     overflow-x: hidden;
   }
 
-  .font-mono {
+  .ascii-art {
     font-family: 'JetBrains Mono', monospace;
+    font-variant-ligatures: none;
+    font-feature-settings: "rlig" 0, "calt" 0;
   }
 
   .font-quando {
