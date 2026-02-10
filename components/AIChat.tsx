@@ -135,31 +135,45 @@ const AIChat: React.FC = () => {
   const runBootSequence = async () => {
     setIsBooting(true);
 
-    // Initialize session immediately to get user ID
+    // 1. Start sequence
+    setHistory(prev => [...prev, {
+      role: 'model',
+      text: "beginning startup sequence...",
+      timestamp: new Date(),
+      isSystem: true
+    }]);
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    // 2. Fetch profile (show loading msg first)
+    setHistory(prev => [...prev, {
+      role: 'model',
+      text: "accessing user profile...",
+      timestamp: new Date(),
+      isSystem: true
+    }]);
+
+    // Fetch data *after* showing the message
     const initData = await initializeSession();
 
-    const steps = [
-      { text: "beginning startup sequence...", delay: 1000 },
-      { text: "accessing user profile...", delay: 700 }
-    ];
-
     if (initData) {
-      steps[1].text = `accessing user profile: ${initData.userId}...`;
-    }
-
-    steps.push({ text: "starting nexus kernel...", delay: 500 });
-
-    for (const step of steps) {
+      // 3. Profile loaded
       setHistory(prev => [...prev, {
         role: 'model',
-        text: step.text,
+        text: `profile initialized: ${initData.userId}`,
         timestamp: new Date(),
         isSystem: true
       }]);
-      await new Promise(resolve => setTimeout(resolve, step.delay));
-    }
+      await new Promise(resolve => setTimeout(resolve, 200));
 
-    if (initData) {
+      // 4. Kernel start
+      setHistory(prev => [...prev, {
+        role: 'model',
+        text: "starting nexus kernel...",
+        timestamp: new Date(),
+        isSystem: true
+      }]);
+      await new Promise(resolve => setTimeout(resolve, 500));
+
       setSessionInfo({
         userRequestsLeft: initData.userRequestsLeft,
         globalRequestsLeft: initData.globalRequestsLeft
@@ -197,6 +211,7 @@ const AIChat: React.FC = () => {
         }, 100);
       }
     } else {
+      // Init failed
       setHasInitFailed(true);
       setHistory([{
         role: 'model',
