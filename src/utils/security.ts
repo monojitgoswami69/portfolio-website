@@ -1,7 +1,10 @@
 // Security utilities for input validation and sanitization
 
+const ALLOWED_PROTOCOLS = ['http:', 'https:', 'mailto:'];
+
 /**
- * Validates if a URL is safe (not javascript:, data:, or vbscript: protocol)
+ * Validates if a URL is safe using a strict allowlist of protocols.
+ * Only http, https, and mailto URLs are permitted.
  */
 export const isSafeUrl = (url: string | undefined): boolean => {
   if (!url) return false;
@@ -9,21 +12,34 @@ export const isSafeUrl = (url: string | undefined): boolean => {
   if (!trimmed || trimmed.toUpperCase() === 'NIL' || trimmed.toUpperCase() === 'NULL') {
     return false;
   }
-  // Block dangerous protocols
-  if (trimmed.match(/^(javascript|data|vbscript|file):/i)) {
-    return false;
+  try {
+    const parsed = new URL(trimmed, window.location.origin);
+    return ALLOWED_PROTOCOLS.includes(parsed.protocol);
+  } catch {
+    // Relative URLs (e.g. /path) are safe
+    return !trimmed.match(/^[a-zA-Z][a-zA-Z0-9+.-]*:/);
   }
-  return true;
 };
 
 /**
- * Sanitizes a URL - returns # if unsafe, otherwise returns the URL
+ * Sanitizes a URL - returns '#' if unsafe, otherwise returns the URL.
+ * Used for project links, social links, etc.
  */
 export const sanitizeUrl = (url: string | undefined): string => {
   if (!isSafeUrl(url)) {
     return '#';
   }
-  return url!;
+  return url ?? '#';
+};
+
+/**
+ * Sanitizes a URL specifically for markdown-rendered content.
+ * Blocks dangerous protocols; returns null if blocked (caller should show [Blocked URL]).
+ */
+export const sanitizeMarkdownUrl = (href: string | undefined): string | null => {
+  if (!href) return null;
+  if (!isSafeUrl(href)) return null;
+  return href;
 };
 
 /**
@@ -83,7 +99,7 @@ export class RateLimiter {
 /**
  * Creates an AbortController with timeout
  */
-export const createTimeoutController = (timeoutMs: number): { controller: AbortController; timeoutId: NodeJS.Timeout } => {
+export const createTimeoutController = (timeoutMs: number): { controller: AbortController; timeoutId: ReturnType<typeof setTimeout> } => {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
   return { controller, timeoutId };

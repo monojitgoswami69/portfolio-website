@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    body {
+        font-family: 'Quando', serif;
+        background-color: #020617;
+        color: #e2e8f0;
+        overflow-x: hidden;
+    }
+
+    .ascii-art {
+        font-family: monospace;
+        font-variant-ligatures: none;
+        font-feature-settings: "rlig" 0, "calt" 0;
+    }
+
+    .font-quando {
+        font-family: 'Quando', serif;
+    }
+}

@@ -1,9 +1,10 @@
 // Chat API Service - Connected to backend streaming API
 // Points to the new FastAPI backend endpoint
-import { createTimeoutController } from '../utils/security';
+import { createTimeoutController, isNonEmpty, sanitizeInput } from '../utils/security';
 
 const BACKEND_URL = import.meta.env.VITE_CHAT_API_URL || 'https://api.nexus.mgbuilds.in';
 const REQUEST_TIMEOUT_MS = 30000; // 30 seconds
+const MAX_MESSAGE_LENGTH = 1000;
 
 export interface ChatRequest {
   message: string;
@@ -32,7 +33,7 @@ export const initializeSession = async (): Promise<{ userId: string; userRequest
 
     if (!response.ok) return null;
 
-    const data = await response.json();
+    const data = await response.json() as { user_id: string; user_requests_left: string; global_requests_left: string; reset_at?: string };
 
     // Store in session storage
     sessionStorage.setItem('nexus_user_id', data.user_id);
@@ -80,6 +81,12 @@ export const sendMessage = async (
   onUpdateLimits?: (limits: { userRequestsLeft: string; globalRequestsLeft: string }) => void
 ): Promise<void> => {
   try {
+    if (!isNonEmpty(message)) {
+      throw new Error("Message cannot be empty");
+    }
+
+    const sanitizedMessage = sanitizeInput(message, MAX_MESSAGE_LENGTH);
+
     // Format history for backend: { role: "user" | "model", parts: ["text"] }
     const formattedHistory = history.map(msg => ({
       role: msg.role === 'model' ? 'model' : 'user',
@@ -88,13 +95,13 @@ export const sendMessage = async (
 
     const { controller, timeoutId } = createTimeoutController(REQUEST_TIMEOUT_MS);
 
-    const payload: any = {
-      message,
+    const payload: ChatRequest = {
+      message: sanitizedMessage,
       history: formattedHistory
     };
 
     if (roastLevel) {
-      payload["roast_level"] = roastLevel.toLowerCase();
+      payload.roast_level = roastLevel.toLowerCase();
     }
 
     const response = await fetch(`${BACKEND_URL}/chat`, {

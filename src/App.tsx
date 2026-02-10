@@ -1,17 +1,22 @@
 import { useState, useEffect } from 'react';
-import Navbar from './components/Navbar';
-import Hero from './components/Hero';
-import Skills from './components/Skills';
-import Projects from './components/Projects';
-import AIChat from './components/AIChat';
-import Contact from './components/Contact';
+import Navbar from './layout/Navbar';
+import Hero from './sections/Hero';
+import Skills from './sections/Skills';
+import Projects from './sections/Projects/Projects';
+import AIChat from './sections/AIChat/AIChat';
+import Contact from './sections/Contact/Contact';
 import BackgroundGrid from './components/BackgroundGrid';
-import { Section } from './types';
+import { Section } from './types/global.d';
 
 const App: React.FC = () => {
   const [activeSection, setActiveSection] = useState<string>(Section.HERO);
 
   useEffect(() => {
+    // Prevent browser from restoring scroll position
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
+
     // Scroll to top on page load and clear any hash
     window.scrollTo(0, 0);
     if (window.location.hash) {
@@ -102,9 +107,9 @@ const App: React.FC = () => {
 
       {/* Bottom viewport gradient fade for smooth content appearance */}
       <div
-        className="fixed bottom-0 left-0 right-0 h-12 pointer-events-none z-40"
+        className="fixed bottom-0 left-0 right-0 h-5 pointer-events-none z-40"
         style={{
-          background: 'linear-gradient(to top, rgba(2, 6, 23, 0.9) 0%, rgba(2, 6, 23, 0.5) 40%, transparent 100%)'
+          background: 'linear-gradient(to top, rgba(2, 6, 23, 0.7) 0%, transparent 100%)'
         }}
       />
     </div>
