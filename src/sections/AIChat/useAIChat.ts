@@ -28,7 +28,30 @@ const COMMANDS = [
     'neofetch', 'matrix', 'escape-the-matrix', 'roast-level', 'exit'
 ];
 
-export const useAIChat = () => {
+export const useAIChat = (): {
+    history: ChatMessage[];
+    input: string;
+    setInput: (input: string) => void;
+    isLoading: boolean;
+    isBooting: boolean;
+    hasBooted: boolean;
+    hasInitFailed: boolean;
+    isMatrixActive: boolean;
+    isTerminated: boolean;
+    error: string | null;
+    activeMenu: 'roast' | null;
+    roastLevel: string;
+    sessionInfo: { userRequestsLeft: string; globalRequestsLeft: string } | null;
+    scrollRef: React.RefObject<HTMLDivElement>;
+    inputRef: React.RefObject<HTMLInputElement>;
+    containerRef: React.RefObject<HTMLElement>;
+    terminalRef: React.RefObject<HTMLDivElement>;
+    handleTerminalClick: () => void;
+    handleKeyDown: (e: React.KeyboardEvent) => void;
+    handleSend: (e: React.FormEvent) => Promise<void>;
+    handleReconnect: () => void;
+    handleMenuSelect: (option: string) => void;
+} => {
     const [history, setHistory] = useState<ChatMessage[]>([]);
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -63,7 +86,7 @@ export const useAIChat = () => {
             (entries) => {
                 const firstEntry = entries[0];
                 if (firstEntry?.isIntersecting) {
-                    runBootSequence();
+                    void runBootSequence();
                     observer.disconnect();
                 }
             },
@@ -176,7 +199,7 @@ export const useAIChat = () => {
         setIsMatrixActive(false);
         setHasBooted(false);
         setHistory([]);
-        runBootSequence();
+        void runBootSequence();
     };
 
     // Sync menu index to history
