@@ -143,14 +143,14 @@ const Contact: React.FC = () => {
                     {/* Right Column - Form */}
                     <div>
                         <form onSubmit={handleSubmit} className="space-y-3 lg:space-y-4">
-                            <div className="grid grid-cols-2 gap-3 lg:gap-4">
+                            <div className="flex flex-col gap-3 lg:gap-4">
                                 <div className="space-y-1 lg:space-y-2">
                                     <label className="text-xs lg:text-sm font-mono text-slate-500">USER_ID</label>
                                     <input
                                         type="text"
                                         value={formData.name}
                                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                        className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 lg:p-3 text-sm lg:text-base text-white focus:border-cyan-500 outline-none transition-colors"
+                                        className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 lg:py-2.5 text-xs lg:text-sm font-mono text-white focus:border-cyan-500 outline-none transition-colors"
                                         placeholder="Name"
                                         required
                                     />
@@ -161,7 +161,7 @@ const Contact: React.FC = () => {
                                         type="email"
                                         value={formData.email}
                                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                        className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 lg:p-3 text-sm lg:text-base text-white focus:border-cyan-500 outline-none transition-colors"
+                                        className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 lg:py-2.5 text-xs lg:text-sm font-mono text-white focus:border-cyan-500 outline-none transition-colors"
                                         placeholder="Email"
                                         required
                                     />
@@ -173,7 +173,7 @@ const Contact: React.FC = () => {
                                     rows={3}
                                     value={formData.message}
                                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 lg:p-3 text-sm lg:text-base text-white focus:border-cyan-500 outline-none transition-colors lg:rows-4"
+                                    className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 lg:py-2.5 text-xs lg:text-sm font-mono text-white focus:border-cyan-500 outline-none transition-colors min-h-[100px]"
                                     placeholder="Message..."
                                     required
                                 />

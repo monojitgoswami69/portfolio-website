@@ -104,6 +104,36 @@ const AIChat: React.FC = () => {
     const opacity = useTransform(scrollYProgress, [0, 0.3], [0, 1]);
     const y = useTransform(scrollYProgress, [0, 0.3], [50, 0]);
 
+    useEffect(() => {
+        if (inputRef.current) {
+            const scrollElem = scrollRef.current;
+            let isAtBottom = false;
+            let oldScrollTop = 0;
+
+            if (scrollElem) {
+                oldScrollTop = scrollElem.scrollTop;
+                // Check if user is near the very bottom of the chat container
+                isAtBottom = Math.abs(scrollElem.scrollHeight - scrollElem.scrollTop - scrollElem.clientHeight) <= 15;
+            }
+
+            // Temporarily shrink to re-calculate clean scrollHeight
+            inputRef.current.style.height = 'auto';
+            if (input) {
+                inputRef.current.style.height = `${inputRef.current.scrollHeight}px`;
+            }
+
+            if (scrollElem) {
+                if (isAtBottom) {
+                    // Lock to absolute bottom so expanding textareas stay fully visible
+                    scrollElem.scrollTop = scrollElem.scrollHeight;
+                } else {
+                    // Anchor to old pos if user is currently scrolled up reading history
+                    scrollElem.scrollTop = oldScrollTop;
+                }
+            }
+        }
+    }, [input, inputRef, scrollRef]);
+
     return (
         <section id="chat" ref={containerRef} className="pb-[60px] lg:pb-[120px] relative z-10 scroll-mt-[85px]">
             <motion.div
@@ -146,15 +176,15 @@ const AIChat: React.FC = () => {
 
                                     <div
                                         ref={scrollRef}
-                                        className="relative z-10 h-full p-4 md:p-6 overflow-y-auto space-y-4 cursor-text scroll-smooth font-mono text-xs md:text-sm bg-[#0A0C11]/60 leading-relaxed terminal-scroll"
+                                        className="relative z-10 h-full p-4 md:p-6 overflow-y-auto space-y-4 cursor-text font-mono text-xs md:text-sm bg-[#0A0C11]/60 leading-relaxed terminal-scroll"
                                     >
                                         {history.map((msg, i) => (
                                             <div key={i} className="break-words">
                                                 {msg.role === 'user' ? (
                                                     <div className="flex gap-2 items-start">
-                                                        <span className="text-green-400 font-bold shrink-0">➜</span>
-                                                        <span className="text-cyan-400 font-bold shrink-0">~</span>
-                                                        <span className="text-[#00ff41]">{msg.text}</span>
+                                                        <span className="text-green-400 font-bold shrink-0 mt-[2px]">➜</span>
+                                                        <span className="text-cyan-400 font-bold shrink-0 mt-[2px]">~</span>
+                                                        <span className="text-[#00ff41] break-all whitespace-pre-wrap flex-1">{msg.text}</span>
                                                     </div>
                                                 ) : (
                                                     <div className={`mt-2 mb-4 space-y-1 ${msg.isSuccess ? 'text-slate-300' :
@@ -247,19 +277,23 @@ const AIChat: React.FC = () => {
                                             </div>
                                         )}
 
-                                        {hasBooted && !isBooting && !hasInitFailed && !isLoading && !activeMenu && (
+                                        {hasBooted && !isBooting && !isLoading && !activeMenu && (
                                             <div className="mt-4">
-                                                <form onSubmit={handleSend} className="flex items-center group">
-                                                    <span className="text-green-400 font-bold mr-2">➜</span>
-                                                    <span className="text-cyan-400 font-bold mr-2">~</span>
-                                                    <div className="relative flex-grow flex items-center">
-                                                        <input
+                                                <form onSubmit={handleSend} className="flex items-start group">
+                                                    <span className="text-green-400 font-bold mr-2 mt-[2px]">➜</span>
+                                                    <span className="text-cyan-400 font-bold mr-2 mt-[2px]">~</span>
+                                                    <div className="relative flex-grow flex items-start">
+                                                        <textarea
                                                             ref={inputRef}
-                                                            type="text"
                                                             value={input}
-                                                            onChange={(e) => setInput(e.target.value)}
+                                                            onChange={(e) => {
+                                                                setInput(e.target.value);
+                                                            }}
                                                             onKeyDown={handleKeyDown}
-                                                            className="w-full bg-transparent border-none outline-none text-[#00ff41] font-mono text-sm md:text-[15px] caret-[#00ff41] break-all"
+                                                            className="w-full bg-transparent border-none outline-none text-[#00ff41] font-mono text-sm md:text-[15px] caret-[#00ff41] break-words resize-none overflow-hidden"
+                                                            style={{ minHeight: '24px', paddingTop: '2px' }}
+                                                            rows={1}
+                                                            maxLength={1024}
                                                             aria-label="Terminal Input"
                                                             autoComplete="off"
                                                             spellCheck="false"
@@ -284,7 +318,12 @@ const AIChat: React.FC = () => {
                                             :: Allocation: {sessionInfo && hasBooted && !isBooting ? sessionInfo.userRequestsLeft : 'N/A'}
                                         </span>
                                     </div>
-                                    <div>
+                                    <div className="flex gap-4 items-center">
+                                        {input.length >= 1024 && (
+                                            <span className="text-red-500 font-bold animate-pulse">
+                                                MAX LENGTH (1024) REACHED
+                                            </span>
+                                        )}
                                         <span className="md:hidden">{sessionInfo && hasBooted && !isBooting ? sessionInfo.userRequestsLeft : 'N/A'}</span>
                                         <span className="hidden md:inline">v2.5.1 BUILD 2026</span>
                                     </div>

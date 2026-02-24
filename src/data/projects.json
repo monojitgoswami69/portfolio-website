@@ -162,7 +162,7 @@
         "imageUrl": "/assets/projects/certify.webp",
         "githubUrl": "https://github.com/monojitgoswami69/certify",
         "demoUrl": "https://certify.mgbuilds.in",
-        "status": "Under Development",
+        "status": "completed",
         "features": [
             "Visual template editor with draggable text boxes",
             "CSV-to-template field mapping",

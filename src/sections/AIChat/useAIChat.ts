@@ -14,7 +14,7 @@ import {
 import projectsData from '../../data/projects.json';
 import { ProjectData } from '../Projects/projectUtils';
 
-const MAX_MESSAGE_LENGTH = 1000;
+const MAX_MESSAGE_LENGTH = 1024;
 
 const ROAST_OPTIONS = ['DEFAULT', 'SPICY', 'NO-MERCY'];
 const ROAST_DESCRIPTIONS = [
@@ -43,7 +43,7 @@ export const useAIChat = (): {
     roastLevel: string;
     sessionInfo: { userRequestsLeft: string; globalRequestsLeft: string } | null;
     scrollRef: React.RefObject<HTMLDivElement>;
-    inputRef: React.RefObject<HTMLInputElement>;
+    inputRef: React.RefObject<HTMLTextAreaElement>;
     containerRef: React.RefObject<HTMLElement>;
     terminalRef: React.RefObject<HTMLDivElement>;
     handleTerminalClick: () => void;
@@ -74,7 +74,7 @@ export const useAIChat = (): {
     const [projects] = useState<Array<{ name: string; description: string }>>(projectsData as ProjectData[]);
 
     const scrollRef = useRef<HTMLDivElement>(null);
-    const inputRef = useRef<HTMLInputElement>(null);
+    const inputRef = useRef<HTMLTextAreaElement>(null);
     const containerRef = useRef<HTMLElement>(null);
     const terminalRef = useRef<HTMLDivElement>(null);
 
@@ -131,17 +131,27 @@ export const useAIChat = (): {
                 timestamp: new Date(),
                 isSystem: true
             }]);
-            await new Promise(resolve => setTimeout(resolve, 200));
-
-            // 4. Kernel start
+        } else {
+            // Profile load failed
             setHistory(prev => [...prev, {
                 role: 'model',
-                text: "starting nexus kernel...",
+                text: `profile fetch failed: using local guest...`,
                 timestamp: new Date(),
                 isSystem: true
             }]);
-            await new Promise(resolve => setTimeout(resolve, 500));
+        }
+        await new Promise(resolve => setTimeout(resolve, 200));
 
+        // 4. Kernel start
+        setHistory(prev => [...prev, {
+            role: 'model',
+            text: "starting nexus kernel...",
+            timestamp: new Date(),
+            isSystem: true
+        }]);
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        if (initData) {
             setSessionInfo({
                 userRequestsLeft: initData.userRequestsLeft,
                 globalRequestsLeft: initData.globalRequestsLeft
@@ -179,15 +189,30 @@ export const useAIChat = (): {
                 }, 100);
             }
         } else {
-            // Init failed
-            setHasInitFailed(true);
+            // Init failed - offline mode
+            setSessionInfo({
+                userRequestsLeft: 'OFFLINE',
+                globalRequestsLeft: 'OFFLINE'
+            });
+
             setHistory([{
                 role: 'model',
-                text: "# NEXUS v2.5.0 FAILED TO INITIALIZE\n\ncheck back later or contact at [monojitgoswami.dev@gmail.com](mailto:monojitgoswami.dev@gmail.com) for support",
+                text: "# NEXUS v2.5.0 INITIALIZED (OFFLINE MODE)...\n\nType `help` for available commands or ask anything about the portfolio (dare to be roasted)",
                 timestamp: new Date(),
-                isError: true,
-                isSystem: true
+                isSuccess: true
             }]);
+
+            setIsRateLimited(true);
+            setHasInitFailed(true);
+
+            setTimeout(() => {
+                setHistory(prev => [...prev, {
+                    role: 'model',
+                    text: `\`BACKEND OFFLINE\`\n\nserver unreachable.\n\n## ENTERING COMMAND-ONLY MODE`,
+                    timestamp: new Date(),
+                    isError: true
+                }]);
+            }, 100);
         }
 
         setIsBooting(false);
@@ -278,7 +303,12 @@ export const useAIChat = (): {
     // Auto-scroll to bottom
     useEffect(() => {
         if (scrollRef.current) {
-            scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+            // Slight delay allows React to render the DOM elements before measuring scrollHeight
+            setTimeout(() => {
+                if (scrollRef.current) {
+                    scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+                }
+            }, 50);
         }
     }, [history, isLoading]);
 
@@ -319,6 +349,9 @@ export const useAIChat = (): {
                     setInput(firstMatch);
                 }
             }
+        } else if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            void handleSend(e as unknown as React.FormEvent);
         }
     };
 
