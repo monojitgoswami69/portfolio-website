@@ -51,6 +51,7 @@ export const useAIChat = (): {
     handleSend: (e: React.FormEvent) => Promise<void>;
     handleReconnect: () => void;
     handleMenuSelect: (option: string) => void;
+    setMenuSelectedIndex: React.Dispatch<React.SetStateAction<number>>;
 } => {
     const [history, setHistory] = useState<ChatMessage[]>([]);
     const [input, setInput] = useState('');
@@ -276,7 +277,11 @@ export const useAIChat = (): {
     useEffect(() => {
         if (!activeMenu) return;
 
+        let ready = false;
+        const timer = setTimeout(() => { ready = true; }, 100);
+
         const handleGlobalKeyDown = (e: KeyboardEvent) => {
+            if (!ready) return;
             const options = ROAST_OPTIONS;
             if (e.key === 'ArrowUp') {
                 e.preventDefault();
@@ -297,7 +302,10 @@ export const useAIChat = (): {
         };
 
         window.addEventListener('keydown', handleGlobalKeyDown);
-        return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+        return () => {
+            clearTimeout(timer);
+            window.removeEventListener('keydown', handleGlobalKeyDown);
+        };
     }, [activeMenu, menuSelectedIndex, handleMenuSelect]);
 
     // Auto-scroll to bottom
@@ -548,5 +556,6 @@ export const useAIChat = (): {
         handleSend,
         handleReconnect,
         handleMenuSelect,
+        setMenuSelectedIndex,
     };
 };

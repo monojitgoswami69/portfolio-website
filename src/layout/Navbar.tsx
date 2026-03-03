@@ -30,11 +30,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
         const element = document.getElementById(id);
         if (element) {
             const elementPosition = element.getBoundingClientRect().top;
-
-            // Add intentional offset for Skills section (only for PC layout)
-            const isDesktop = window.innerWidth >= 768;
-            const extraOffset = (id === Section.SKILLS && isDesktop) ? 50 : 0;
-            const offsetPosition = elementPosition + window.pageYOffset - 85 - extraOffset;
+            const offsetPosition = elementPosition + window.pageYOffset - 85;
 
             window.scrollTo({
                 top: offsetPosition,

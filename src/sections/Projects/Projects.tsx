@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ProjectGrid from './ProjectGrid';
 import { ProjectData } from './projectUtils';
@@ -6,34 +6,17 @@ import ProjectModal from './ProjectModal';
 import projectsData from '../../data/projects.json';
 
 const Projects: React.FC = () => {
-    const [projects, setProjects] = useState<ProjectData[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
     const [selectedProject, setSelectedProject] = useState<ProjectData | null>(null);
 
-    useEffect(() => {
-        try {
-            // Validate data shape
-            if (!Array.isArray(projectsData)) {
-                throw new Error('Invalid project data format');
-            }
-
-            const data = projectsData as ProjectData[];
-
-            // Sort projects: featured projects first
-            const sortedData = [...data].sort((a, b) => {
-                const aFeatured = !!a.featured;
-                const bFeatured = !!b.featured;
-                if (aFeatured && !bFeatured) return -1;
-                if (!aFeatured && bFeatured) return 1;
-                return 0;
-            });
-            setProjects(sortedData);
-            setLoading(false);
-        } catch (err: unknown) {
-            setError(err instanceof Error ? err.message : 'Failed to load projects');
-            setLoading(false);
-        }
+    const sortedProjects = useMemo(() => {
+        const data = projectsData as ProjectData[];
+        return [...data].sort((a, b) => {
+            const aFeatured = !!a.featured;
+            const bFeatured = !!b.featured;
+            if (aFeatured && !bFeatured) return -1;
+            if (!aFeatured && bFeatured) return 1;
+            return 0;
+        });
     }, []);
 
     return (
@@ -55,9 +38,7 @@ const Projects: React.FC = () => {
                     </motion.div>
 
                     <ProjectGrid
-                        projects={projects}
-                        loading={loading}
-                        error={error}
+                        projects={sortedProjects}
                         onSelect={setSelectedProject}
                     />
                 </div>

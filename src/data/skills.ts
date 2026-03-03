@@ -10,9 +10,10 @@ export const skillsData = [
 ];
 
 export const toolsData = [
-    'Firebase', "GCP", 'Pinecone', 'ChromaDB',
-    'Langchain', 'Transformers'
-    , 'Git', 'Linux'
+    'FastAPI', 'Node.js', 'SSE', 'REST APIs',
+    'Redis', 'Firestore', 'Supabase', 'Streamlit',
+    'Firebase', 'Pinecone', 'ChromaDB',
+    'LangChain', 'Git/Github'
 ];
 
 // System metrics data

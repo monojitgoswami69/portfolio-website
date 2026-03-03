@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion } from 'framer-motion';
-import { Github, ExternalLink, X, Zap, Lightbulb, Target, ChevronRight, Star } from 'lucide-react';
+import { Github, ExternalLink, X, Zap, ChevronRight, Star } from 'lucide-react';
 import { sanitizeUrl } from '../../utils/security';
 import { ProjectData, isValidLink, getStatusColor } from './projectUtils';
 
@@ -42,12 +42,16 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
         return () => window.removeEventListener('keydown', handleTab);
     }, []);
 
-    // Close on escape key
+    // Close on escape key and prevent layout shift
     useEffect(() => {
         const handleEscape = (e: KeyboardEvent) => {
             if (e.key === 'Escape') onClose();
         };
         window.addEventListener('keydown', handleEscape);
+
+        // Prevent layout shift by adding padding equal to scrollbar width
+        const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+        document.body.style.paddingRight = `${scrollbarWidth}px`;
         document.body.style.overflow = 'hidden';
 
         // Set initial focus to close button or first focusable element
@@ -56,7 +60,8 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
 
         return () => {
             window.removeEventListener('keydown', handleEscape);
-            document.body.style.overflow = 'unset';
+            document.body.style.paddingRight = '';
+            document.body.style.overflow = '';
         };
     }, [onClose]);
 
@@ -90,14 +95,6 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
                     <X size={20} />
                 </button>
 
-                {/* Top Gradient Fade */}
-                <div
-                    className="absolute inset-x-0 top-0 h-4 z-20 pointer-events-none rounded-t-2xl"
-                    style={{
-                        background: 'linear-gradient(to bottom, rgba(15, 23, 42, 0.7) 0%, transparent 100%)'
-                    }}
-                />
-
                 {/* Scrollable Content Container */}
                 <div className="overflow-y-auto flex-1 rounded-t-2xl no-scrollbar">
                     {/* Header Image */}
@@ -111,7 +108,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
                                 (e.target as HTMLImageElement).src = 'https://placehold.co/1200x800/0f172a/00eeff?text=Module+Data+Corrupted';
                             }}
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/50 via-slate-900/30 to-transparent" />
+                        <div className="absolute -inset-x-2 top-0 bottom-0 bg-gradient-to-t from-slate-900/80 via-slate-900/30 to-transparent" />
 
                         {/* Featured Badge - Top Left */}
                         {project.featured && (
@@ -127,7 +124,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
                     {/* Content */}
                     <div className="px-6 pb-3">
                         {/* Project Name */}
-                        <h2 id="modal-title" className="text-2xl md:text-4xl font-averia font-bold text-white pt-3 pb-3">
+                        <h2 id="modal-title" className="text-xl md:text-3xl font-averia font-bold text-white pt-3 pb-3">
                             {project.name}
                         </h2>
 
@@ -162,7 +159,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
 
                             {/* Long Description */}
                             <div className="prose prose-invert max-w-none">
-                                <p className="text-slate-300 text-xs md:text-base leading-relaxed whitespace-pre-line">
+                                <p className="text-slate-300 text-xs md:text-[14px] leading-relaxed whitespace-pre-line">
                                     {project.longDescription || project.description}
                                 </p>
                             </div>
@@ -170,14 +167,16 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
                             {/* Features */}
                             {project.features && project.features.length > 0 && (
                                 <div className="bg-slate-800/50 rounded-xl p-5 border border-slate-700">
-                                    <h3 className="flex items-center gap-2 text-xs md:text-base font-bold text-white mb-4">
+                                    <h3 className="flex items-center gap-2 text-xs md:text-sm font-bold text-white mb-4">
                                         <Zap size={16} className="text-yellow-400" />
                                         Key Features
                                     </h3>
-                                    <ul className="space-y-2">
+                                    <ul className="flex flex-col gap-1.5">
                                         {project.features.map((feature: string, idx: number) => (
-                                            <li key={idx} className="flex items-start gap-3 text-slate-300 text-[11px] md:text-sm leading-relaxed">
-                                                <ChevronRight size={14} className="text-cyan-400 mt-[5px] flex-shrink-0" />
+                                            <li key={idx} className="flex items-start gap-2 text-slate-300 text-[11px] md:text-[13px] leading-relaxed">
+                                                <div className="flex items-center h-[1.625em] shrink-0">
+                                                    <ChevronRight size={14} className="text-cyan-400" />
+                                                </div>
                                                 <span>{feature}</span>
                                             </li>
                                         ))}
@@ -185,27 +184,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
                                 </div>
                             )}
 
-                            {/* Challenges & Learnings Grid */}
-                            <div className="grid md:grid-cols-2 gap-4">
-                                {project.challenges && (
-                                    <div className="bg-slate-800/50 rounded-xl p-5 border border-slate-700">
-                                        <h3 className="flex items-center gap-2 text-xs md:text-base font-bold text-white mb-3">
-                                            <Target size={16} className="text-red-400" />
-                                            Challenges
-                                        </h3>
-                                        <p className="text-slate-300 text-[11px] md:text-sm leading-relaxed">{project.challenges}</p>
-                                    </div>
-                                )}
-                                {project.learnings && (
-                                    <div className="bg-slate-800/50 rounded-xl p-5 border border-slate-700">
-                                        <h3 className="flex items-center gap-2 text-xs md:text-base font-bold text-white mb-3">
-                                            <Lightbulb size={16} className="text-yellow-400" />
-                                            Learnings
-                                        </h3>
-                                        <p className="text-slate-300 text-[11px] md:text-sm leading-relaxed">{project.learnings}</p>
-                                    </div>
-                                )}
-                            </div>
+
                         </div>
                     </div>
                 </div>

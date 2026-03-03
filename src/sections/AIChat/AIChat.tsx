@@ -94,6 +94,7 @@ const AIChat: React.FC = () => {
         handleSend,
         handleReconnect,
         handleMenuSelect,
+        setMenuSelectedIndex,
     } = useAIChat();
 
     const { scrollYProgress } = useScroll({
@@ -202,11 +203,18 @@ const AIChat: React.FC = () => {
                                                                     return (
                                                                         <div
                                                                             key={opt}
+                                                                            onMouseEnter={() => {
+                                                                                if (activeMenu) { // Only update if it's the active menu
+                                                                                    setMenuSelectedIndex(idx);
+                                                                                }
+                                                                            }}
                                                                             onClick={(e) => {
                                                                                 e.stopPropagation();
-                                                                                handleMenuSelect(opt);
+                                                                                if (activeMenu) {
+                                                                                    handleMenuSelect(opt);
+                                                                                }
                                                                             }}
-                                                                            className={`flex items-center gap-2 transition-all duration-200 pointer-events-auto sm:pointer-events-none cursor-pointer sm:cursor-default group/item ${isMovingIndex ? 'text-white' : 'text-slate-500 hover:text-slate-300 sm:hover:text-slate-500'}`}
+                                                                            className={`flex items-center gap-2 transition-all duration-200 cursor-pointer group/item ${isMovingIndex ? 'text-white' : 'text-slate-500 hover:text-white'}`}
                                                                         >
                                                                             <span className={`w-4 font-bold shrink-0 hidden sm:block ${isMovingIndex ? 'text-cyan-400 animate-pulse' : 'invisible'}`}>&gt;</span>
                                                                             <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">

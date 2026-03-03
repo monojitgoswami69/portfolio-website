@@ -60,7 +60,8 @@ const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const handleScroll = () => {
+    let ticking = false;
+    const updateSection = () => {
       const sections = Object.values(Section);
       let current = Section.HERO;
 
@@ -68,6 +69,7 @@ const App: React.FC = () => {
       const isNearBottom = (window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100;
       if (isNearBottom) {
         setActiveSection(Section.CONTACT);
+        ticking = false;
         return;
       }
 
@@ -86,9 +88,19 @@ const App: React.FC = () => {
         }
       }
       setActiveSection(current);
+      ticking = false;
     };
 
-    window.addEventListener('scroll', handleScroll);
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(updateSection);
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    // Initial check
+    updateSection();
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 

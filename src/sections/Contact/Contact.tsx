@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Mail, Linkedin, Github, Twitter } from 'lucide-react';
 import { isValidEmail, isNonEmpty } from '../../utils/security';
@@ -21,7 +21,7 @@ const Contact: React.FC = () => {
     const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
     const [errorMessage, setErrorMessage] = useState<string>('');
 
-    const [config, setConfig] = useState<{
+    const config = contactData as {
         contact: {
             email: string;
             socials: {
@@ -30,13 +30,7 @@ const Contact: React.FC = () => {
                 twitter: string;
             }
         }
-    } | null>(null);
-
-    useEffect(() => {
-        if (contactData) {
-            setConfig(contactData as { contact: { email: string; socials: { github: string; linkedin: string; twitter: string } } });
-        }
-    }, []);
+    };
 
     const opacity = useTransform(scrollYProgress, [0, 0.5], [0, 1]);
 
@@ -97,12 +91,12 @@ const Contact: React.FC = () => {
         setIsSubmitting(false);
     };
 
-    const socialLinks = config ? [
+    const socialLinks = [
         { Icon: Github, url: config.contact.socials.github },
         { Icon: Linkedin, url: config.contact.socials.linkedin },
         { Icon: Twitter, url: config.contact.socials.twitter },
         { Icon: Mail, url: `mailto:${config.contact.email}` }
-    ] : [];
+    ];
 
     return (
         <section ref={ref} className="min-h-screen relative z-20 bg-slate-950 flex flex-col justify-center overflow-hidden pt-24 pb-4 lg:pb-8" style={{ position: 'relative' }}>

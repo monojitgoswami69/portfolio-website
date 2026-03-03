@@ -31,7 +31,17 @@ export const initializeSession = async (): Promise<{ userId: string; userRequest
     });
     clearTimeout(timeoutId);
 
-    if (!response.ok) return null;
+    if (!response.ok) {
+      console.warn(`Initialize endpoint returned status ${response.status}`);
+      return null;
+    }
+
+    // Check if response is JSON before parsing
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      console.warn('Initialize endpoint did not return JSON');
+      return null;
+    }
 
     const data = await response.json() as { user_id: string; user_requests_left: string; global_requests_left: string; reset_at?: string };
 
@@ -117,87 +127,19 @@ export const sendMessage = async (
 
     // Handle rate limiting (429 status)
     if (response.status === 429) {
-      let resetAt: string | null = null;
-      let limit: string = 'Unknown';
-      let errorType = 'unknown';
-
-      // Try to parse JSON body
-      try {
-        const rateLimitData = await response.json();
-        if (rateLimitData) {
-          resetAt = rateLimitData.reset_at;
-          limit = String(rateLimitData.limit || 'Unknown');
-          errorType = rateLimitData.error || 'unknown';
-        }
-      } catch {
-        console.warn("Could not parse 429 JSON body, trying headers...");
-      }
-
-      // Fallback to headers if body failed
-      if (!resetAt) {
-        resetAt = response.headers.get('X-RateLimit-Reset');
-      }
-      if (limit === 'Unknown') {
-        limit = response.headers.get('X-RateLimit-Limit') || response.headers.get('X-RateLimit-Global-Limit') || 'Unknown';
-      }
-
-      // Default safe message logic
-      const resetTime = resetAt ? new Date(resetAt) : new Date(Date.now() + 60000); // Default 1m
-      const now = new Date();
-      let diffMs = resetTime.getTime() - now.getTime();
-      if (isNaN(diffMs) || diffMs < 0) diffMs = 60000; // Safe fallback
-
-      // Calculate relative time
-      let relativeTimeStr = '';
-      if (diffMs > 0) {
-        const hours = Math.floor(diffMs / (1000 * 60 * 60));
-        const minutes = Math.ceil((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-        if (hours > 0) relativeTimeStr = `${hours}h ${minutes}m`;
-        else relativeTimeStr = `${minutes}m`;
-      } else {
-        relativeTimeStr = '1m';
-      }
-
-      const localResetTime = resetTime.toLocaleString(undefined, {
-        weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
-      });
-
-      const isGlobalLimit = errorType === 'global_limit' || limit === '1000'; // Inference
-      const limitMessage = isGlobalLimit
-        ? `Global system limit reached (${limit}/day).`
-        : `Daily limit reached (${limit}/day).`;
-
-      // Set allocation to 0 when rate limited
-      sessionStorage.setItem('nexus_user_requests', '0/50');
-      sessionStorage.setItem('nexus_global_requests', '0/1000');
-
-      if (onUpdateLimits) {
-        onUpdateLimits({
-          userRequestsLeft: '0/50',
-          globalRequestsLeft: '0/1000'
-        });
-      }
-
-      const errorMsg = `RATE_LIMIT_ERROR: ${limitMessage}\n\nRESETS IN: ${relativeTimeStr} (at ${localResetTime})`;
-      throw new Error(errorMsg);
+      await handleRateLimitError(response, onUpdateLimits);
     }
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    // Extract rate limit info from headers
-    const userRemaining = response.headers.get('X-RateLimit-Remaining');
-    const globalRemaining = response.headers.get('X-RateLimit-Global-Remaining');
+    updateRateLimitsFromHeaders(response, onUpdateLimits);
 
-    if (userRemaining) sessionStorage.setItem('nexus_user_requests', userRemaining);
-    if (globalRemaining) sessionStorage.setItem('nexus_global_requests', globalRemaining);
-
-    if (onUpdateLimits && userRemaining && globalRemaining) {
-      onUpdateLimits({
-        userRequestsLeft: userRemaining,
-        globalRequestsLeft: globalRemaining
-      });
+    // Check if response is JSON before parsing
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      throw new Error('Server returned non-JSON response');
     }
 
     const data = await response.json();
@@ -264,58 +206,8 @@ export const sendMessageStream = async (
 
     // Handle rate limiting (429 status)
     if (response.status === 429) {
-      let resetAt: string | null = null;
-      let limit: string = 'Unknown';
-      let errorType = 'unknown';
-
-      // Try to parse JSON body
-      try {
-        const rateLimitData = await response.json();
-        if (rateLimitData) {
-          resetAt = rateLimitData.reset_at;
-          limit = String(rateLimitData.limit || 'Unknown');
-          errorType = rateLimitData.error || 'unknown';
-        }
-      } catch {
-        console.warn("Could not parse 429 JSON body, trying headers...");
-      }
-
-      // Fallback to headers if body failed
-      if (!resetAt) {
-        resetAt = response.headers.get('X-RateLimit-Reset');
-      }
-      if (limit === 'Unknown') {
-        limit = response.headers.get('X-RateLimit-Limit') || response.headers.get('X-RateLimit-Global-Limit') || 'Unknown';
-      }
-
-      // Default safe message logic
-      const resetTime = resetAt ? new Date(resetAt) : new Date(Date.now() + 60000); // Default 1m
-      const now = new Date();
-      let diffMs = resetTime.getTime() - now.getTime();
-      if (isNaN(diffMs) || diffMs < 0) diffMs = 60000; // Safe fallback
-
-      // Calculate relative time
-      let relativeTimeStr = '';
-      if (diffMs > 0) {
-        const hours = Math.floor(diffMs / (1000 * 60 * 60));
-        const minutes = Math.ceil((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-        if (hours > 0) relativeTimeStr = `${hours}h ${minutes}m`;
-        else relativeTimeStr = `${minutes}m`;
-      } else {
-        relativeTimeStr = '1m';
-      }
-
-      const localResetTime = resetTime.toLocaleString(undefined, {
-        weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
-      });
-
-      const isGlobalLimit = errorType === 'global_limit' || limit === '1000'; // Inference
-      const limitMessage = isGlobalLimit
-        ? `Global system limit reached (${limit}/day).`
-        : `Daily limit reached (${limit}/day).`;
-
-      const errorMsg = `RATE_LIMIT_ERROR: ${limitMessage}\n\nRESETS IN: ${relativeTimeStr} (at ${localResetTime})`;
-      throw new Error(errorMsg);
+      // Stream helper doesn't receive onUpdateLimits directly, but handleRateLimitError handles limits if provided
+      await handleRateLimitError(response);
     }
 
     if (!response.ok) {
@@ -442,4 +334,81 @@ const getOfflineResponse = (message: string): string => {
   }
 
   return "**SYSTEM NOTICE:**\n\n> Backend neural link not yet established.\n> Running in `DEMO_MODE`\n\nTry asking about:\n- `skills` - Technical capabilities\n- `projects` - Active modules\n- `contact` - Transmission protocols";
+};
+
+// Helper function to handle 429 rate limit responses
+const handleRateLimitError = async (response: Response, onUpdateLimits?: (limits: { userRequestsLeft: string; globalRequestsLeft: string }) => void): Promise<never> => {
+  let resetAt: string | null = null;
+  let limit: string = 'Unknown';
+  let errorType = 'unknown';
+
+  try {
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      const rateLimitData = await response.json();
+      if (rateLimitData) {
+        resetAt = rateLimitData.reset_at;
+        limit = String(rateLimitData.limit || 'Unknown');
+        errorType = rateLimitData.error || 'unknown';
+      }
+    }
+  } catch {
+    console.warn("Could not parse 429 JSON body, trying headers...");
+  }
+
+  if (!resetAt) resetAt = response.headers.get('X-RateLimit-Reset');
+  if (limit === 'Unknown') limit = response.headers.get('X-RateLimit-Limit') || response.headers.get('X-RateLimit-Global-Limit') || 'Unknown';
+
+  const resetTime = resetAt ? new Date(resetAt) : new Date(Date.now() + 60000);
+  const now = new Date();
+  let diffMs = resetTime.getTime() - now.getTime();
+  if (isNaN(diffMs) || diffMs < 0) diffMs = 60000;
+
+  let relativeTimeStr = '';
+  if (diffMs > 0) {
+    const hours = Math.floor(diffMs / (1000 * 60 * 60));
+    const minutes = Math.ceil((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+    if (hours > 0) relativeTimeStr = `${hours}h ${minutes}m`;
+    else relativeTimeStr = `${minutes}m`;
+  } else {
+    relativeTimeStr = '1m';
+  }
+
+  const localResetTime = resetTime.toLocaleString(undefined, {
+    weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+  });
+
+  const isGlobalLimit = errorType === 'global_limit' || limit === '1000';
+  const limitMessage = isGlobalLimit
+    ? `Global system limit reached (${limit}/day).`
+    : `Daily limit reached (${limit}/day).`;
+
+  sessionStorage.setItem('nexus_user_requests', '0/50');
+  sessionStorage.setItem('nexus_global_requests', '0/1000');
+
+  if (onUpdateLimits) {
+    onUpdateLimits({
+      userRequestsLeft: '0/50',
+      globalRequestsLeft: '0/1000'
+    });
+  }
+
+  const errorMsg = `RATE_LIMIT_ERROR: ${limitMessage}\n\nRESETS IN: ${relativeTimeStr} (at ${localResetTime})`;
+  throw new Error(errorMsg);
+};
+
+// Helper function to update rate limits from headers
+const updateRateLimitsFromHeaders = (response: Response, onUpdateLimits?: (limits: { userRequestsLeft: string; globalRequestsLeft: string }) => void) => {
+  const userRemaining = response.headers.get('X-RateLimit-Remaining');
+  const globalRemaining = response.headers.get('X-RateLimit-Global-Remaining');
+
+  if (userRemaining) sessionStorage.setItem('nexus_user_requests', userRemaining);
+  if (globalRemaining) sessionStorage.setItem('nexus_global_requests', globalRemaining);
+
+  if (onUpdateLimits && userRemaining && globalRemaining) {
+    onUpdateLimits({
+      userRequestsLeft: userRemaining,
+      globalRequestsLeft: globalRemaining
+    });
+  }
 };

@@ -25,8 +25,6 @@
             "Confidence-threshold based human handoff to prevent hallucinations",
             "Analytics dashboard for high-confusion and unresolved queries"
         ],
-        "challenges": "Preventing hallucinations in high-stakes academic queries while maintaining low response latency, and designing a system that allows real-time knowledge updates without retraining or redeploying the model.",
-        "learnings": "Learned how to design safe RAG systems for production use, implement confidence-aware AI workflows, and build admin-facing tooling for real-time AI system control and observability.",
         "category": "GenAI/RAG",
         "featured": true
     },
@@ -58,8 +56,6 @@
             "Centralized infrastructure, hosting, and scaling",
             "Secure tenant-aware authentication and authorization"
         ],
-        "challenges": "Designing strict tenant isolation while reusing shared infrastructure, preventing cross-tenant data leakage, and scaling RAG pipelines efficiently across multiple institutions.",
-        "learnings": "Gained experience in designing multi-tenant SaaS systems, implementing tenant-aware security models, and scaling production RAG architectures without sacrificing safety or data isolation.",
         "category": "GenAI/RAG",
         "featured": true
     },
@@ -86,8 +82,6 @@
             "Actionable optimization suggestions",
             "Educational feedback for algorithmic improvement"
         ],
-        "challenges": "Ensuring consistent and explainable complexity analysis from probabilistic models and minimizing false positives when identifying inefficient algorithmic patterns.",
-        "learnings": "Learned how to combine LLM reasoning with static analysis techniques, design prompts for deterministic technical output, and balance model flexibility with analytical correctness.",
         "category": "GenAI",
         "featured": false
     },
@@ -115,8 +109,6 @@
             "Enhanced multi-turn conversation history management",
             "Bounded context window to prevent drift and hallucinations"
         ],
-        "challenges": "Balancing a humorous persona with factual correctness, enforcing strict knowledge boundaries without RAG, and maintaining coherent multi-turn conversations under tight context limits.",
-        "learnings": "Learned how to design constrained LLM personas, enforce safety and scope without retrieval systems, and build production-grade rate limiting and conversation state management.",
         "category": "GenAI",
         "featured": false
     },
@@ -143,8 +135,6 @@
             "Exportable terminal chatbot or backend server templates",
             "Auto-generated Python or Node.js servers with env files and test curl scripts"
         ],
-        "challenges": "Designing a zero-backend architecture while supporting multiple providers, preventing accidental key persistence in the browser, and generating starter code that is minimal yet correct.",
-        "learnings": "Learned how to design privacy-first GenAI tooling, implement secure client-side workflows for sensitive credentials, and build developer onboarding tools that scale learning without abstraction overload.",
         "category": "Frontend/GenAI",
         "featured": true
     },
@@ -172,8 +162,6 @@
             "Batch-based processing to minimize memory usage",
             "Fully client-side execution with no backend"
         ],
-        "challenges": "Managing memory and performance constraints in the browser while generating thousands of certificates, coordinating parallel workers safely, and maintaining layout accuracy across different fonts and alignments.",
-        "learnings": "Learned how to design high-performance client-side systems, leverage web workers for CPU-bound workloads, and build privacy-first tooling that scales without backend infrastructure.",
         "category": "Frontend",
         "featured": false
     }

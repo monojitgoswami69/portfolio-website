@@ -10,8 +10,7 @@ export interface ProjectData {
     demoUrl?: string;
     status?: string;
     features?: string[];
-    challenges?: string;
-    learnings?: string;
+
     category?: string;
     featured?: boolean;
 }

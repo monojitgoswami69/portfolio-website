@@ -135,32 +135,16 @@ export const TechStackDisplay: React.FC<{ techStack: string[]; sortByLength?: bo
 
 interface ProjectGridProps {
     projects: ProjectData[];
-    loading: boolean;
-    error: string | null;
     onSelect: (project: ProjectData) => void;
 }
 
-const ProjectGrid: React.FC<ProjectGridProps> = ({ projects, loading, error, onSelect }) => {
+const ProjectGrid: React.FC<ProjectGridProps> = ({ projects, onSelect }) => {
     const [hoveredId, setHoveredId] = useState<string | null>(null);
 
     return (
         <>
-            {/* Loading State */}
-            {loading && (
-                <div className="text-center text-slate-400 py-12">
-                    <div className="animate-pulse font-mono">Loading projects...</div>
-                </div>
-            )}
-
-            {/* Error State */}
-            {error && (
-                <div className="text-center text-red-400 py-12 font-mono">
-                    Error: {error}
-                </div>
-            )}
-
             {/* No Projects Fallback */}
-            {!loading && !error && projects.length === 0 && (
+            {projects.length === 0 && (
                 <div className="flex flex-col items-center justify-center py-20 px-4 text-center">
                     <p className="text-slate-400 text-lg mb-6 font-mono">
                         No projects featured at the moment.
@@ -177,8 +161,8 @@ const ProjectGrid: React.FC<ProjectGridProps> = ({ projects, loading, error, onS
             )}
 
             {/* Projects Grid */}
-            {!loading && !error && projects.length > 0 && (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {projects.length > 0 && (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
                     {projects.map((project, index) => (
                         <ProjectCard
                             key={index}
