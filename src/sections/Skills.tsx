@@ -152,7 +152,7 @@ const Skills: React.FC = () => {
                     {/* Middle Column - Tech Stack (Skills) */}
                     <motion.div
                         style={{ opacity }}
-                        className="w-full md:w-1/2 lg:w-[350px] xl:w-[400px] bg-slate-950/40 backdrop-blur-xl border border-slate-800/50 md:rounded-2xl md:rounded-l-none md:rounded-b-none lg:rounded-none -mr-4 md:mr-0 border-l-0 md:border-r lg:border-r shadow-2xl overflow-hidden z-20 h-fit lg:my-[25px] md:border-b-0 lg:border-b"
+                        className="w-full md:w-1/2 lg:w-[350px] xl:w-[400px] bg-slate-950/40 backdrop-blur-xl border border-slate-800/50 md:rounded-2xl md:rounded-l-none md:rounded-b-none lg:rounded-none lg:rounded-tl-2xl lg:rounded-bl-2xl -mr-4 md:mr-0 md:border-l-0 md:border-r lg:border-r shadow-2xl overflow-hidden z-20 lg:my-[25px] md:border-b-0 lg:border-b"
                     >
                         <div className="py-5 px-6 lg:py-6 lg:px-6 xl:py-8 xl:px-8 flex flex-col justify-center">
                             <div>
@@ -210,7 +210,7 @@ const Skills: React.FC = () => {
                     {/* Right Column - Text Content */}
                     <motion.div
                         style={{ opacity }}
-                        className="w-full md:w-full lg:flex-1 bg-slate-950/40 backdrop-blur-xl border border-slate-800/50 rounded-b-2xl md:rounded-2xl md:rounded-t-none lg:rounded-l-none lg:border-l-0 shadow-2xl overflow-hidden z-20 h-fit lg:my-[25px] -mb-4 md:mb-0"
+                        className="w-full md:w-full lg:flex-1 bg-slate-950/40 backdrop-blur-xl border border-slate-800/50 rounded-b-2xl md:rounded-2xl md:rounded-t-none lg:rounded-l-none lg:rounded-tr-2xl lg:border-l-0 shadow-2xl overflow-hidden z-20 lg:my-[25px] -mb-4 md:mb-0"
                     >
                         <div className="py-5 px-6 lg:py-6 lg:px-8 xl:py-8 xl:px-10 flex flex-col justify-center space-y-4 lg:space-y-5 text-slate-300 leading-relaxed text-[13px] md:text-[14px] font-mono">
                             <p>
