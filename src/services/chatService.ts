@@ -182,6 +182,12 @@ export const sendMessageStream = async (
   history: Array<{ role: string; text: string }> = []
 ): Promise<void> => {
   try {
+    if (!isNonEmpty(message)) {
+      throw new Error("Message cannot be empty");
+    }
+
+    const sanitizedMessage = sanitizeInput(message, MAX_MESSAGE_LENGTH);
+
     // Format history for backend: { role: "user" | "model", parts: ["text"] }
     const formattedHistory = history.map(msg => ({
       role: msg.role === 'model' ? 'model' : 'user',
@@ -197,7 +203,7 @@ export const sendMessageStream = async (
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        message,
+        message: sanitizedMessage,
         history: formattedHistory
       }),
     });

@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Mail, Linkedin, Github, Twitter } from 'lucide-react';
-import { isValidEmail, isNonEmpty } from '../../utils/security';
+import { isValidEmail, isNonEmpty, sanitizeUrl } from '../../utils/security';
 import { submitContact } from './submitContact';
 import contactData from '../../data/contact.json';
 
@@ -123,7 +123,7 @@ const Contact: React.FC = () => {
                             {socialLinks.map(({ Icon, url }, idx) => (
                                 <a
                                     key={idx}
-                                    href={url}
+                                    href={sanitizeUrl(url)}
                                     target={url.startsWith('mailto') ? undefined : "_blank"}
                                     rel={url.startsWith('mailto') ? undefined : "noopener noreferrer"}
                                     className="p-2 lg:p-3 bg-slate-900 border border-slate-800 rounded-lg text-slate-400 hover:text-white hover:border-slate-600 hover:bg-slate-800 transition-all transform hover:scale-110"
