@@ -84,7 +84,7 @@ const Skills: React.FC = () => {
                 {/* Section Title */}
                 <motion.h2
                     style={{ opacity }}
-                    className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 font-averia text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400"
+                    className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 font-quantico text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400"
                 >
                     2.0 // SYSTEM SPECS
                 </motion.h2>
@@ -197,7 +197,7 @@ const Skills: React.FC = () => {
                                             whileInView={{ opacity: 1 }}
                                             viewport={{ once: true }}
                                             transition={{ delay: index * 0.02 }}
-                                            className="px-2.5 py-1 text-[10px] lg:text-[11px] font-mono tracking-wide bg-gradient-to-r from-slate-800/90 to-slate-800/60 text-slate-400 rounded border border-slate-700/40 hover:border-purple-500/30 hover:text-purple-300 transition-colors"
+                                            className="px-2.5 py-1 text-[10px] lg:text-[11px] font-mono tracking-wide bg-gradient-to-r from-slate-800/90 to-slate-800/60 text-slate-400 rounded border border-slate-700/40 hover:border-purple-500/30 hover:text-purple-300 hover:scale-105 hover:shadow-[0_0_10px_rgba(168,85,247,0.4)] transition-all inline-block"
                                         >
                                             {tool}
                                         </motion.span>

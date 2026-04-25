@@ -32,7 +32,7 @@ const Hero: React.FC = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
-                    className="text-cyan-400 font-averia text-xl md:text-3xl tracking-wider mb-4"
+                    className="text-cyan-400 font-quantico text-xl md:text-3xl tracking-wider mb-4"
                 >
                     1.0 // MONOJIT GOSWAMI
                 </motion.h2>
@@ -41,8 +41,7 @@ const Hero: React.FC = () => {
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.4, duration: 0.8 }}
-                    className="text-5xl md:text-7xl lg:text-9xl font-bold tracking-tighter text-white mb-6 mix-blend-overlay"
-                    style={{ fontFamily: "'Quantico', sans-serif" }}
+                    className="text-5xl md:text-7xl lg:text-9xl font-bold tracking-tighter text-white mb-6 mix-blend-overlay font-quantico"
                 >
                     ARCHITECT
                     <br />

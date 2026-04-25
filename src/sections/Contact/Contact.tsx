@@ -108,7 +108,7 @@ const Contact: React.FC = () => {
 
                     {/* Left Column - Contact Info */}
                     <div>
-                        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 font-averia text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">
+                        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 font-quantico text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">
                             5.0 // ESTABLISH SIGNAL
                         </h2>
                         <p className="text-xs sm:text-sm md:text-base mb-4 lg:mb-6 font-mono uppercase tracking-widest text-slate-400">

@@ -4,10 +4,11 @@
 
 @layer base {
     body {
-        font-family: 'Quando', serif;
+        font-family: 'Space Grotesk', sans-serif;
         background-color: #020617;
         color: #e2e8f0;
         overflow-x: hidden;
+        position: relative;
     }
 
     .ascii-art {
