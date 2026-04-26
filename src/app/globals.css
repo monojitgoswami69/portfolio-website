@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+@theme {
+    --font-sans: "Space Grotesk", sans-serif;
+    --font-mono: "JetBrains Mono", monospace;
+    --font-averia: "Averia Serif Libre", serif;
+    --font-geo: "Geo", sans-serif;
+    --font-quantico: "Quantico", sans-serif;
+
+    --animate-gradient: gradient 8s linear infinite;
+    --animate-scan: scan 4s linear infinite;
+
+    --background-size-300: 300%;
+}
+
+@keyframes gradient {
+    0%, 100% {
+        background-size: 200% 200%;
+        background-position: left center;
+    }
+    50% {
+        background-size: 200% 200%;
+        background-position: right center;
+    }
+}
+
+@keyframes scan {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(100%); }
+}
+
+@layer base {
+    body {
+        font-family: var(--font-sans);
+        background-color: #020617;
+        color: #e2e8f0;
+        overflow-x: hidden;
+        position: relative;
+    }
+
+    .ascii-art {
+        white-space: pre;
+        line-height: 1.2;
+    }
+
+    /* Custom Scrollbar - Webkit */
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: #020617; /* slate-950 */
+        border-left: 1px solid rgba(30, 41, 59, 0.5); /* slate-800 */
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #334155; /* slate-700 */
+        border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #22d3ee; /* cyan-400 */
+        box-shadow: 0 0 10px #22d3ee;
+    }
+
+    /* Custom Scrollbar - Firefox */
+    * {
+        scrollbar-width: thin;
+        scrollbar-color: #334155 #020617;
+    }
+}

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ChevronsDown, Code2, Terminal, Cpu, MessageSquare, Mail } from 'lucide-react';
-import { Section } from '../types/global.d';
+import { Section } from '../types/global';
 
 interface NavbarProps {
     activeSection: string;

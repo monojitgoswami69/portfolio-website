@@ -15,7 +15,7 @@ interface ContactResult {
 }
 
 const getApiUrl = (): string => {
-    return (import.meta.env.VITE_PORTFOLIO_API_URL as string) || 'http://localhost:8000';
+    return (process.env.NEXT_PUBLIC_PORTFOLIO_API_URL as string) || 'http://localhost:8000';
 };
 
 const REQUEST_TIMEOUT_MS = 10000; // 10 seconds

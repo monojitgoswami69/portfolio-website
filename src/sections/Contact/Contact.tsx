@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Mail, Linkedin, Github, Twitter } from 'lucide-react';
 import { isValidEmail, isNonEmpty, sanitizeUrl } from '../../utils/security';
 import { submitContact } from './submitContact';
@@ -7,11 +7,6 @@ import contactData from '../../data/contact.json';
 
 const Contact: React.FC = () => {
     const ref = useRef<HTMLElement>(null);
-    const { scrollYProgress } = useScroll({
-        target: ref,
-        offset: ["start end", "end end"]
-    });
-
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -31,8 +26,6 @@ const Contact: React.FC = () => {
             }
         }
     };
-
-    const opacity = useTransform(scrollYProgress, [0, 0.5], [0, 1]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -101,7 +94,10 @@ const Contact: React.FC = () => {
     return (
         <section ref={ref} className="min-h-screen relative z-20 bg-slate-950 flex flex-col justify-center overflow-hidden pt-24 pb-4 lg:pb-8" style={{ position: 'relative' }}>
             <motion.div
-                style={{ opacity }}
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.8 }}
                 className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full"
             >
                 <div id="contact" className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 scroll-mt-[85px]">

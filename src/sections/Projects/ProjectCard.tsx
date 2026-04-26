@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Github, ExternalLink, Star, Maximize2 } from 'lucide-react';
 import { sanitizeUrl } from '../../utils/security';
@@ -36,11 +37,12 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, index, hoveredId, on
             {/* Image Container */}
             <div className="relative h-48 overflow-hidden flex-shrink-0">
                 <div className="absolute inset-0 hidden md:block bg-cyan-900/20 group-hover:bg-transparent transition-colors duration-300 z-10" />
-                <img
+                <Image
                     src={project.imageUrl}
                     alt={project.name}
-                    className="w-full h-full object-cover transform md:group-hover:scale-110 transition-transform duration-500 md:grayscale md:group-hover:grayscale-0"
-                    loading="lazy"
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    className="object-cover transform md:group-hover:scale-110 transition-transform duration-500 md:grayscale md:group-hover:grayscale-0"
                     onError={(e) => {
                         (e.target as HTMLImageElement).src = 'https://placehold.co/600x400/0f172a/00eeff?text=Module+Offline';
                     }}

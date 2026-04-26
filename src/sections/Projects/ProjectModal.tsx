@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion } from 'framer-motion';
@@ -99,11 +100,12 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
                 <div className="overflow-y-auto flex-1 rounded-t-2xl no-scrollbar">
                     {/* Header Image */}
                     <div className="relative h-40 md:h-72 overflow-hidden flex-shrink-0">
-                        <img
+                        <Image
                             src={project.imageUrl}
                             alt={project.name}
-                            className="w-full h-full object-cover"
-                            loading="lazy"
+                            fill
+                            sizes="(max-width: 1024px) 100vw, 1024px"
+                            className="object-cover"
                             onError={(e) => {
                                 (e.target as HTMLImageElement).src = 'https://placehold.co/1200x800/0f172a/00eeff?text=Module+Data+Corrupted';
                             }}

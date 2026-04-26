@@ -13,7 +13,8 @@ export const isSafeUrl = (url: string | undefined): boolean => {
     return false;
   }
   try {
-    const parsed = new URL(trimmed, window.location.origin);
+    const base = typeof window !== 'undefined' ? window.location.origin : 'http://localhost';
+    const parsed = new URL(trimmed, base);
     return ALLOWED_PROTOCOLS.includes(parsed.protocol);
   } catch {
     // Relative URLs (e.g. /path) are safe

@@ -1,5 +1,6 @@
+import Image from 'next/image';
 import { useRef } from 'react';
-import { motion, useScroll, useTransform, useInView } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
 import { Scan, Activity, Monitor, Code, Terminal } from 'lucide-react';
 import { skillsData, toolsData, Metric } from '../data/skills';
 
@@ -57,40 +58,35 @@ const metrics: Metric[] = [
 ];
 
 const Skills: React.FC = () => {
-    const ref = useRef<HTMLElement>(null);
     const metricsRef = useRef<HTMLDivElement>(null);
     const isMetricsInView = useInView(metricsRef, { once: true, margin: "-100px" });
-
-    const { scrollYProgress } = useScroll({
-        target: ref,
-        offset: ["start end", "end start"]
-    });
-
-    const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
-    const rotateBg = useTransform(scrollYProgress, [0, 1], [0, 45]);
 
     // Changed from import to static string path to compatible with browser ESM
     const PROFILE_IMG = "/assets/profile.webp";
 
     return (
-        <section ref={ref} className="pt-24 pb-10 lg:pb-20 relative z-10 overflow-hidden" style={{ position: 'relative' }}>
+        <section className="pt-24 pb-10 lg:pb-20 relative z-10 overflow-hidden" style={{ position: 'relative' }}>
             {/* Parallax Background Element */}
-            <motion.div
-                style={{ rotate: rotateBg, opacity: 0.05 }}
-                className="absolute -right-64 top-0 w-[800px] h-[800px] border-[40px] border-slate-700 rounded-full pointer-events-none"
+            <div
+                className="absolute -right-64 top-0 w-[800px] h-[800px] border-[40px] border-slate-700 rounded-full pointer-events-none opacity-[0.05]"
             />
 
             <div id="skills" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Section Title */}
                 <motion.h2
-                    style={{ opacity }}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-50px" }}
                     className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 font-quantico text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400"
                 >
                     2.0 // SYSTEM SPECS
                 </motion.h2>
 
                 <motion.p
-                    style={{ opacity }}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-50px" }}
+                    transition={{ delay: 0.1 }}
                     className="text-slate-400 text-xs sm:text-sm md:text-base mb-6 font-mono uppercase tracking-widest"
                 >
                     Technical Capabilities &amp; Core Architecture
@@ -99,19 +95,23 @@ const Skills: React.FC = () => {
                 <div className="flex flex-col md:flex-row md:flex-wrap lg:flex-nowrap items-stretch justify-center w-full gap-0">
                     {/* Left - Anchor Frame (Image) */}
                     <motion.div
-                        style={{ opacity }}
+                        initial={{ opacity: 0, x: -30 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true, margin: "-50px" }}
+                        transition={{ delay: 0.2 }}
                         className="relative w-full md:w-1/2 lg:w-[450px] xl:w-[500px] z-10 flex"
                     >
                         <div className="relative group w-full h-full overflow-hidden transition-all duration-300">
                             {/* Image Section */}
                             <div className="relative w-full h-full bg-slate-900 border border-slate-800 rounded-t-2xl md:rounded-r-none lg:rounded-2xl overflow-hidden shadow-2xl min-h-[400px]">
-                                <img
+                                <Image
                                     src={PROFILE_IMG}
                                     alt="Monojit Goswami"
-                                    className="absolute inset-0 w-full h-full object-cover object-[center_30%] transition-all duration-700
+                                    fill
+                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 500px"
+                                    className="object-cover object-[center_30%] transition-all duration-700
                                    filter grayscale sepia hue-rotate-[170deg] contrast-[1.2] brightness-75
                                    group-hover:filter-none group-hover:scale-105"
-                                    loading="lazy"
                                 />
 
                                 {/* Hologram Overlay */}
@@ -151,7 +151,10 @@ const Skills: React.FC = () => {
 
                     {/* Middle Column - Tech Stack (Skills) */}
                     <motion.div
-                        style={{ opacity }}
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: "-50px" }}
+                        transition={{ delay: 0.3 }}
                         className="w-full md:w-1/2 lg:w-[350px] xl:w-[400px] bg-slate-950/40 backdrop-blur-xl border border-slate-800/50 md:rounded-2xl md:rounded-l-none md:rounded-b-none lg:rounded-none lg:rounded-tl-2xl lg:rounded-bl-2xl -mr-4 md:mr-0 md:border-l-0 md:border-r lg:border-r shadow-2xl overflow-hidden z-20 lg:my-[25px] md:border-b-0 lg:border-b"
                     >
                         <div className="py-5 px-6 lg:py-6 lg:px-6 xl:py-8 xl:px-8 flex flex-col justify-center">
@@ -170,11 +173,12 @@ const Skills: React.FC = () => {
                                             className="flex flex-col items-center justify-start gap-1 lg:gap-2 w-[60px] lg:w-[70px]"
                                             title={skill.name}
                                         >
-                                            <img
+                                            <Image
                                                 src={skill.image}
                                                 alt={skill.name}
+                                                width={56}
+                                                height={56}
                                                 className="w-12 h-12 lg:w-14 lg:h-14 object-contain hover:scale-110 transition-transform"
-                                                loading="lazy"
                                             />
                                             <span className="text-[10px] lg:text-[11px] font-mono text-slate-400 text-center truncate w-full">
                                                 {skill.name}
@@ -209,7 +213,10 @@ const Skills: React.FC = () => {
 
                     {/* Right Column - Text Content */}
                     <motion.div
-                        style={{ opacity }}
+                        initial={{ opacity: 0, x: 30 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true, margin: "-50px" }}
+                        transition={{ delay: 0.4 }}
                         className="w-full md:w-full lg:flex-1 bg-slate-950/40 backdrop-blur-xl border border-slate-800/50 rounded-b-2xl md:rounded-2xl md:rounded-t-none lg:rounded-l-none lg:rounded-tr-2xl lg:border-l-0 shadow-2xl overflow-hidden z-20 lg:my-[25px] -mb-4 md:mb-0"
                     >
                         <div className="py-5 px-6 lg:py-6 lg:px-8 xl:py-8 xl:px-10 flex flex-col justify-center space-y-4 lg:space-y-5 text-slate-300 leading-relaxed text-[13px] md:text-[14px] font-mono">

@@ -1,14 +1,16 @@
-import { useState, useEffect } from 'react';
-import Navbar from './layout/Navbar';
-import Hero from './sections/Hero';
-import Skills from './sections/Skills';
-import Projects from './sections/Projects/Projects';
-import AIChat from './sections/AIChat/AIChat';
-import Contact from './sections/Contact/Contact';
-import BackgroundGrid from './components/BackgroundGrid';
-import { Section } from './types/global.d';
+"use client";
 
-const App: React.FC = () => {
+import { useState, useEffect } from 'react';
+import Navbar from '@/layout/Navbar';
+import Hero from '@/sections/Hero';
+import Skills from '@/sections/Skills';
+import Projects from '@/sections/Projects/Projects';
+import AIChat from '@/sections/AIChat/AIChat';
+import Contact from '@/sections/Contact/Contact';
+import BackgroundGrid from '@/components/BackgroundGrid';
+import { Section } from '@/types/global';
+
+const Home: React.FC = () => {
   const [activeSection, setActiveSection] = useState<string>(Section.HERO);
 
   useEffect(() => {
@@ -128,4 +130,4 @@ const App: React.FC = () => {
   );
 };
 
-export default App;
+export default Home;

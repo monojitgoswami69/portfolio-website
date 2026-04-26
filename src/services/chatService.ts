@@ -2,7 +2,7 @@
 // Points to the new FastAPI backend endpoint
 import { createTimeoutController, isNonEmpty, sanitizeInput } from '../utils/security';
 
-const BACKEND_URL = import.meta.env.VITE_CHAT_API_URL || 'https://api.nexus.mgbuilds.in';
+const BACKEND_URL = process.env.NEXT_PUBLIC_CHAT_API_URL || 'https://api.nexus.mgbuilds.in';
 const REQUEST_TIMEOUT_MS = 30000; // 30 seconds
 const MAX_MESSAGE_LENGTH = 1000;
 

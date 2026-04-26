@@ -1,31 +1,19 @@
-import { useRef } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
-import { Section } from '../types/global.d';
+import { Section } from '../types/global';
 
 const Hero: React.FC = () => {
-    const ref = useRef<HTMLDivElement>(null);
-    const { scrollYProgress } = useScroll({
-        target: ref,
-        offset: ["start start", "end start"]
-    });
-
-    const yText = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
-    const yBg = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
-    const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
-
     return (
-        <section id={Section.HERO} ref={ref} className="relative h-screen flex items-center justify-center overflow-hidden" style={{ position: 'relative' }}>
+        <section id={Section.HERO} className="relative h-screen flex items-center justify-center overflow-hidden" style={{ position: 'relative' }}>
 
             {/* Background Elements */}
-            <motion.div style={{ y: yBg }} className="absolute inset-0 z-0 flex items-center justify-center opacity-10">
+            <div className="absolute inset-0 z-0 flex items-center justify-center opacity-10">
                 <div className="relative w-[800px] h-[800px] border border-slate-700 rounded-full animate-[spin_60s_linear_infinite]" />
                 <div className="absolute w-[600px] h-[600px] border border-dashed border-cyan-900 rounded-full animate-[spin_40s_linear_infinite_reverse]" />
                 <div className="absolute w-[400px] h-[400px] border border-slate-700 rounded-full animate-[spin_20s_linear_infinite]" />
-            </motion.div>
+            </div>
 
-            <motion.div
-                style={{ y: yText, opacity }}
+            <div
                 className="relative z-10 text-center px-4 max-w-5xl mx-auto"
             >
                 <motion.h2
@@ -60,7 +48,7 @@ const Hero: React.FC = () => {
                 </motion.p>
 
 
-            </motion.div>
+            </div>
 
             <motion.div
                 animate={{ y: [0, 10, 0] }}

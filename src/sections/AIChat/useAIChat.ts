@@ -42,10 +42,10 @@ export const useAIChat = (): {
     activeMenu: 'roast' | null;
     roastLevel: string;
     sessionInfo: { userRequestsLeft: string; globalRequestsLeft: string } | null;
-    scrollRef: React.RefObject<HTMLDivElement>;
-    inputRef: React.RefObject<HTMLTextAreaElement>;
-    containerRef: React.RefObject<HTMLElement>;
-    terminalRef: React.RefObject<HTMLDivElement>;
+    scrollRef: React.RefObject<HTMLDivElement | null>;
+    inputRef: React.RefObject<HTMLTextAreaElement | null>;
+    containerRef: React.RefObject<HTMLElement | null>;
+    terminalRef: React.RefObject<HTMLDivElement | null>;
     handleTerminalClick: () => void;
     handleKeyDown: (e: React.KeyboardEvent) => void;
     handleSend: (e: React.FormEvent) => Promise<void>;

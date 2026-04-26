@@ -1,5 +1,5 @@
 import { useRef, useEffect } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useAIChat } from './useAIChat';
 import MarkdownRenderer from './markdown/MarkdownRenderer';
 
@@ -97,14 +97,6 @@ const AIChat: React.FC = () => {
         setMenuSelectedIndex,
     } = useAIChat();
 
-    const { scrollYProgress } = useScroll({
-        target: containerRef,
-        offset: ["start end", "end end"]
-    });
-
-    const opacity = useTransform(scrollYProgress, [0, 0.3], [0, 1]);
-    const y = useTransform(scrollYProgress, [0, 0.3], [50, 0]);
-
     useEffect(() => {
         if (inputRef.current) {
             const scrollElem = scrollRef.current;
@@ -138,7 +130,10 @@ const AIChat: React.FC = () => {
     return (
         <section id="chat" ref={containerRef} className="pb-[60px] lg:pb-[120px] relative z-10 scroll-mt-[85px]">
             <motion.div
-                style={{ opacity, y }}
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.8 }}
                 className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full"
             >
                 <div className="w-full">
