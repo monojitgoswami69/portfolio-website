@@ -1,11 +1,11 @@
 @import "tailwindcss";
 
 @theme {
-    --font-sans: "Space Grotesk", sans-serif;
-    --font-mono: "JetBrains Mono", monospace;
-    --font-averia: "Averia Serif Libre", serif;
+    --font-sans: var(--font-space-grotesk), sans-serif;
+    --font-mono: var(--font-jetbrains-mono), monospace;
+    --font-averia: var(--font-averia-serif-libre), serif;
     --font-geo: "Geo", sans-serif;
-    --font-quantico: "Quantico", sans-serif;
+    --font-quantico: var(--font-quantico), sans-serif;
 
     --animate-gradient: gradient 8s linear infinite;
     --animate-scan: scan 4s linear infinite;
@@ -36,6 +36,10 @@
         color: #e2e8f0;
         overflow-x: hidden;
         position: relative;
+        min-height: 100vh;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
     }
 
     .ascii-art {

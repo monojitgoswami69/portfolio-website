@@ -1,7 +1,40 @@
 import type { Metadata } from "next";
+import {
+  Averia_Serif_Libre,
+  JetBrains_Mono,
+  Quantico,
+  Space_Grotesk,
+} from "next/font/google";
 import "./globals.css";
 
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-space-grotesk",
+});
+
+const jetBrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-jetbrains-mono",
+});
+
+const averiaSerifLibre = Averia_Serif_Libre({
+  subsets: ["latin"],
+  weight: ["300", "400", "700"],
+  display: "swap",
+  variable: "--font-averia-serif-libre",
+});
+
+const quantico = Quantico({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  display: "swap",
+  variable: "--font-quantico",
+});
+
 export const metadata: Metadata = {
+  metadataBase: new URL("https://mgbuilds.in"),
   title: "Monojit Goswami | Portfolio",
   description: "Monojit Goswami - Backend & AI Engineer specializing in RAG systems and high-performance ML pipelines",
   keywords: "AI Engineer, Backend Developer, RAG, Machine Learning, Python, React",
@@ -33,15 +66,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="scroll-smooth">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Quantico:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@100..800&family=Averia+Serif+Libre:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Geo&display=swap"
-          rel="stylesheet"
-        />
-      </head>
-      <body>{children}</body>
+      <body
+        className={[
+          spaceGrotesk.variable,
+          jetBrainsMono.variable,
+          averiaSerifLibre.variable,
+          quantico.variable,
+        ].join(" ")}
+      >
+        {children}
+      </body>
     </html>
   );
 }

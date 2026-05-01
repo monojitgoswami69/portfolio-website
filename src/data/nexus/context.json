@@ -1,0 +1,53 @@
+{
+    "name": "Monojit Goswami",
+
+    "age": "19",
+
+    "about_me": "Self-taught Backend Developer specializing in RAG-based systems and high-performance Machine Learning pipelines. backend developer driven by the potential of autonomous systems. My architecture philosophy focuses on efficiency, modularity, security, and scalability, building high-performance engines that bridge the gap between architectural stability and artificial intelligence. I specialize in developing general-purpose, high-fidelity backend solutions and RAG-based agentic systems. Also with interest in DSA. I love to build projects to solve my own solutions and help others, love to guide and mentor others in the same field requiring guidance",
+
+    "skills": ["Python", "C/C++", "JavaScript", "TypeScript", "java", "Node.js", "Express", "FastAPI", "REST APIs", "Server-Sent Events (SSE)", "PostgreSQL", "MySQL", "Firestore", "MongoDB", "Redis", "Pinecone", "ChromaDB", "NeonDB", "AWS", "Cloudflare", "Firebase", "Supabase", "JWT Authentication", "LangChain", "Linux", "Streamlit", "Git", "GitHub", "Backend Development", "API Design", "System Architecture", "Retrieval-Augmented Generation (RAG)", "AI-Enabled Systems", "Prompt Engineering", "Multi-Tenant SaaS Development", "Static Code Analysis", "Vector Database Management", "Database Caching", "Real-Time Systems", "Cloud Infrastructure"],
+
+    "tools": "OS: Arch Linux | Kernel: Linux Stable | DE: Hyprland (end4 dots) | Terminal: Kitty | Shell: Fish | Tools: VS Code, Vim | Hardware: Dell G15 5525",
+
+    "contact":
+    {
+        "email": "monojitgoswami.dev@gmail.com",
+        "github": "https://github.com/monojitgoswami69",
+        "linkedin": "https://linkedin.com/in/monojitgoswami69",
+        "twitter": "https://twitter.com/monojitgoswami9"
+    },
+
+    "projects":
+    [
+  {
+    "project_name": "Shiksha Saathi",
+    "description": "A production-grade RAG-based SaaS chatbot designed for educational institutions to provide 24x7 student support. It features a real-time admin panel for knowledge base management, dynamic system instruction control, and an analytics dashboard to track unresolved queries. To ensure reliability, it implements a confidence-threshold-based human handoff mechanism to prevent hallucinations in high-stakes academic contexts.",
+    "tech stack": ["Python", "FastAPI", "Firestore", "Transformers", "Gemini API", "Pinecone", "Dropbox", "Vercel", "HTML/CSS", "Vanilla JS"]
+  },
+  {
+    "project_name": "Campus Dost",
+    "description": "A multi-tenant SaaS evolution of Shiksha Saathi that provides isolated, institution-specific RAG chatbot instances. It ensures strict tenant isolation with dedicated vector stores and configurations for each organization. The platform includes a secure, role-based admin system and centralized infrastructure management to support scaling across multiple institutions without compromising data security.",
+    "tech stack": ["Python", "FastAPI", "Firestore", "Gemini Embeddings", "Gemini/Groq API", "Firebase Auth", "Pinecone", "Dropbox", "Vercel", "React JS"]
+  },
+  {
+    "project_name": "Codalyzer",
+    "description": "An LLM-powered static code analysis tool designed to infer time and space complexity from source code. It utilizes language-aware understanding to evaluate algorithmic patterns and provide targeted optimization suggestions. Primarily built for educational and screening use cases, it helps developers understand performance trade-offs through actionable feedback and complexity estimation.",
+    "tech stack": ["Python", "FastAPI", "Gemini/Groq API", "Vercel", "React TS", "Redis"]
+  },
+  {
+    "project_name": "NEXUS",
+    "description": "A terminal-style portfolio chatbot featuring a controlled roast persona layered over factual information about my technical experience. It operates on a strictly prompt-scoped context to prevent hallucinations and uses Redis for global and per-user rate limiting. The system maintains multi-turn conversation history within a bounded context window to ensure a consistent and engaging user experience.",
+    "tech stack": ["Python", "FastAPI", "Gemini/Groq API", "Redis", "React TS", "Vercel"]
+  },
+  {
+    "project_name": "Make-a-Chatbot",
+    "description": "A privacy-focused, client-side chatbot builder that allows users to prototype LLM chatbots using their own API keys without a backend. It supports multiple providers like Gemini and Groq, offering a secure playground to test system prompts and streaming toggles. Users can export production-ready starter templates for Python or Node.js, including environment files and test scripts for immediate deployment.",
+    "tech stack": ["React JS", "JavaScript", "Gemini API", "Groq API"]
+  },
+  {
+    "project_name": "Certify",
+    "description": "A high-performance mass certificate generation tool that operates entirely on the client side using Web Workers for parallelized processing. It features a visual template editor with CSV field mapping and advanced typography controls via Google Fonts. By splitting tasks into large-scale batches, it optimizes memory usage and achieves significant speedups while ensuring user data privacy.",
+    "tech stack": ["React TS", "JavaScript", "HTML5 Canvas", "Web Workers", "Vercel"]
+  }
+]
+}
