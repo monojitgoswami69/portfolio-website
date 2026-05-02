@@ -26,8 +26,25 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
         { id: HomeSection.CONTACT, label: '05. // SIGNAL', icon: <Mail size={16} /> },
     ];
 
-    const handleNavClick = () => {
+    const handleNavClick = (sectionId: HomeSection) => (event: React.MouseEvent<HTMLAnchorElement>) => {
+        event.preventDefault();
         setIsOpen(false);
+
+        const target = document.getElementById(sectionId);
+        if (target) {
+            const block = sectionId === HomeSection.CONTACT ? 'end' : 'start';
+            target.scrollIntoView({ behavior: 'smooth', block });
+
+            if (sectionId === HomeSection.CONTACT) {
+                setTimeout(() => {
+                    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+                }, 50);
+            }
+        }
+
+        if (window.location.hash) {
+            window.history.replaceState(null, '', window.location.pathname);
+        }
     };
 
     return (
@@ -65,8 +82,8 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
                             {navItems.map((item) => (
                                 <a
                                     key={item.id}
-                                    href={`#${item.id}`}
-                                    onClick={handleNavClick}
+                                    href="/"
+                                    onClick={handleNavClick(item.id)}
                                     aria-current={activeSection === item.id ? 'page' : undefined}
                                     className={`group flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium font-mono transition-colors duration-300 ${activeSection === item.id
                                         ? 'text-cyan-400 bg-cyan-400/10'
@@ -102,8 +119,8 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
                     {navItems.map((item) => (
                         <a
                             key={item.id}
-                            href={`#${item.id}`}
-                            onClick={handleNavClick}
+                            href="/"
+                            onClick={handleNavClick(item.id)}
                             aria-current={activeSection === item.id ? 'page' : undefined}
                             className={`w-full text-left flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium font-mono transition-all duration-200 ${activeSection === item.id
                                 ? 'text-cyan-400 bg-cyan-400/10'

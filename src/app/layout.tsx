@@ -6,6 +6,7 @@ import {
   Space_Grotesk,
 } from "next/font/google";
 import "./globals.css";
+import PWARegister from "@/features/pwa/PWARegister";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -39,6 +40,23 @@ export const metadata: Metadata = {
   description: "Monojit Goswami - Backend & AI Engineer specializing in RAG systems and high-performance ML pipelines",
   keywords: "AI Engineer, Backend Developer, RAG, Machine Learning, Python, React",
   authors: [{ name: "Monojit Goswami" }],
+  manifest: "/favicons/site.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "MG | Portfolio",
+  },
+  formatDetection: {
+    telephone: false,
+  },
+  icons: {
+    icon: [
+      { url: "/favicons/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicons/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicons/favicon.ico", sizes: "any" },
+    ],
+    apple: "/favicons/apple-touch-icon.png",
+  },
   openGraph: {
     title: "Monojit Goswami | Portfolio",
     description: "Monojit Goswami - Backend & AI Engineer specializing in RAG systems and high-performance ML pipelines",
@@ -66,6 +84,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="scroll-smooth">
+      <head>
+        <meta name="theme-color" content="#0f172a" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="MG | Portfolio" />
+        <link rel="manifest" href="/favicons/site.webmanifest" />
+      </head>
       <body
         className={[
           spaceGrotesk.variable,
@@ -74,6 +100,7 @@ export default function RootLayout({
           quantico.variable,
         ].join(" ")}
       >
+        <PWARegister />
         {children}
       </body>
     </html>

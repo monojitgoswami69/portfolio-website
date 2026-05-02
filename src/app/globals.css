@@ -29,6 +29,7 @@
     100% { transform: translateY(100%); }
 }
 
+
 @layer base {
     body {
         font-family: var(--font-sans);
@@ -72,5 +73,13 @@
     * {
         scrollbar-width: thin;
         scrollbar-color: #334155 #020617;
+    }
+
+    .no-scrollbar {
+        scrollbar-width: none;
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
     }
 }

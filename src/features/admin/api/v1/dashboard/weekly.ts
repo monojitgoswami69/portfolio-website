@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { and, eq, gte, lte } from "drizzle-orm";
+import { and, gte, lte } from "drizzle-orm";
 import { getAuthenticatedUser } from "@/features/admin/server/auth";
 import { initializeDatabase, isDatabaseConfigured } from "@/features/admin/server/db-utils";
 import { weeklyMetrics } from "@/features/admin/server/schema";

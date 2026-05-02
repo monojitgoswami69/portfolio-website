@@ -8,9 +8,9 @@ const Hero: React.FC = () => {
 
             {/* Background Elements */}
             <div className="absolute inset-0 z-0 flex items-center justify-center opacity-10">
-                <div className="relative w-[800px] h-[800px] border border-slate-700 rounded-full animate-[spin_60s_linear_infinite]" />
-                <div className="absolute w-[600px] h-[600px] border border-dashed border-cyan-900 rounded-full animate-[spin_40s_linear_infinite_reverse]" />
-                <div className="absolute w-[400px] h-[400px] border border-slate-700 rounded-full animate-[spin_20s_linear_infinite]" />
+                <div className="relative w-[800px] h-[800px] border border-slate-700 rounded-full animate-[spin_60s_linear_infinite] will-change-transform transform-gpu" />
+                <div className="absolute w-[600px] h-[600px] border border-dashed border-cyan-900 rounded-full animate-[spin_40s_linear_infinite_reverse] will-change-transform transform-gpu" />
+                <div className="absolute w-[400px] h-[400px] border border-slate-700 rounded-full animate-[spin_20s_linear_infinite] will-change-transform transform-gpu" />
             </div>
 
             <div

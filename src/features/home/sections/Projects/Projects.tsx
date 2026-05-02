@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ProjectGrid from './ProjectGrid';
 import { ProjectData } from './projectUtils';
@@ -11,6 +11,21 @@ interface ProjectsProps {
 
 const Projects: React.FC<ProjectsProps> = ({ projects }) => {
     const [selectedProject, setSelectedProject] = useState<ProjectData | null>(null);
+
+    useEffect(() => {
+        const handlePopState = () => {
+            setSelectedProject(null);
+        };
+
+        window.addEventListener('popstate', handlePopState);
+        return () => window.removeEventListener('popstate', handlePopState);
+    }, []);
+
+    useEffect(() => {
+        if (selectedProject) {
+            window.history.pushState({ modal: 'project' }, '', window.location.pathname);
+        }
+    }, [selectedProject]);
 
     const sortedProjects = useMemo(() => {
         return [...projects].sort((a, b) => {
@@ -52,7 +67,13 @@ const Projects: React.FC<ProjectsProps> = ({ projects }) => {
                 {selectedProject && (
                     <ProjectModal
                         project={selectedProject}
-                        onClose={() => setSelectedProject(null)}
+                        onClose={() => {
+                            if (window.history.state?.modal === 'project') {
+                                window.history.back();
+                            } else {
+                                setSelectedProject(null);
+                            }
+                        }}
                     />
                 )}
             </AnimatePresence>

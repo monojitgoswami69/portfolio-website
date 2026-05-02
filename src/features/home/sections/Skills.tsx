@@ -104,7 +104,7 @@ const Skills: React.FC = () => {
                     >
                         <div className="relative group w-full h-full overflow-hidden transition-all duration-300">
                             {/* Image Section */}
-                            <div className="relative w-full h-full bg-slate-900 border border-slate-800 rounded-t-2xl md:rounded-r-none lg:rounded-2xl lg:rounded-r-none overflow-hidden shadow-2xl min-h-[400px]">
+                            <div className="relative w-full h-full bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl min-h-[400px]">
                                 <Image
                                     src={PROFILE_IMG}
                                     alt="Monojit Goswami"

@@ -89,7 +89,7 @@ const Contact: React.FC<ContactProps> = ({ contact }) => {
         <section
             id={HomeSection.CONTACT}
             ref={ref}
-            className="min-h-screen relative z-20 bg-slate-950 flex flex-col justify-center overflow-hidden pt-24 pb-4 lg:pb-8 scroll-mt-[85px]"
+            className="min-h-screen relative z-20 bg-slate-950 flex flex-col justify-center overflow-hidden pt-24 pb-4 lg:pb-8 scroll-mt-[40px]"
             style={{ position: 'relative' }}
         >
             <motion.div

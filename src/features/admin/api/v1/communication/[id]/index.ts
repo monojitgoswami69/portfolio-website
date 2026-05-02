@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { eq, and } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { getAuthenticatedUser } from "@/features/admin/server/auth";
 import { logActivity } from "@/features/admin/server/activity";
 import { initializeDatabase, isDatabaseConfigured } from "@/features/admin/server/db-utils";

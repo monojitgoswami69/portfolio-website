@@ -37,7 +37,7 @@ const BackgroundGrid: React.FC = () => {
 
       {/* Floating Particles/Code Fragments */}
       <motion.div
-        className={`absolute top-1/4 left-1/4 ${CYAN_ORB_SIZE} bg-cyan-500 rounded-full mix-blend-screen filter ${CYAN_ORB_BLUR} ${CYAN_ORB_OPACITY}`}
+        className={`absolute top-1/4 left-1/4 ${CYAN_ORB_SIZE} bg-cyan-500 rounded-full mix-blend-screen filter ${CYAN_ORB_BLUR} ${CYAN_ORB_OPACITY} will-change-transform transform-gpu`}
         animate={{
           x: [0, 50, -50, 0],
           y: [0, -50, 50, 0],
@@ -49,7 +49,7 @@ const BackgroundGrid: React.FC = () => {
         }}
       />
       <motion.div
-        className={`absolute bottom-1/3 right-1/4 ${PURPLE_ORB_SIZE} bg-purple-600 rounded-full mix-blend-screen filter ${PURPLE_ORB_BLUR} ${PURPLE_ORB_OPACITY}`}
+        className={`absolute bottom-1/3 right-1/4 ${PURPLE_ORB_SIZE} bg-purple-600 rounded-full mix-blend-screen filter ${PURPLE_ORB_BLUR} ${PURPLE_ORB_OPACITY} will-change-transform transform-gpu`}
         animate={{
           x: [0, -70, 70, 0],
           y: [0, 70, -70, 0],
