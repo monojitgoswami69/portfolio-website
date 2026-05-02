@@ -175,26 +175,27 @@ const AIChat: React.FC<AIChatProps> = ({ projects, contact }) => {
 
                                     <div
                                         ref={scrollRef}
-                                        className="relative z-10 h-full p-4 md:p-6 overflow-y-auto space-y-4 cursor-text font-mono text-xs md:text-sm bg-[#0A0C11]/60 leading-relaxed terminal-scroll"
+                                        className="relative z-10 h-full p-4 md:p-6 overflow-y-auto space-y-4 cursor-text bg-[#0A0C11]/60 terminal-scroll"
+                                        style={{ fontFamily: '"JetBrains Mono", "JetBrainsMono Nerd Font", monospace', lineHeight: '1.2' }}
                                     >
                                         {history.map((msg, i) => (
                                             <div key={i} className="break-words">
                                                 {msg.role === 'user' ? (
-                                                    <div className="flex gap-2 items-start">
+                                                    <div className="flex gap-2 items-start font-mono">
                                                         <span className="text-green-400 font-bold shrink-0 mt-[2px]">➜</span>
                                                         <span className="text-cyan-400 font-bold shrink-0 mt-[2px]">~</span>
                                                         <span className="text-[#00ff41] break-all whitespace-pre-wrap flex-1">{msg.text}</span>
                                                     </div>
                                                 ) : (
-                                                    <div className={`mt-2 mb-4 space-y-1 ${msg.isSuccess ? 'text-slate-300' :
+                                                    <div className={`mt-2 mb-4 space-y-1 font-mono ${msg.isSuccess ? 'text-slate-300' :
                                                         msg.isError && msg.isSystem ? 'text-slate-300' :
-                                                            msg.isError ? 'text-yellow-400 font-mono tracking-wide' :
-                                                                msg.isSystem ? 'text-yellow-500/80 font-mono text-xs italic' :
+                                                            msg.isError ? 'text-yellow-400 tracking-wide' :
+                                                                msg.isSystem ? 'text-yellow-500/80 text-xs italic' :
                                                                     'text-slate-300'
                                                         }`}>
                                                         {msg.isMenu ? (
-                                                            <div className="mt-2 space-y-2">
-                                                                <p className="text-white font-mono font-bold tracking-[0.2em] uppercase text-xs border-b border-white/20 w-fit pb-1 mb-3">{msg.text}</p>
+                                                            <div className="mt-2 space-y-2 font-mono">
+                                                                <p className="text-white font-bold tracking-[0.2em] uppercase text-xs border-b border-white/20 w-fit pb-1 mb-3">{msg.text}</p>
                                                                 {msg.menuOptions?.map((opt, idx) => {
                                                                     const isMovingIndex = idx === msg.selectedIndex;
                                                                     return (
@@ -208,7 +209,7 @@ const AIChat: React.FC<AIChatProps> = ({ projects, contact }) => {
                                                                                     {opt}
                                                                                 </span>
                                                                                 {msg.menuOptionDescriptions && (
-                                                                                    <span className="text-[10px] md:text-xs opacity-40 font-mono italic whitespace-nowrap overflow-hidden text-ellipsis max-w-[200px] sm:max-w-none group-hover/item:opacity-60">
+                                                                                    <span className="text-[10px] md:text-xs opacity-40 italic whitespace-nowrap overflow-hidden text-ellipsis max-w-[200px] sm:max-w-none group-hover/item:opacity-60">
                                                                                         — {msg.menuOptionDescriptions[idx]}
                                                                                     </span>
                                                                                 )}
@@ -220,11 +221,9 @@ const AIChat: React.FC<AIChatProps> = ({ projects, contact }) => {
                                                         ) : msg.isNeofetch ? (
                                                             <div className="flex flex-col md:flex-row gap-4 md:gap-8 items-start select-none md:select-text font-mono">
                                                                 {/* ASCII Art */}
-                                                                <div className="text-purple-500/80 leading-none whitespace-pre text-[10px] sm:text-xs md:text-sm font-bold shrink-0 ascii-art">
-                                                                    {msg.neofetchArt?.map((line, idx) => (
-                                                                        <div key={idx}>{line}</div>
-                                                                    ))}
-                                                                </div>
+                                                                <pre className="text-purple-500/80 leading-none text-sm sm:text-base md:text-2xl font-bold shrink-0 ascii-art m-0">
+                                                                    {msg.neofetchArt?.join('\n')}
+                                                                </pre>
                                                                 {/* System Info */}
                                                                 <div className="flex flex-col gap-1 text-xs sm:text-sm">
                                                                     {msg.neofetchInfo?.map((info, idx) => (
@@ -255,16 +254,16 @@ const AIChat: React.FC<AIChatProps> = ({ projects, contact }) => {
                                         ))}
 
                                         {isLoading && (
-                                            <div className="text-cyan-500 flex items-center gap-2 opacity-60">
+                                            <div className="text-cyan-500 flex items-center gap-2 opacity-60 font-mono">
                                                 <span className="animate-spin">⠋</span>
                                                 <span>Processing...</span>
                                             </div>
                                         )}
 
                                         {error && (
-                                            <div className={`mt-2 text-xs md:text-sm rounded p-3 border ${error.includes('limit') ? 'text-yellow-400 bg-yellow-950/30 border-yellow-800' : 'text-red-400 bg-red-950/30 border-red-800'}`}>
+                                            <div className={`mt-2 text-xs md:text-sm rounded p-3 border font-mono ${error.includes('limit') ? 'text-yellow-400 bg-yellow-950/30 border-yellow-800' : 'text-red-400 bg-red-950/30 border-red-800'}`}>
                                                 <div className="font-bold mb-1">{error.includes('limit') ? '⚠ ACCESS LIMITED' : '⚠ ERROR'}</div>
-                                                <div className="whitespace-pre-line font-mono">{error}</div>
+                                                <div className="whitespace-pre-line">{error}</div>
                                             </div>
                                         )}
 
@@ -281,8 +280,8 @@ const AIChat: React.FC<AIChatProps> = ({ projects, contact }) => {
                                                                 setInput(e.target.value);
                                                             }}
                                                             onKeyDown={handleKeyDown}
-                                                            className="w-full bg-transparent border-none outline-none text-[#00ff41] font-mono text-sm md:text-[15px] caret-[#00ff41] break-words resize-none overflow-hidden"
-                                                            style={{ minHeight: '24px', paddingTop: '2px' }}
+                                                            className="w-full bg-transparent border-none outline-none text-[#00ff41] text-sm md:text-[15px] caret-[#00ff41] break-words resize-none overflow-hidden"
+                                                            style={{ minHeight: '24px', paddingTop: '2px', fontFamily: '"JetBrains Mono", "JetBrainsMono Nerd Font", monospace' }}
                                                             rows={1}
                                                             maxLength={1024}
                                                             aria-label="Terminal Input"

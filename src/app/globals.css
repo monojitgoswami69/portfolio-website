@@ -44,8 +44,11 @@
     }
 
     .ascii-art {
-        white-space: pre;
-        line-height: 1.2;
+        white-space: pre !important;
+        line-height: 1 !important;
+        letter-spacing: -0.05em !important;
+        font-family: "JetBrains Mono", "JetBrainsMono Nerd Font", monospace !important;
+        display: inline-block;
     }
 
     /* Custom Scrollbar - Webkit */
