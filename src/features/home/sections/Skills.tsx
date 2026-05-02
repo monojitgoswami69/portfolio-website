@@ -104,7 +104,7 @@ const Skills: React.FC = () => {
                     >
                         <div className="relative group w-full h-full overflow-hidden transition-all duration-300">
                             {/* Image Section */}
-                            <div className="relative w-full h-full bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl min-h-[400px]">
+                            <div className="relative w-full h-full bg-slate-900 border border-slate-800 rounded-b-none md:rounded-2xl rounded-t-2xl overflow-hidden shadow-2xl min-h-[400px]">
                                 <Image
                                     src={PROFILE_IMG}
                                     alt="Monojit Goswami"
@@ -141,8 +141,8 @@ const Skills: React.FC = () => {
                                 {/* Corner Brackets */}
                                 <div className="absolute top-2 left-2 w-8 h-8 border-t-2 border-l-2 border-cyan-500/50 rounded-tl-lg z-30" />
                                 <div className="absolute top-2 right-2 w-8 h-8 border-t-2 border-r-2 border-cyan-500/50 rounded-tr-lg z-30" />
-                                <div className="absolute bottom-2 left-2 w-8 h-8 border-b-2 border-l-2 border-cyan-500/50 rounded-bl-lg z-30" />
-                                <div className="absolute bottom-2 right-2 w-8 h-8 border-b-2 border-r-2 border-cyan-500/50 rounded-br-lg z-30" />
+                                <div className="absolute bottom-2 left-2 w-8 h-8 border-b-2 border-l-2 border-cyan-500/50 rounded-bl-lg z-30 md:rounded-bl-lg rounded-bl-none" />
+                                <div className="absolute bottom-2 right-[2px] w-8 h-8 border-b-2 border-r-2 border-cyan-500/50 rounded-br-none z-30" />
                             </div>
                         </div>
 
@@ -156,7 +156,7 @@ const Skills: React.FC = () => {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true, margin: "-50px" }}
                         transition={{ delay: 0.3 }}
-                        className="w-full md:w-1/2 lg:w-[350px] xl:w-[400px] bg-slate-950/40 backdrop-blur-xl border border-slate-800/50 md:rounded-2xl md:rounded-l-none md:rounded-b-none lg:rounded-none -mr-4 md:mr-0 md:border-l-0 md:border-r lg:border-r shadow-2xl overflow-hidden z-20 lg:my-[25px] md:border-b-0 lg:border-b"
+                        className="w-full md:w-1/2 lg:w-[350px] xl:w-[400px] bg-slate-950/40 backdrop-blur-xl border border-slate-800/50 md:rounded-2xl md:rounded-l-none md:rounded-b-none lg:rounded-none -mr-4 md:mr-0 md:border-l-0 md:border-r lg:border-r shadow-2xl overflow-hidden z-20 lg:mt-[10px] lg:mb-[25px] md:border-b-0 lg:border-b"
                     >
                         <div className="py-5 px-6 lg:py-6 lg:px-6 xl:py-8 xl:px-8 flex flex-col justify-center">
                             <div>
