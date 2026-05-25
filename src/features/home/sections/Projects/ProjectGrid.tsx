@@ -11,7 +11,6 @@ export const TechStackDisplay: React.FC<{ techStack: string[]; sortByLength?: bo
     const containerRef = useRef<HTMLDivElement>(null);
     const [visibleCount, setVisibleCount] = useState(techStack.length);
 
-    // Sort by length if requested (shortest first to maximize visible count)
     const sortedTechStack = sortByLength
         ? [...techStack].sort((a, b) => a.length - b.length)
         : techStack;
@@ -23,46 +22,42 @@ export const TechStackDisplay: React.FC<{ techStack: string[]; sortByLength?: bo
             const container = containerRef.current;
             const containerWidth = container.offsetWidth;
 
-            // Create temporary badges to measure their actual widths
             const tempContainer = document.createElement('div');
             tempContainer.style.position = 'absolute';
             tempContainer.style.visibility = 'hidden';
             tempContainer.style.display = 'flex';
             tempContainer.style.flexWrap = 'wrap';
-            tempContainer.style.gap = '0.5rem'; // gap-2
+            tempContainer.style.gap = '0.5rem';
             tempContainer.style.width = `${containerWidth}px`;
             document.body.appendChild(tempContainer);
 
             const badges: HTMLElement[] = [];
             sortedTechStack.forEach((tech) => {
                 const badge = document.createElement('span');
-                badge.className = 'px-2 py-1 text-xs font-mono bg-slate-800 text-cyan-200/70 rounded border border-slate-700';
+                badge.className = 'px-2 py-1 text-xs font-mono border-2';
                 badge.textContent = tech;
                 badge.style.whiteSpace = 'nowrap';
                 tempContainer.appendChild(badge);
                 badges.push(badge);
             });
 
-            // Force layout calculation
             void tempContainer.offsetHeight;
 
-            // Detect which badges are in the first two rows
             let maxVisibleCount = 0;
             if (badges.length > 0) {
                 const firstBadge = badges[0];
-                if (!firstBadge) return; // Guard against undefined
+                if (!firstBadge) return;
 
                 const firstBadgeTop = firstBadge.offsetTop;
-                const gap = 8; // 0.5rem = 8px
+                const gap = 8;
 
-                // Find badges that are within two rows
                 const firstBadgeHeight = firstBadge.offsetHeight;
                 const secondRowTop = firstBadgeTop + firstBadgeHeight + gap;
-                const maxAllowedTop = secondRowTop + firstBadgeHeight; // End of second row
+                const maxAllowedTop = secondRowTop + firstBadgeHeight;
 
                 for (let i = 0; i < badges.length; i++) {
                     const badge = badges[i];
-                    if (!badge) continue; // Guard against undefined
+                    if (!badge) continue;
 
                     const badgeTop = badge.offsetTop;
                     if (badgeTop < maxAllowedTop) {
@@ -72,10 +67,9 @@ export const TechStackDisplay: React.FC<{ techStack: string[]; sortByLength?: bo
                     }
                 }
 
-                // Reserve space for the +X badge if needed
                 if (maxVisibleCount < sortedTechStack.length) {
                     const plusBadge = document.createElement('span');
-                    plusBadge.className = 'px-2 py-1 text-xs font-mono bg-slate-800 text-slate-400 rounded border border-slate-700';
+                    plusBadge.className = 'px-2 py-1 text-xs font-mono border-2';
                     plusBadge.textContent = `+${sortedTechStack.length - maxVisibleCount}`;
                     plusBadge.style.whiteSpace = 'nowrap';
 
@@ -84,7 +78,7 @@ export const TechStackDisplay: React.FC<{ techStack: string[]; sortByLength?: bo
                         if (lastVisibleBadge) {
                             tempContainer.removeChild(lastVisibleBadge);
                             tempContainer.appendChild(plusBadge);
-                            void tempContainer.offsetHeight; // Force layout
+                            void tempContainer.offsetHeight;
 
                             const plusBadgeTop = plusBadge.offsetTop;
                             if (plusBadgeTop >= maxAllowedTop) {
@@ -118,14 +112,14 @@ export const TechStackDisplay: React.FC<{ techStack: string[]; sortByLength?: bo
         <div ref={containerRef} className="flex flex-wrap gap-2 mb-4">
             {visibleTechs.map((tech) => (
                 <span
-                    key={tech}
-                    className="px-2 py-1 text-[10px] md:text-xs font-mono bg-slate-800 text-cyan-200/70 rounded border border-slate-700"
+                     key={tech}
+                     className="px-2 py-1 text-[10px] md:text-xs font-mono bg-[#110e24] border-2 border-[#2d2754] text-cyan-200/80"
                 >
-                    {tech}
+                     {tech}
                 </span>
             ))}
             {remainingCount > 0 && (
-                <span className="px-2 py-1 text-[10px] md:text-xs font-mono bg-slate-800 text-slate-400 rounded border border-slate-700">
+                <span className="px-2 py-1 text-[10px] md:text-xs font-mono bg-[#110e24] border-2 border-[#2d2754] text-slate-400">
                     +{remainingCount}
                 </span>
             )}
@@ -153,7 +147,7 @@ const ProjectGrid: React.FC<ProjectGridProps> = ({ projects, onSelect }) => {
                         href="https://github.com/monojitgoswami69"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 px-6 py-3 bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-cyan-500/50 rounded-lg text-cyan-400 hover:text-cyan-300 transition-all duration-300 font-mono group"
+                        className="inline-flex items-center gap-2 px-6 py-3 bg-[#110e24] border-2 border-[#2d2754] text-cyan-400 shadow-[4px_4px_0px_0px_#2d2754] hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none transition-all duration-200 font-mono group font-bold"
                     >
                         Visit GitHub to explore <Github size={18} className="group-hover:translate-x-1 transition-transform" />
                     </a>

@@ -7,71 +7,23 @@ import { HomeSection } from '../types';
 
 // System metrics data
 const metrics: Metric[] = [
-    {
-        label: 'OS',
-        value: 'Arch Linux',
-        icon: Monitor,
-        color: '#00FFFF',
-        glowColor: 'rgba(0, 255, 255, 0.5)'
-    },
-    {
-        label: 'Kernel',
-        value: 'linux standard',
-        icon: Monitor,
-        color: '#00FFFF',
-        glowColor: 'rgba(0, 255, 255, 0.5)'
-    },
-    {
-        label: 'DE',
-        value: 'hyprland',
-        icon: Monitor,
-        color: '#00FFFF',
-        glowColor: 'rgba(0, 255, 255, 0.5)'
-    },
-    {
-        label: 'IDE',
-        value: 'VS Code',
-        icon: Code,
-        color: '#00FFFF',
-        glowColor: 'rgba(0, 255, 255, 0.5)'
-    },
-    {
-        label: 'Editor',
-        value: 'Vim',
-        icon: Code,
-        color: '#00FFFF',
-        glowColor: 'rgba(0, 255, 255, 0.5)'
-    },
-    {
-        label: 'Terminal',
-        value: 'kitty',
-        icon: Terminal,
-        color: '#00FFFF',
-        glowColor: 'rgba(0, 255, 255, 0.5)'
-    },
-    {
-        label: 'Shell',
-        value: 'fish',
-        icon: Terminal,
-        color: '#00FFFF',
-        glowColor: 'rgba(0, 255, 255, 0.5)'
-    }
+    { label: 'OS', value: 'Arch Linux', icon: Monitor, color: '#00FFFF', glowColor: 'rgba(0, 255, 255, 0.5)' },
+    { label: 'Kernel', value: 'linux standard', icon: Monitor, color: '#00FFFF', glowColor: 'rgba(0, 255, 255, 0.5)' },
+    { label: 'DE', value: 'hyprland', icon: Monitor, color: '#00FFFF', glowColor: 'rgba(0, 255, 255, 0.5)' },
+    { label: 'IDE', value: 'VS Code', icon: Code, color: '#00FFFF', glowColor: 'rgba(0, 255, 255, 0.5)' },
+    { label: 'Editor', value: 'Vim', icon: Code, color: '#00FFFF', glowColor: 'rgba(0, 255, 255, 0.5)' },
+    { label: 'Terminal', value: 'kitty', icon: Terminal, color: '#00FFFF', glowColor: 'rgba(0, 255, 255, 0.5)' },
+    { label: 'Shell', value: 'fish', icon: Terminal, color: '#00FFFF', glowColor: 'rgba(0, 255, 255, 0.5)' }
 ];
 
 const Skills: React.FC = () => {
     const metricsRef = useRef<HTMLDivElement>(null);
     const isMetricsInView = useInView(metricsRef, { once: true, margin: "-100px" });
 
-    // Changed from import to static string path to compatible with browser ESM
     const PROFILE_IMG = "/assets/profile.webp";
 
     return (
         <section id={HomeSection.SKILLS} className="pt-8 pb-10 lg:pb-20 relative z-10 overflow-hidden scroll-mt-[85px]" style={{ position: 'relative' }}>
-            {/* Parallax Background Element */}
-            <div
-                className="absolute -right-64 top-0 w-[800px] h-[800px] border-[40px] border-slate-700 rounded-full pointer-events-none opacity-[0.05]"
-            />
-
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Section Title */}
                 <motion.h2
@@ -93,26 +45,26 @@ const Skills: React.FC = () => {
                     Technical Capabilities &amp; Core Architecture
                 </motion.p>
 
-                <div className="flex flex-col md:flex-row md:flex-wrap lg:flex-nowrap items-stretch justify-center w-full gap-0 lg:gap-0 mt-8 lg:mt-12">
-                    {/* Left - Anchor Frame (Image) */}
+                <div className="flex flex-col lg:flex-row items-stretch justify-center w-full gap-0 lg:gap-6 mt-5 lg:mt-6">
+                    {/* Left - Profile Image */}
                     <motion.div
                         initial={{ opacity: 0, x: -30 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true, margin: "-50px" }}
                         transition={{ delay: 0.2 }}
-                        className="relative w-full md:w-1/2 lg:w-[400px] xl:w-[450px] z-10 flex"
+                        className="relative w-full lg:w-[380px] xl:w-[420px] z-10 flex"
                     >
-                        <div className="relative group w-full h-full overflow-hidden transition-all duration-300">
-                            {/* Image Section */}
-                            <div className="relative w-full h-full bg-slate-900 border border-slate-800 rounded-b-none md:rounded-2xl rounded-t-2xl overflow-hidden shadow-2xl min-h-[400px]">
+                        <div className="relative group w-full h-full">
+                            <div className="relative w-full h-full border-2 border-[#2d2754] bg-[#0d0a1a] overflow-hidden shadow-[4px_4px_0px_0px_#2d2754] min-h-[400px]">
                                 <Image
                                     src={PROFILE_IMG}
                                     alt="Monojit Goswami"
                                     fill
+                                    priority
                                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 500px"
                                     className="object-cover object-[center_30%] transition-all duration-700
                                    filter grayscale sepia hue-rotate-[170deg] contrast-[1.2] brightness-75
-                                   group-hover:filter-none group-hover:scale-105"
+                                   group-hover:filter-none"
                                 />
 
                                 {/* Hologram Overlay */}
@@ -131,7 +83,7 @@ const Skills: React.FC = () => {
                                 </div>
 
                                 <div className="absolute bottom-4 left-4 z-30">
-                                    <div className="flex items-center gap-2 text-emerald-400 font-mono text-xs bg-black/60 px-2 py-1 rounded border border-emerald-500/30 backdrop-blur-md">
+                                    <div className="flex items-center gap-2 text-emerald-400 font-mono text-xs px-2.5 py-1.5 border-2 border-emerald-500/40 bg-[#020208]">
                                         <Scan size={14} />
                                         <span className="group-hover:hidden">SCANNING...</span>
                                         <span className="hidden group-hover:inline">IDENTITY CONFIRMED</span>
@@ -139,28 +91,25 @@ const Skills: React.FC = () => {
                                 </div>
 
                                 {/* Corner Brackets */}
-                                <div className="absolute top-2 left-2 w-8 h-8 border-t-2 border-l-2 border-cyan-500/50 rounded-tl-lg z-30" />
-                                <div className="absolute top-2 right-2 w-8 h-8 border-t-2 border-r-2 border-cyan-500/50 rounded-tr-lg z-30" />
-                                <div className="absolute bottom-2 left-2 w-8 h-8 border-b-2 border-l-2 border-cyan-500/50 rounded-bl-lg z-30 md:rounded-bl-lg rounded-bl-none" />
-                                <div className="absolute bottom-2 right-2 w-8 h-8 border-b-2 border-r-2 border-cyan-500/50 md:rounded-br-lg rounded-br-none z-30" />
+                                <div className="absolute top-2 left-2 w-8 h-8 border-t-2 border-l-2 border-cyan-500/50 z-30" />
+                                <div className="absolute top-2 right-2 w-8 h-8 border-t-2 border-r-2 border-cyan-500/50 z-30" />
+                                <div className="absolute bottom-2 left-2 w-8 h-8 border-b-2 border-l-2 border-cyan-500/50 z-30" />
+                                <div className="absolute bottom-2 right-2 w-8 h-8 border-b-2 border-r-2 border-cyan-500/50 z-30" />
                             </div>
                         </div>
-
-                        {/* Background Glow */}
-                        <div className="absolute inset-0 bg-cyan-500 rounded-full blur-[120px] opacity-10 -z-10 group-hover:opacity-20 transition-opacity duration-500 pointer-events-none" />
                     </motion.div>
 
-                    {/* Middle Column - Tech Stack (Skills) */}
+                    {/* Middle Column - Tech Stack */}
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true, margin: "-50px" }}
                         transition={{ delay: 0.3 }}
-                        className="w-full md:w-1/2 lg:w-[350px] xl:w-[380px] bg-slate-950/40 backdrop-blur-xl border border-slate-800/50 md:rounded-2xl md:rounded-l-none md:rounded-b-none lg:rounded-none -mr-4 md:mr-0 md:border-l-0 md:border-r lg:border-r shadow-2xl overflow-hidden z-20 lg:my-[20px] md:border-b-0 lg:border-b"
+                        className="w-full lg:w-[380px] border-2 border-t-0 lg:border-t-2 border-[#2d2754] bg-[#0d0a1a] overflow-hidden z-20 shadow-[4px_4px_0px_0px_#2d2754]"
                     >
                         <div className="py-5 px-6 lg:py-6 lg:px-6 xl:py-8 xl:px-8 flex flex-col justify-center">
                             <div>
-                                <div className="text-cyan-400 font-mono text-sm tracking-wider mb-3 text-center">
+                                <div className="text-cyan-400 font-mono text-sm tracking-wider mb-3 text-center font-bold">
                                     2.1 // SKILLS
                                 </div>
                                 <div className="flex flex-wrap justify-center gap-1 lg:gap-2">
@@ -179,9 +128,10 @@ const Skills: React.FC = () => {
                                                 alt={skill.name}
                                                 width={56}
                                                 height={56}
+                                                {...(index === 0 ? { priority: true } : {})}
                                                 className="w-12 h-12 lg:w-14 lg:h-14 object-contain hover:scale-110 transition-transform"
                                             />
-                                            <span className="text-[10px] lg:text-[11px] font-mono text-slate-400 text-center truncate w-full">
+                                            <span className="text-[11px] lg:text-xs font-mono text-slate-400 text-center truncate w-full">
                                                 {skill.name}
                                             </span>
                                         </motion.div>
@@ -191,7 +141,7 @@ const Skills: React.FC = () => {
 
                             {/* Tools Section */}
                             <div className="mt-6">
-                                <div className="text-purple-400 font-mono text-sm tracking-wider mb-3 text-center">
+                                <div className="text-purple-400 font-mono text-sm tracking-wider mb-3 text-center font-bold">
                                     2.2 // TOOLS
                                 </div>
                                 <div className="flex flex-wrap gap-2 lg:gap-2.5 justify-center">
@@ -202,7 +152,7 @@ const Skills: React.FC = () => {
                                             whileInView={{ opacity: 1 }}
                                             viewport={{ once: true }}
                                             transition={{ delay: index * 0.02 }}
-                                            className="px-2.5 py-1 text-[10px] lg:text-[11px] font-mono tracking-wide bg-gradient-to-r from-slate-800/90 to-slate-800/60 text-slate-400 rounded border border-slate-700/40 hover:border-purple-500/30 hover:text-purple-300 hover:scale-105 hover:shadow-[0_0_10px_rgba(168,85,247,0.4)] transition-all inline-block"
+                                            className="px-2.5 py-1 text-[11px] lg:text-xs font-mono tracking-wide border-2 border-[#2d2754] bg-[#110e24] text-slate-300 shadow-[2px_2px_0px_0px_#2d2754] hover:bg-purple-500 hover:text-[#020208] hover:border-[#2d2754] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all duration-200 inline-block cursor-default font-medium"
                                         >
                                             {tool}
                                         </motion.span>
@@ -218,7 +168,7 @@ const Skills: React.FC = () => {
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true, margin: "-50px" }}
                         transition={{ delay: 0.4 }}
-                        className="w-full md:w-full lg:w-[350px] xl:w-[380px] bg-slate-950/40 backdrop-blur-xl border border-slate-800/50 rounded-b-2xl md:rounded-2xl md:rounded-t-none lg:rounded-l-none lg:rounded-tr-2xl lg:border-l-0 shadow-2xl overflow-hidden z-20 lg:my-[20px] -mb-4 md:mb-0"
+                        className="w-full lg:w-[380px] border-2 border-t-0 lg:border-t-2 border-[#2d2754] bg-[#0d0a1a] overflow-hidden z-20 shadow-[4px_4px_0px_0px_#2d2754]"
                     >
                         <div className="py-5 px-6 lg:py-6 lg:px-8 xl:py-8 xl:px-10 flex flex-col justify-center space-y-4 lg:space-y-5 text-slate-300 leading-relaxed text-[13px] md:text-sm lg:text-[15px] xl:text-base font-mono">
                             <p>
@@ -231,48 +181,32 @@ const Skills: React.FC = () => {
                     </motion.div>
                 </div>
 
-                {/* System Metrics Section - Integrated */}
+                {/* System Metrics */}
                 <motion.div
                     ref={metricsRef}
                     initial={{ opacity: 0, y: 20 }}
                     animate={isMetricsInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
                     transition={{ duration: 0.5 }}
-                    className="relative group mt-[20px] hidden lg:block"
+                    className="relative mt-5 lg:mt-6 w-full hidden lg:block"
                 >
-                    {/* Single Card Background */}
-                    <div className="relative rounded-xl border border-slate-800 bg-slate-950/50 backdrop-blur-md p-4">
-                        {/* All metrics in a single row */}
-                        <div className="flex items-stretch divide-x divide-slate-700/30">
+                    <div className="border-2 border-[#2d2754] bg-[#0d0a1a] p-6 shadow-[4px_4px_0px_0px_#2d2754]">
+                        {/* Specs Flex Row */}
+                        <div className="flex flex-row flex-nowrap items-center justify-between md:justify-center w-full gap-x-2 sm:gap-x-3 md:gap-x-6 lg:gap-x-10 xl:gap-x-12 overflow-x-auto no-scrollbar pb-1 md:pb-0">
                             {metrics.map((metric) => (
-                                <div
-                                    key={metric.label}
-                                    className="flex-1 px-6 first:pl-0 last:pr-0"
-                                >
-                                    {/* Label */}
-                                    <div className="mb-0">
-                                        <span className="font-mono text-xs text-slate-400 tracking-wider uppercase">
-                                            {metric.label}
-                                        </span>
+                                <div key={metric.label} className="flex items-center gap-1.5 sm:gap-2.5 flex-shrink-0">
+                                    <div className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 flex items-center justify-center border-2 border-[#2d2754] bg-[#110e24] text-cyan-400 shadow-[2px_2px_0px_0px_#2d2754] flex-shrink-0">
+                                        <metric.icon className="w-4 h-4 sm:w-[18px] sm:h-[18px] md:w-5 md:h-5" />
                                     </div>
-
-                                    {/* Value */}
-                                    <div>
-                                        <span className="font-mono text-sm text-cyan-400">
-                                            {metric.value}
-                                        </span>
+                                    <div className="min-w-0">
+                                        <div className="leading-none mb-1">
+                                            <span className="font-mono text-[9px] sm:text-[10px] md:text-xs text-slate-400 tracking-widest uppercase">{metric.label}</span>
+                                        </div>
+                                        <div className="leading-none">
+                                            <span className="font-mono text-[10px] sm:text-xs md:text-sm lg:text-base text-cyan-400 font-bold whitespace-nowrap">{metric.value}</span>
+                                        </div>
                                     </div>
                                 </div>
                             ))}
-                        </div>
-
-                        {/* Subtle grid lines for tech aesthetic */}
-                        <div className="absolute inset-0 pointer-events-none opacity-5 rounded-xl overflow-hidden">
-                            <div className="h-full w-full"
-                                style={{
-                                    backgroundImage: 'linear-gradient(0deg, transparent 24%, rgba(0, 255, 255, 0.05) 25%, rgba(0, 255, 255, 0.05) 26%, transparent 27%, transparent 74%, rgba(0, 255, 255, 0.05) 75%, rgba(0, 255, 255, 0.05) 76%, transparent 77%, transparent)',
-                                    backgroundSize: '50px 50px'
-                                }}
-                            />
                         </div>
                     </div>
                 </motion.div>

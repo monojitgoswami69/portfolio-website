@@ -25,7 +25,6 @@ const Contact: React.FC<ContactProps> = ({ contact }) => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Validate inputs
         if (!isNonEmpty(formData.name)) {
             setSubmitStatus('error');
             setErrorMessage('Please enter your name');
@@ -90,7 +89,7 @@ const Contact: React.FC<ContactProps> = ({ contact }) => {
         <section
             id={HomeSection.CONTACT}
             ref={ref}
-            className="min-h-screen relative z-20 bg-slate-950 flex flex-col justify-center overflow-hidden pt-24 pb-4 lg:pb-8 scroll-mt-[40px]"
+            className="min-h-screen relative z-20 bg-transparent flex flex-col justify-center overflow-hidden pt-24 pb-4 lg:pb-8 scroll-mt-[40px]"
             style={{ position: 'relative' }}
         >
             <motion.div
@@ -100,7 +99,7 @@ const Contact: React.FC<ContactProps> = ({ contact }) => {
                 transition={{ duration: 0.8 }}
                 className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full"
             >
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
 
                     {/* Left Column - Contact Info */}
                     <div>
@@ -122,7 +121,7 @@ const Contact: React.FC<ContactProps> = ({ contact }) => {
                                     href={sanitizeUrl(url)}
                                     target={url.startsWith('mailto') ? undefined : "_blank"}
                                     rel={url.startsWith('mailto') ? undefined : "noopener noreferrer"}
-                                    className="p-2 lg:p-3 bg-slate-900 border border-slate-800 rounded-lg text-slate-400 hover:text-white hover:border-slate-600 hover:bg-slate-800 transition-all transform hover:scale-110"
+                                    className="p-2 lg:p-3 bg-[#110e24] border-2 border-[#2d2754] text-slate-400 shadow-[3px_3px_0px_0px_#2d2754] hover:translate-x-[3px] hover:translate-y-[3px] hover:shadow-none hover:bg-cyan-400 hover:text-[#020208] transition-all duration-200"
                                 >
                                     <Icon size={20} className="lg:w-6 lg:h-6" />
                                 </a>
@@ -131,51 +130,51 @@ const Contact: React.FC<ContactProps> = ({ contact }) => {
                     </div>
 
                     {/* Right Column - Form */}
-                    <div>
+                    <div className="w-full">
                         <form onSubmit={handleSubmit} className="space-y-3 lg:space-y-4">
                             <div className="flex flex-col gap-3 lg:gap-4">
                                 <div className="space-y-1 lg:space-y-2">
-                                    <label className="text-xs lg:text-sm font-mono text-slate-500">USER_ID</label>
+                                    <label className="text-xs lg:text-sm font-mono text-slate-400 font-bold">USER_ID</label>
                                     <input
                                         type="text"
                                         value={formData.name}
                                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                        className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 lg:py-2.5 text-xs lg:text-sm font-mono text-white focus:border-cyan-500 outline-none transition-colors"
+                                        className="w-full bg-[#08061a] border-2 border-[#2d2754] px-3 py-2 lg:py-2.5 text-xs lg:text-sm font-mono text-white focus:border-cyan-400 focus:ring-0 outline-none transition-colors"
                                         placeholder="Name"
                                         required
                                     />
                                 </div>
                                 <div className="space-y-1 lg:space-y-2">
-                                    <label className="text-xs lg:text-sm font-mono text-slate-500">RETURN_ADDRESS</label>
+                                    <label className="text-xs lg:text-sm font-mono text-slate-400 font-bold">RETURN_ADDRESS</label>
                                     <input
-                                        type="email"
+                                        type="text"
                                         value={formData.email}
                                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                        className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 lg:py-2.5 text-xs lg:text-sm font-mono text-white focus:border-cyan-500 outline-none transition-colors"
+                                        className="w-full bg-[#08061a] border-2 border-[#2d2754] px-3 py-2 lg:py-2.5 text-xs lg:text-sm font-mono text-white focus:border-cyan-400 focus:ring-0 outline-none transition-colors"
                                         placeholder="Email"
                                         required
                                     />
                                 </div>
                             </div>
                             <div className="space-y-1 lg:space-y-2">
-                                <label className="text-xs lg:text-sm font-mono text-slate-500">PAYLOAD</label>
+                                <label className="text-xs lg:text-sm font-mono text-slate-400 font-bold">PAYLOAD</label>
                                 <textarea
                                     rows={3}
                                     value={formData.message}
                                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                                    className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 lg:py-2.5 text-xs lg:text-sm font-mono text-white focus:border-cyan-500 outline-none transition-colors min-h-[100px]"
+                                    className="w-full bg-[#08061a] border-2 border-[#2d2754] px-3 py-2 lg:py-2.5 text-xs lg:text-sm font-mono text-white focus:border-cyan-400 focus:ring-0 outline-none transition-colors min-h-[100px]"
                                     placeholder="Message..."
                                     required
                                 />
                             </div>
 
                             {submitStatus === 'success' && (
-                                <div className="text-sm text-green-400 font-mono">
+                                <div className="text-sm text-green-400 font-mono border-2 border-green-500/40 bg-green-950/20 p-2">
                                     ✓ Message transmitted successfully!
                                 </div>
                             )}
                             {submitStatus === 'error' && (
-                                <div className="text-sm text-red-400 font-mono">
+                                <div className="text-sm text-red-400 font-mono border-2 border-red-500/40 bg-red-950/20 p-2">
                                     ✗ {errorMessage || 'Transmission failed. Please try again.'}
                                 </div>
                             )}
@@ -183,23 +182,18 @@ const Contact: React.FC<ContactProps> = ({ contact }) => {
                             <button
                                 type="submit"
                                 disabled={isSubmitting}
-                                className="w-full py-3 lg:py-4 bg-cyan-600 hover:bg-cyan-500 disabled:bg-slate-700 disabled:cursor-not-allowed text-white text-sm lg:text-base font-bold tracking-widest rounded-lg transition-colors font-mono uppercase relative overflow-hidden group"
+                                className="w-full py-3 lg:py-4 bg-cyan-400 text-[#020208] border-2 border-[#2d2754] disabled:bg-slate-700 disabled:text-slate-400 disabled:cursor-not-allowed text-sm lg:text-base font-bold tracking-widest transition-all font-mono uppercase shadow-[4px_4px_0px_0px_#2d2754] hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none active:translate-x-[4px] active:translate-y-[4px] active:shadow-none"
                             >
-                                <span className="relative z-10">
-                                    {isSubmitting ? 'Transmitting...' : 'Transmit Data'}
-                                </span>
-                                {!isSubmitting && (
-                                    <div className="absolute inset-0 bg-white/10 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500 skew-x-12" />
-                                )}
+                                {isSubmitting ? 'Transmitting...' : 'Transmit Data'}
                             </button>
                         </form>
                     </div>
                 </div>
             </motion.div>
-
-            {/* Footer - Static relative flow */}
-            <div className="w-full text-center text-slate-600 font-mono text-[10px] sm:text-xs z-30 mt-8 sm:mt-12">
-                <p>
+ 
+            {/* Footer */}
+            <div className="w-full text-center text-slate-500 font-mono text-xs sm:text-sm z-30 mt-8 sm:mt-12 flex flex-col items-center gap-3">
+                <p className="font-bold text-slate-400">
                     &copy; 2026 Monojit Goswami. All Rights Reserved.
                 </p>
             </div>

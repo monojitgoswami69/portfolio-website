@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import BackgroundGrid from "@/features/home/BackgroundGrid";
+import Particles from "@/features/home/Particles";
 import Navbar from "@/features/home/Navbar";
 import AIChat from "@/features/chat/ui/AIChat";
 import Contact from "@/features/home/sections/Contact/Contact";
@@ -40,6 +41,9 @@ export default function HomePage({ projects, contact }: HomePageProps) {
 
     const observer = new IntersectionObserver(
       (entries) => {
+        if (typeof window !== "undefined" && (window as any).isProgrammaticScroll) {
+          return;
+        }
         entries.forEach((entry) => {
           ratios.set(entry.target.id, entry.intersectionRatio);
         });
@@ -70,9 +74,38 @@ export default function HomePage({ projects, contact }: HomePageProps) {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-200 selection:bg-cyan-500/30 selection:text-cyan-200">
+    <div className="min-h-screen bg-transparent text-slate-200 selection:bg-cyan-500/30 selection:text-cyan-200">
       <BackgroundGrid />
-      <Navbar activeSection={activeSection} />
+
+      {/* Floating Interactive Particles Background Layer */}
+      <div className="fixed inset-0 pointer-events-none" style={{ zIndex: -5 }}>
+        <Particles
+          particleColors={["#a5f3fc", "#ffa6fb", "#b3b7ff"]}
+          particleCount={400}
+          particleSpread={10}
+          speed={0.05}
+          moveParticlesOnHover={false}
+          particleHoverFactor={4.5}
+          alphaParticles={true}
+          particleOpacity={0.7}
+          particleBaseSize={50}
+          sizeRandomness={3}
+          cameraDistance={30}
+          disableRotation={true}
+          pixelRatio={1}
+        />
+      </div>
+
+      <Navbar activeSection={activeSection} onSectionChange={setActiveSection} />
+
+      {/* Top content mask — hides scrolling content behind the navbar */}
+      <div
+        className="fixed top-0 left-0 right-0 h-[88px] pointer-events-none z-30"
+        style={{
+          background:
+            "linear-gradient(to bottom, rgba(7, 3, 21, 1) 0%, rgba(7, 3, 21, 1) 72%, rgba(7, 3, 21, 0.4) 88%, transparent 100%)",
+        }}
+      />
 
       <main className="relative z-10">
         <Hero />
@@ -86,7 +119,7 @@ export default function HomePage({ projects, contact }: HomePageProps) {
         className="fixed bottom-0 left-0 right-0 h-5 pointer-events-none z-40"
         style={{
           background:
-            "linear-gradient(to top, rgba(2, 6, 23, 0.7) 0%, transparent 100%)",
+            "linear-gradient(to top, rgba(2, 2, 8, 0.7) 0%, transparent 100%)",
         }}
       />
     </div>

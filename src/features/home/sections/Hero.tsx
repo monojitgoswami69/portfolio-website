@@ -6,16 +6,9 @@ const Hero: React.FC = () => {
     return (
         <section id={HomeSection.HERO} className="relative h-screen flex items-center justify-center overflow-hidden" style={{ position: 'relative' }}>
 
-            {/* Background Elements */}
-            <div className="absolute inset-0 z-0 flex items-center justify-center opacity-10">
-                <div className="relative w-[800px] h-[800px] border border-slate-700 rounded-full animate-[spin_60s_linear_infinite] will-change-transform transform-gpu" />
-                <div className="absolute w-[600px] h-[600px] border border-dashed border-cyan-900 rounded-full animate-[spin_40s_linear_infinite_reverse] will-change-transform transform-gpu" />
-                <div className="absolute w-[400px] h-[400px] border border-slate-700 rounded-full animate-[spin_20s_linear_infinite] will-change-transform transform-gpu" />
-            </div>
+            <div className="relative z-10 text-center px-4 max-w-5xl mx-auto">
 
-            <div
-                className="relative z-10 text-center px-4 max-w-5xl mx-auto"
-            >
+
                 <motion.h2
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -29,7 +22,7 @@ const Hero: React.FC = () => {
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.4, duration: 0.8 }}
-                    className="text-5xl md:text-7xl lg:text-9xl font-bold tracking-tighter text-white mb-6 mix-blend-overlay font-quantico"
+                    className="text-5xl md:text-7xl lg:text-9xl font-bold tracking-tighter text-white mb-6 font-quantico"
                 >
                     ARCHITECT
                     <br />
@@ -42,7 +35,7 @@ const Hero: React.FC = () => {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.8 }}
-                    className="text-slate-400 text-lg md:text-2xl font-mono max-w-2xl mx-auto leading-relaxed"
+                    className="text-slate-400 text-lg md:text-2xl font-mono max-w-2xl mx-auto leading-relaxed mb-10"
                 >
                     Self-taught Backend Developer specializing in RAG based systems and high-performance Machine Learning pipelines.
                 </motion.p>

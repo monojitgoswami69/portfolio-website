@@ -13,6 +13,40 @@
     --background-size-300: 300%;
 }
 
+/* ═══════════════════════════════════════════════════
+   NEO-BRUTALISM DARK DESIGN SYSTEM
+   Hard borders, offset shadows, flat colors, no blur
+   ═══════════════════════════════════════════════════ */
+:root {
+    /* Surfaces — solid, no transparency */
+    --bg-base:       #020208;
+    --bg-card:       #0d0a1a;
+    --bg-card-alt:   #110e24;
+    --bg-input:      #08061a;
+    --bg-elevated:   #15112e;
+
+    /* Accent "main" color and foreground */
+    --accent-main:       #22d3ee;  /* cyan-400 */
+    --accent-main-fg:    #020208;
+    --accent-secondary:  #a855f7;  /* purple-500 */
+    --accent-warn:       #facc15;  /* yellow-400 */
+
+    /* Borders — visible, no translucency */
+    --border-color:   #2d2754;
+    --border-active:  #22d3ee;
+
+    /* Neo-brut offset shadow */
+    --shadow-offset:  4px 4px 0px 0px var(--border-color);
+    --shadow-accent:  4px 4px 0px 0px var(--accent-main);
+    --shadow-lg:      6px 6px 0px 0px var(--border-color);
+
+    /* Border radius — sharp/minimal */
+    --radius-base: 0px;
+}
+
+/* ═══════════════════════════════════════════════════
+   KEYFRAMES
+   ═══════════════════════════════════════════════════ */
 @keyframes gradient {
     0%, 100% {
         background-size: 200% 200%;
@@ -29,11 +63,14 @@
     100% { transform: translateY(100%); }
 }
 
-
 @layer base {
+    html {
+        background-color: #020208;
+    }
+
     body {
         font-family: var(--font-sans);
-        background-color: #020617;
+        background-color: transparent;
         color: #e2e8f0;
         overflow-x: hidden;
         position: relative;
@@ -58,24 +95,23 @@
     }
 
     ::-webkit-scrollbar-track {
-        background: #020617; /* slate-950 */
-        border-left: 1px solid rgba(30, 41, 59, 0.5); /* slate-800 */
+        background: #020208;
+        border-left: 1px solid #2d2754;
     }
 
     ::-webkit-scrollbar-thumb {
-        background: #334155; /* slate-700 */
-        border-radius: 10px;
+        background: #334155;
+        border-radius: 0px;
     }
 
     ::-webkit-scrollbar-thumb:hover {
-        background: #22d3ee; /* cyan-400 */
-        box-shadow: 0 0 10px #22d3ee;
+        background: #22d3ee;
     }
 
     /* Custom Scrollbar - Firefox */
     * {
         scrollbar-width: thin;
-        scrollbar-color: #334155 #020617;
+        scrollbar-color: #334155 #020208;
     }
 
     .no-scrollbar {

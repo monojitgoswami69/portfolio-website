@@ -1,24 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { ChevronsDown, Code2, Terminal, Cpu, MessageSquare, Mail } from 'lucide-react';
 import { useLenis } from 'lenis/react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { HomeSection } from './types';
 
 interface NavbarProps {
     activeSection: HomeSection;
+    onSectionChange: (section: HomeSection) => void;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
+const Navbar: React.FC<NavbarProps> = ({ activeSection, onSectionChange }) => {
     const [isOpen, setIsOpen] = useState(false);
-    const [scrolled, setScrolled] = useState(false);
     const lenis = useLenis();
-
-    useEffect(() => {
-        const handleScroll = () => {
-            setScrolled(window.scrollY > 50);
-        };
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
 
     const navItems = [
         { id: HomeSection.HERO, label: '01. // SYSTEM', icon: <Terminal size={16} /> },
@@ -29,31 +22,67 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
     ];
 
     const handleNavClick = (sectionId: HomeSection) => () => {
+        const wasOpen = isOpen;
         setIsOpen(false);
+
+        // Mute the IntersectionObserver during programmatically triggered scrolling
+        if (typeof window !== "undefined") {
+            (window as any).isProgrammaticScroll = true;
+        }
+
+        // Set the active section immediately in the parent state for responsive pill translation
+        onSectionChange(sectionId);
 
         const target = document.getElementById(sectionId);
         if (target) {
-            if (lenis) {
-                if (sectionId === HomeSection.HERO) {
-                    lenis.scrollTo('top', {
-                        duration: 1.5,
-                        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
-                    });
-                } else if (sectionId === HomeSection.CONTACT) {
-                    lenis.scrollTo('bottom', {
-                        duration: 1.5,
-                        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
-                    });
+            const clearScrollMute = () => {
+                setTimeout(() => {
+                    if (typeof window !== "undefined") {
+                        (window as any).isProgrammaticScroll = false;
+                    }
+                }, 100);
+            };
+
+            const triggerScroll = () => {
+                if (lenis) {
+                    if (sectionId === HomeSection.HERO) {
+                        lenis.scrollTo('top', {
+                            duration: 1.5,
+                            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                            onComplete: clearScrollMute
+                        });
+                    } else if (sectionId === HomeSection.CONTACT) {
+                        lenis.scrollTo('bottom', {
+                            duration: 1.5,
+                            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                            onComplete: clearScrollMute
+                        });
+                    } else {
+                        // Offset is 0 by default, but applying a +12px offset specifically for the SKILLS section.
+                        lenis.scrollTo(target, {
+                            offset: sectionId === HomeSection.SKILLS ? 12 : 0,
+                            duration: 1.5,
+                            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                            onComplete: clearScrollMute
+                        });
+                    }
                 } else {
-                    lenis.scrollTo(target, {
-                        offset: 0,
-                        duration: 1.5,
-                        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
-                    });
+                    const block = sectionId === HomeSection.CONTACT ? 'end' : 'start';
+                    target.scrollIntoView({ behavior: 'smooth', block });
+                    setTimeout(clearScrollMute, 1000);
                 }
+            };
+
+            // Delay scroll animation when mobile menu is open to let layout collapse finish first,
+            // avoiding scroll target offset calculation errors due to the in-flow layout shift.
+            if (wasOpen) {
+                setTimeout(triggerScroll, 250);
             } else {
-                const block = sectionId === HomeSection.CONTACT ? 'end' : 'start';
-                target.scrollIntoView({ behavior: 'smooth', block });
+                triggerScroll();
+            }
+        } else {
+            if (typeof window !== "undefined") {
+                (window as any).isProgrammaticScroll = false;
             }
         }
 
@@ -63,18 +92,15 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
     };
 
     return (
-        <nav
-            className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? 'bg-slate-950/95 backdrop-blur-md' : 'bg-transparent'
-                }`}
-        >
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav className="fixed top-0 w-full z-50 border-b-2 border-[#2d2754] bg-[#070315]">
+            <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between md:justify-center h-16">
 
-                    {/* Mobile Navigation - Content on blurred container */}
+                    {/* Mobile Navigation */}
                     <div className="flex md:hidden w-full">
                         <button
                             onClick={() => setIsOpen(!isOpen)}
-                            className="w-full flex items-center justify-center px-4 py-2 font-mono text-sm transition-all duration-300 relative"
+                            className="w-full flex items-center justify-center px-4 py-2 font-mono text-sm transition-all duration-200 relative"
                         >
                             <div className="flex items-center gap-2">
                                 <span className="text-slate-400">
@@ -93,63 +119,78 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
 
                     {/* Desktop Navigation */}
                     <div className="hidden md:block">
-                        <div className="flex items-center space-x-8">
-                            {navItems.map((item) => (
-                                <button
-                                    key={item.id}
-                                    type="button"
-                                    onClick={handleNavClick(item.id)}
-                                    aria-current={activeSection === item.id ? 'page' : undefined}
-                                    className={`group flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium font-mono transition-colors duration-300 ${activeSection === item.id
-                                        ? 'text-cyan-400 bg-cyan-400/10'
-                                        : 'text-slate-400 hover:text-white hover:bg-white/5'
-                                        }`}
-                                >
-                                    <span className="inline-flex items-center opacity-50 group-hover:opacity-100 transition-opacity" style={{ marginBottom: '1px' }}>{item.icon}</span>
-                                    {item.label}
-                                </button>
-                            ))}
+                        <div className="flex items-center space-x-1 relative">
+                            {navItems.map((item) => {
+                                const isActive = activeSection === item.id;
+                                return (
+                                    <button
+                                        key={item.id}
+                                        type="button"
+                                        onClick={handleNavClick(item.id)}
+                                        aria-current={isActive ? 'page' : undefined}
+                                        className="relative group flex items-center gap-2 px-3.5 py-2 text-sm font-medium font-mono transition-colors duration-300 cursor-pointer"
+                                    >
+                                        {isActive && (
+                                            <motion.div
+                                                layoutId="navbar-active-pill"
+                                                className="absolute inset-0 bg-cyan-400 border border-[#2d2754] z-0"
+                                                transition={{ type: "spring", stiffness: 350, damping: 26 }}
+                                            />
+                                        )}
+                                        <span className={`relative z-10 inline-flex items-center transition-colors duration-300 ${
+                                            isActive ? 'text-[#020208] opacity-100' : 'text-slate-400 opacity-50 group-hover:opacity-90 group-hover:text-white'
+                                        }`}>
+                                            {item.icon}
+                                        </span>
+                                        <span className={`relative z-10 transition-colors duration-300 ${
+                                            isActive ? 'text-[#020208] font-bold' : 'text-slate-400 group-hover:text-white'
+                                        }`}>
+                                            {item.label}
+                                        </span>
+                                    </button>
+                                );
+                            })}
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* Gradient fade overlay below navbar for smooth content transition */}
-            <div
-                className={`absolute left-0 right-0 top-full h-4 pointer-events-none transition-opacity duration-300 ${scrolled ? 'opacity-100' : 'opacity-0'}`}
-                style={{
-                    background: 'linear-gradient(to bottom, rgba(2, 6, 23, 0.7) 0%, transparent 100%)'
-                }}
-            />
-
             {/* Mobile dropdown menu */}
-            <div
-                className={`md:hidden absolute top-16 left-0 right-0 overflow-hidden transition-all duration-300 rounded-b-lg backdrop-blur-md ${isOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0 pointer-events-none'
-                    }`}
-                style={{
-                    backgroundColor: 'rgba(2, 6, 23, 0.95)'
-                }}
-            >
-                <div className="px-4 py-2 space-y-1 max-w-7xl mx-auto">
-                    {navItems.map((item) => (
-                        <button
-                            key={item.id}
-                            type="button"
-                            onClick={handleNavClick(item.id)}
-                            aria-current={activeSection === item.id ? 'page' : undefined}
-                            className={`w-full text-left flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium font-mono transition-all duration-200 ${activeSection === item.id
-                                ? 'text-cyan-400 bg-cyan-400/10'
-                                : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
-                                }`}
-                        >
-                            <span className={activeSection === item.id ? 'text-cyan-400' : 'text-slate-400'}>
-                                {item.icon}
-                            </span>
-                            {item.label}
-                        </button>
-                    ))}
-                </div>
-            </div>
+            <AnimatePresence>
+                {isOpen && (
+                    <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ type: 'spring', damping: 28, stiffness: 300 }}
+                        className="md:hidden overflow-hidden border-t-2 border-[#2d2754]"
+                    >
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 space-y-1">
+                            {navItems.map((item) => {
+                                const isActive = activeSection === item.id;
+                                return (
+                                    <button
+                                        key={item.id}
+                                        type="button"
+                                        onClick={handleNavClick(item.id)}
+                                        aria-current={isActive ? 'page' : undefined}
+                                        className={`w-full text-left flex items-center gap-3 px-4 py-3 text-sm font-medium font-mono transition-colors duration-200 ${
+                                            isActive
+                                                ? 'bg-cyan-400 text-[#020208] font-bold'
+                                                : 'text-slate-300 hover:bg-[#110e24] hover:text-white'
+                                        }`}
+                                    >
+                                        <span className={isActive ? 'text-[#020208]' : 'text-slate-400'}>
+                                            {item.icon}
+                                        </span>
+                                        {item.label}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </nav>
     );
 };

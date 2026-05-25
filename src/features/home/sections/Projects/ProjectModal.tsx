@@ -2,9 +2,10 @@ import Image from 'next/image';
 import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion } from 'framer-motion';
-import { ExternalLink, X, Zap, ChevronRight, Star } from 'lucide-react';
+import { ExternalLink, X, Zap, Star } from 'lucide-react';
 import { Github } from '@/lib/icons';
 import { sanitizeUrl } from '@/utils/security';
+import Lenis from 'lenis';
 import { ProjectData, isValidLink, getStatusColor } from './projectUtils';
 
 interface ProjectModalProps {
@@ -14,6 +15,7 @@ interface ProjectModalProps {
 
 const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
     const modalRef = useRef<HTMLDivElement>(null);
+    const scrollRef = useRef<HTMLDivElement>(null);
 
     // Trap focus inside modal
     useEffect(() => {
@@ -44,19 +46,23 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
         return () => window.removeEventListener('keydown', handleTab);
     }, []);
 
-    // Close on escape key and prevent layout shift
+    // Close on escape key and prevent layout shift (including navbar shift)
     useEffect(() => {
         const handleEscape = (e: KeyboardEvent) => {
             if (e.key === 'Escape') onClose();
         };
         window.addEventListener('keydown', handleEscape);
 
-        // Prevent layout shift by adding padding equal to scrollbar width
         const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
         document.body.style.paddingRight = `${scrollbarWidth}px`;
         document.body.style.overflow = 'hidden';
 
-        // Set initial focus to close button or first focusable element
+        // Apply scroll padding to fixed navigation bar to block shifting
+        const navbar = document.querySelector('nav');
+        if (navbar) {
+            navbar.style.paddingRight = `${scrollbarWidth}px`;
+        }
+
         const firstFocusable = modalRef.current?.querySelector<HTMLElement>('button, [href]');
         firstFocusable?.focus();
 
@@ -64,15 +70,45 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
             window.removeEventListener('keydown', handleEscape);
             document.body.style.paddingRight = '';
             document.body.style.overflow = '';
+            const navbar = document.querySelector('nav');
+            if (navbar) {
+                navbar.style.paddingRight = '';
+            }
         };
     }, [onClose]);
+
+    // Custom Lenis instance for smooth scrolling inside the modal
+    useEffect(() => {
+        if (!scrollRef.current) return;
+
+        const lenis = new Lenis({
+            wrapper: scrollRef.current,
+            content: scrollRef.current.firstElementChild as HTMLElement,
+            lerp: 0.1,
+            duration: 1.2,
+            syncTouch: true,
+        });
+
+        let rafId: number;
+        const raf = (time: number) => {
+            lenis.raf(time);
+            rafId = requestAnimationFrame(raf);
+        };
+        rafId = requestAnimationFrame(raf);
+
+        return () => {
+            lenis.destroy();
+            cancelAnimationFrame(rafId);
+        };
+    }, []);
 
     return createPortal(
         <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+            className="fixed inset-0 flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm"
             style={{ zIndex: 9999 }}
             onClick={onClose}
             role="dialog"
@@ -81,25 +117,26 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
         >
             <motion.div
                 ref={modalRef}
-                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                initial={{ opacity: 0, scale: 0.96, y: 12 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                className="relative w-full max-w-5xl bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl flex flex-col"
+                exit={{ opacity: 0, scale: 0.96, y: 12 }}
+                transition={{ type: 'spring', damping: 32, stiffness: 280 }}
+                className="relative w-full max-w-5xl bg-[#0d0a1a] border-2 border-[#2d2754] shadow-[4px_4px_0px_0px_#2d2754] rounded-2xl overflow-hidden flex flex-col outline-none"
                 style={{ maxHeight: 'calc(100vh - 120px)' }}
                 onClick={(e) => e.stopPropagation()}
             >
-                {/* Close Button - Fixed position on card */}
+                {/* Close Button */}
                 <button
                     onClick={onClose}
-                    className="absolute top-4 right-4 z-30 p-2 bg-slate-900/80 backdrop-blur-sm border border-slate-700 rounded-full text-slate-400 hover:text-white hover:border-slate-500 transition-all"
+                    className="absolute top-4 right-4 z-30 p-2.5 bg-[#110e24] border-2 border-[#2d2754] text-slate-400 hover:bg-red-500 hover:text-[#020208] hover:border-[#2d2754] shadow-[2px_2px_0px_0px_#2d2754] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all duration-200 outline-none focus:outline-none focus-visible:outline-none select-none rounded-lg"
                 >
                     <X size={20} />
                 </button>
 
-                {/* Scrollable Content Container */}
-                <div className="overflow-y-auto flex-1 rounded-t-2xl no-scrollbar">
-                    {/* Header Image */}
+                {/* Scrollable Content */}
+                <div ref={scrollRef} className="overflow-y-auto flex-1 no-scrollbar" data-lenis-prevent>
+                    <div className="flex flex-col">
+                        {/* Header Image */}
                     <div className="relative h-40 md:h-72 overflow-hidden flex-shrink-0">
                         <Image
                             src={project.imageUrl}
@@ -111,22 +148,24 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
                                 (e.target as HTMLImageElement).src = 'https://placehold.co/1200x800/0f172a/00eeff?text=Module+Data+Corrupted';
                             }}
                         />
-                        <div className="absolute -inset-x-2 top-0 bottom-0 bg-gradient-to-t from-slate-900/80 via-slate-900/30 to-transparent" />
+                        <div className="absolute -inset-x-2 top-0 bottom-0 bg-gradient-to-t from-[#0d0a1a]/95 via-[#0d0a1a]/40 to-transparent" />
 
-                        {/* Featured Badge - Top Left */}
+                        {/* Featured Badge */}
                         {project.featured && (
                             <div className="absolute top-4 left-4">
-                                <span className="flex items-center gap-1.5 px-2 py-1 md:px-3 md:py-1.5 text-[10px] md:text-xs font-mono bg-yellow-400 text-black rounded-lg font-bold">
+                                <span className="flex items-center gap-1.5 px-2 py-1 md:px-3 md:py-1.5 text-[10px] md:text-xs font-mono bg-yellow-400 text-[#020208] border-2 border-[#2d2754] font-bold shadow-[2px_2px_0px_0px_#2d2754] rounded-md">
                                     <Star className="w-2.5 h-2.5 md:w-3 md:h-3" fill="currentColor" />
                                     Featured
                                 </span>
                             </div>
                         )}
+
+                        {/* Hard bottom edge */}
+                        <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#2d2754]" />
                     </div>
 
                     {/* Content */}
                     <div className="px-6 pb-3">
-                        {/* Project Name */}
                         <h2 id="modal-title" className="text-xl md:text-3xl font-averia font-bold text-white pt-3 pb-3">
                             {project.name}
                         </h2>
@@ -136,12 +175,12 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
                                 {/* Badges */}
                                 <div className="flex flex-wrap items-center gap-2">
                                     {project.status && (
-                                        <span className={`px-2 py-1 text-[10px] md:text-xs font-mono rounded-lg border ${getStatusColor(project.status)}`}>
+                                        <span className={`px-2 py-1 text-[10px] md:text-xs font-mono border-2 border-[#2d2754] font-bold rounded-md ${getStatusColor(project.status)}`}>
                                             {project.status}
                                         </span>
                                     )}
                                     {project.category && (
-                                        <span className="px-2 py-1 text-[10px] md:text-xs font-mono bg-purple-500/20 text-purple-400 border border-purple-500/30 rounded-lg font-semibold">
+                                        <span className="px-2 py-1 text-[10px] md:text-xs font-mono bg-purple-500/20 text-purple-400 border-2 border-[#2d2754] font-semibold rounded-md">
                                             {project.category}
                                         </span>
                                     )}
@@ -152,7 +191,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
                                     {project.techStack.map((tech: string) => (
                                         <span
                                             key={tech}
-                                            className="px-2 py-1 text-[10px] md:text-xs font-mono bg-slate-800 text-cyan-200/80 rounded-lg border border-slate-700"
+                                            className="px-2 py-1 text-[10px] md:text-xs font-mono bg-[#110e24] border-2 border-[#2d2754] text-cyan-200/80 rounded-md"
                                         >
                                             {tech}
                                         </span>
@@ -167,60 +206,48 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
                                 </p>
                             </div>
 
-                            {/* Features */}
+                            {/* Features Grid */}
                             {project.features && project.features.length > 0 && (
-                                <div className="bg-slate-800/50 rounded-xl p-5 border border-slate-700">
-                                    <h3 className="flex items-center gap-2 text-xs md:text-sm font-bold text-white mb-4">
-                                        <Zap size={16} className="text-yellow-400" />
-                                        Key Features
+                                <div className="mt-6">
+                                    <h3 className="flex items-center gap-2 text-xs md:text-sm font-mono font-bold text-cyan-400 tracking-wider uppercase mb-4">
+                                        <Zap size={14} className="text-yellow-400 animate-pulse" />
+                                        SYSTEM_MODULES // KEY_FEATURES
                                     </h3>
-                                    <ul className="flex flex-col gap-1.5">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                         {project.features.map((feature: string, idx: number) => (
-                                            <li key={idx} className="flex items-start gap-2 text-slate-300 text-[11px] md:text-[13px] leading-relaxed">
-                                                <div className="flex items-center h-[1.625em] shrink-0">
-                                                    <ChevronRight size={14} className="text-cyan-400" />
+                                            <div
+                                                key={idx}
+                                                className="flex items-start gap-3 p-3.5 bg-[#110e24] border-2 border-[#2d2754] shadow-[2px_2px_0px_0px_#2d2754] rounded-xl transition-all duration-200 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
+                                            >
+                                                <div className="flex items-center justify-center w-5 h-5 border border-[#2d2754] bg-[#0d0a1a] text-cyan-400 font-mono text-[9px] font-bold shrink-0 mt-[2px] select-none rounded-md">
+                                                    {String(idx + 1).padStart(2, '0')}
                                                 </div>
-                                                <span>{feature}</span>
-                                            </li>
+                                                <span className="font-mono text-slate-300 text-[11px] md:text-xs leading-relaxed">
+                                                    {feature}
+                                                </span>
+                                            </div>
                                         ))}
-                                    </ul>
+                                    </div>
                                 </div>
                             )}
-
-
                         </div>
                     </div>
                 </div>
+            </div>
 
-                {/* Sticky Action Buttons with Gradient Blur */}
+                {/* Sticky Action Buttons */}
                 {(isValidLink(project.demoUrl) || isValidLink(project.githubUrl)) && (
                     <div className="relative flex-shrink-0">
-                        {/* Gradient fade overlay extending above buttons */}
-                        <div
-                            className="absolute inset-x-0 -top-10 h-10 pointer-events-none"
-                            style={{
-                                background: 'linear-gradient(to bottom, transparent 0%, rgba(15, 23, 42, 0.4) 50%, rgba(15, 23, 42, 0.8) 100%)'
-                            }}
-                        />
-                        {/* Button container - highly translucent with strong blur */}
-                        <div
-                            className="relative flex gap-3 pt-0 pb-3 px-3 rounded-b-2xl"
-                            style={{
-                                backgroundColor: 'rgba(15, 23, 42, 0)',
-                                backdropFilter: 'blur(16px)',
-                                WebkitBackdropFilter: 'blur(16px)',
-                                borderTop: '1px solid rgba(148, 163, 184, 0)'
-                            }}
-                        >
+                        <div className="relative flex gap-3 pt-0 pb-3 px-3 bg-[#0d0a1a]">
                             {isValidLink(project.demoUrl) && (
                                 <a
                                     href={sanitizeUrl(project.demoUrl)}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className={`flex-1 flex items-center justify-center gap-1.5 py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-bold rounded-lg transition-all duration-300 whitespace-nowrap ${isValidLink(project.demoUrl) && isValidLink(project.githubUrl)
+                                    className={`flex-1 flex items-center justify-center gap-1.5 py-3 bg-cyan-400 text-[#020208] font-bold border-2 border-[#2d2754] shadow-[2px_2px_0px_0px_#2d2754] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all duration-200 rounded-xl whitespace-nowrap outline-none focus:outline-none ${isValidLink(project.demoUrl) && isValidLink(project.githubUrl)
                                         ? 'text-[10px] px-2 md:text-base md:px-6'
                                         : 'text-sm px-6 md:text-base'
-                                        }`}
+                                    }`}
                                 >
                                     <ExternalLink className="w-3.5 h-3.5 md:w-4 md:h-4" />
                                     Live Demo
@@ -231,14 +258,10 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
                                     href={sanitizeUrl(project.githubUrl)}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className={`flex-1 flex items-center justify-center gap-1.5 py-3 text-white font-bold rounded-lg border border-slate-400/30 transition-all duration-300 hover:bg-white/10 whitespace-nowrap ${isValidLink(project.demoUrl) && isValidLink(project.githubUrl)
+                                    className={`flex-1 flex items-center justify-center gap-1.5 py-3 bg-purple-500 text-[#020208] font-bold border-2 border-[#2d2754] shadow-[2px_2px_0px_0px_#2d2754] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all duration-200 rounded-xl whitespace-nowrap outline-none focus:outline-none ${isValidLink(project.demoUrl) && isValidLink(project.githubUrl)
                                         ? 'text-[10px] px-2 md:text-base md:px-6'
                                         : 'text-sm px-6 md:text-base'
-                                        }`}
-                                    style={{
-                                        backgroundColor: 'rgba(51, 65, 85, 0.5)',
-                                        backdropFilter: 'blur(4px)'
-                                    }}
+                                    }`}
                                 >
                                     <Github className="w-3.5 h-3.5 md:w-4 md:h-4" />
                                     Source Code
