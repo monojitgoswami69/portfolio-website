@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ChevronsDown, Code2, Terminal, Cpu, MessageSquare, Mail } from 'lucide-react';
+import { useLenis } from 'lenis/react';
 import { HomeSection } from './types';
 
 interface NavbarProps {
@@ -9,6 +10,7 @@ interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
+    const lenis = useLenis();
 
     useEffect(() => {
         const handleScroll = () => {
@@ -26,19 +28,32 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
         { id: HomeSection.CONTACT, label: '05. // SIGNAL', icon: <Mail size={16} /> },
     ];
 
-    const handleNavClick = (sectionId: HomeSection) => (event: React.MouseEvent<HTMLAnchorElement>) => {
-        event.preventDefault();
+    const handleNavClick = (sectionId: HomeSection) => () => {
         setIsOpen(false);
 
         const target = document.getElementById(sectionId);
         if (target) {
-            const block = sectionId === HomeSection.CONTACT ? 'end' : 'start';
-            target.scrollIntoView({ behavior: 'smooth', block });
-
-            if (sectionId === HomeSection.CONTACT) {
-                setTimeout(() => {
-                    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-                }, 50);
+            if (lenis) {
+                if (sectionId === HomeSection.HERO) {
+                    lenis.scrollTo('top', {
+                        duration: 1.5,
+                        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
+                    });
+                } else if (sectionId === HomeSection.CONTACT) {
+                    lenis.scrollTo('bottom', {
+                        duration: 1.5,
+                        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
+                    });
+                } else {
+                    lenis.scrollTo(target, {
+                        offset: 0,
+                        duration: 1.5,
+                        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
+                    });
+                }
+            } else {
+                const block = sectionId === HomeSection.CONTACT ? 'end' : 'start';
+                target.scrollIntoView({ behavior: 'smooth', block });
             }
         }
 
@@ -80,9 +95,9 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
                     <div className="hidden md:block">
                         <div className="flex items-center space-x-8">
                             {navItems.map((item) => (
-                                <a
+                                <button
                                     key={item.id}
-                                    href="/"
+                                    type="button"
                                     onClick={handleNavClick(item.id)}
                                     aria-current={activeSection === item.id ? 'page' : undefined}
                                     className={`group flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium font-mono transition-colors duration-300 ${activeSection === item.id
@@ -92,7 +107,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
                                 >
                                     <span className="inline-flex items-center opacity-50 group-hover:opacity-100 transition-opacity" style={{ marginBottom: '1px' }}>{item.icon}</span>
                                     {item.label}
-                                </a>
+                                </button>
                             ))}
                         </div>
                     </div>
@@ -117,9 +132,9 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
             >
                 <div className="px-4 py-2 space-y-1 max-w-7xl mx-auto">
                     {navItems.map((item) => (
-                        <a
+                        <button
                             key={item.id}
-                            href="/"
+                            type="button"
                             onClick={handleNavClick(item.id)}
                             aria-current={activeSection === item.id ? 'page' : undefined}
                             className={`w-full text-left flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium font-mono transition-all duration-200 ${activeSection === item.id
@@ -131,7 +146,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
                                 {item.icon}
                             </span>
                             {item.label}
-                        </a>
+                        </button>
                     ))}
                 </div>
             </div>

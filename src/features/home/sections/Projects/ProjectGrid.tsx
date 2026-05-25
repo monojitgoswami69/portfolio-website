@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Github } from 'lucide-react';
+import { Github } from '@/lib/icons';
 import ProjectCard from './ProjectCard';
 import { ProjectData } from './projectUtils';
 

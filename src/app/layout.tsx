@@ -7,6 +7,7 @@ import {
 } from "next/font/google";
 import "./globals.css";
 import PWARegister from "@/features/pwa/PWARegister";
+import LenisProvider from "@/lib/LenisProvider";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -83,7 +84,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="en">
       <head>
         <meta name="theme-color" content="#0f172a" />
         <meta name="mobile-web-app-capable" content="yes" />
@@ -100,8 +101,10 @@ export default function RootLayout({
           quantico.variable,
         ].join(" ")}
       >
-        <PWARegister />
-        {children}
+        <LenisProvider>
+          <PWARegister />
+          {children}
+        </LenisProvider>
       </body>
     </html>
   );

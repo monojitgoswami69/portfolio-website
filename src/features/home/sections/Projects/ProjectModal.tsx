@@ -2,7 +2,8 @@ import Image from 'next/image';
 import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion } from 'framer-motion';
-import { Github, ExternalLink, X, Zap, ChevronRight, Star } from 'lucide-react';
+import { ExternalLink, X, Zap, ChevronRight, Star } from 'lucide-react';
+import { Github } from '@/lib/icons';
 import { sanitizeUrl } from '@/utils/security';
 import { ProjectData, isValidLink, getStatusColor } from './projectUtils';
 

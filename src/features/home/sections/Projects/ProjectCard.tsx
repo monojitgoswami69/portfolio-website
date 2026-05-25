@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { Github, ExternalLink, Star, Maximize2 } from 'lucide-react';
+import { ExternalLink, Star, Maximize2 } from 'lucide-react';
+import { Github } from '@/lib/icons';
 import { sanitizeUrl } from '@/utils/security';
 import { TechStackDisplay } from './ProjectGrid';
 import { ProjectData, getStatusColor, isValidLink } from './projectUtils';

@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Mail, Linkedin, Github, Twitter } from 'lucide-react';
+import { Mail } from 'lucide-react';
+import { Github, Linkedin, Twitter } from '@/lib/icons';
 import { isValidEmail, isNonEmpty, sanitizeUrl } from '@/utils/security';
 import { submitContact } from './submitContact';
 import { HomeSection } from '../../types';

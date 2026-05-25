@@ -100,7 +100,7 @@ const Skills: React.FC = () => {
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true, margin: "-50px" }}
                         transition={{ delay: 0.2 }}
-                        className="relative w-full md:w-1/2 lg:w-[450px] xl:w-[500px] z-10 flex"
+                        className="relative w-full md:w-1/2 lg:w-[400px] xl:w-[450px] z-10 flex"
                     >
                         <div className="relative group w-full h-full overflow-hidden transition-all duration-300">
                             {/* Image Section */}
@@ -142,7 +142,7 @@ const Skills: React.FC = () => {
                                 <div className="absolute top-2 left-2 w-8 h-8 border-t-2 border-l-2 border-cyan-500/50 rounded-tl-lg z-30" />
                                 <div className="absolute top-2 right-2 w-8 h-8 border-t-2 border-r-2 border-cyan-500/50 rounded-tr-lg z-30" />
                                 <div className="absolute bottom-2 left-2 w-8 h-8 border-b-2 border-l-2 border-cyan-500/50 rounded-bl-lg z-30 md:rounded-bl-lg rounded-bl-none" />
-                                <div className="absolute bottom-2 right-[2px] w-8 h-8 border-b-2 border-r-2 border-cyan-500/50 rounded-br-none z-30" />
+                                <div className="absolute bottom-2 right-2 w-8 h-8 border-b-2 border-r-2 border-cyan-500/50 md:rounded-br-lg rounded-br-none z-30" />
                             </div>
                         </div>
 
@@ -156,7 +156,7 @@ const Skills: React.FC = () => {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true, margin: "-50px" }}
                         transition={{ delay: 0.3 }}
-                        className="w-full md:w-1/2 lg:w-[350px] xl:w-[400px] bg-slate-950/40 backdrop-blur-xl border border-slate-800/50 md:rounded-2xl md:rounded-l-none md:rounded-b-none lg:rounded-none -mr-4 md:mr-0 md:border-l-0 md:border-r lg:border-r shadow-2xl overflow-hidden z-20 lg:mt-[10px] lg:mb-[25px] md:border-b-0 lg:border-b"
+                        className="w-full md:w-1/2 lg:w-[350px] xl:w-[380px] bg-slate-950/40 backdrop-blur-xl border border-slate-800/50 md:rounded-2xl md:rounded-l-none md:rounded-b-none lg:rounded-none -mr-4 md:mr-0 md:border-l-0 md:border-r lg:border-r shadow-2xl overflow-hidden z-20 lg:my-[20px] md:border-b-0 lg:border-b"
                     >
                         <div className="py-5 px-6 lg:py-6 lg:px-6 xl:py-8 xl:px-8 flex flex-col justify-center">
                             <div>
@@ -218,9 +218,9 @@ const Skills: React.FC = () => {
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true, margin: "-50px" }}
                         transition={{ delay: 0.4 }}
-                        className="w-full md:w-full lg:flex-1 bg-slate-950/40 backdrop-blur-xl border border-slate-800/50 rounded-b-2xl md:rounded-2xl md:rounded-t-none lg:rounded-l-none lg:rounded-tr-2xl lg:border-l-0 shadow-2xl overflow-hidden z-20 lg:my-[25px] -mb-4 md:mb-0"
+                        className="w-full md:w-full lg:w-[350px] xl:w-[380px] bg-slate-950/40 backdrop-blur-xl border border-slate-800/50 rounded-b-2xl md:rounded-2xl md:rounded-t-none lg:rounded-l-none lg:rounded-tr-2xl lg:border-l-0 shadow-2xl overflow-hidden z-20 lg:my-[20px] -mb-4 md:mb-0"
                     >
-                        <div className="py-5 px-6 lg:py-6 lg:px-8 xl:py-8 xl:px-10 flex flex-col justify-center space-y-4 lg:space-y-5 text-slate-300 leading-relaxed text-[13px] md:text-[14px] font-mono">
+                        <div className="py-5 px-6 lg:py-6 lg:px-8 xl:py-8 xl:px-10 flex flex-col justify-center space-y-4 lg:space-y-5 text-slate-300 leading-relaxed text-[13px] md:text-sm lg:text-[15px] xl:text-base font-mono">
                             <p>
                                 I am <span className="text-cyan-400 font-bold">Monojit Goswami</span>, a backend engineer driven by the potential of autonomous systems. My architecture philosophy focuses on <span className="text-white font-bold">efficiency</span>, <span className="text-white font-bold">modularity</span>, <span className="text-white font-bold">security</span>, and <span className="text-white font-bold">scalability</span>, building high-performance engines that bridge the gap between architectural stability and artificial intelligence.
                             </p>
