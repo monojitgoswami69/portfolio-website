@@ -41,7 +41,7 @@ export default function HomePage({ projects, contact }: HomePageProps) {
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (typeof window !== "undefined" && (window as any).isProgrammaticScroll) {
+        if (typeof window !== "undefined" && (window as Window & typeof globalThis & { isProgrammaticScroll?: boolean }).isProgrammaticScroll) {
           return;
         }
         entries.forEach((entry) => {

@@ -74,7 +74,7 @@
         "imageUrl": "/assets/projects/codalyzer.webp",
         "githubUrl": "https://github.com/monojitgoswami69/codalyzer",
         "demoUrl": "https://codalyzer.mgbuilds.in",
-        "status": "Under Development",
+        "status": "Completed",
         "features": [
             "LLM-based static code analysis",
             "Automatic inference of time and space complexity",
@@ -83,7 +83,7 @@
             "Educational feedback for algorithmic improvement"
         ],
         "category": "GenAI",
-        "featured": false
+        "featured": true
     },
     {
         "name": "NEXUS",
@@ -136,7 +136,7 @@
             "Auto-generated Python or Node.js servers with env files and test curl scripts"
         ],
         "category": "Frontend/GenAI",
-        "featured": true
+        "featured": false
     },
     {
         "name": "Certify",

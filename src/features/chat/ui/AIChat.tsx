@@ -158,11 +158,11 @@ const AIChat: React.FC<AIChatProps> = ({ projects, contact }) => {
         };
 
         const handleTouchStart = (e: TouchEvent) => {
-            (el as any).touchStartY = e.touches[0].clientY;
+            (el as HTMLElement & { touchStartY?: number }).touchStartY = e.touches[0].clientY;
         };
 
         const handleTouchMove = (e: TouchEvent) => {
-            const touchStartY = (el as any).touchStartY || 0;
+            const touchStartY = (el as HTMLElement & { touchStartY?: number }).touchStartY || 0;
             const touchCurrentY = e.touches[0].clientY;
             const deltaY = touchStartY - touchCurrentY;
 

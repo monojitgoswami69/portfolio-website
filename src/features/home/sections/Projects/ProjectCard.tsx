@@ -9,12 +9,10 @@ import { ProjectData, getStatusColor, isValidLink } from './projectUtils';
 export interface ProjectCardProps {
     project: ProjectData;
     index: number;
-    hoveredId: string | null;
-    onHover: (id: string | null) => void;
     onSelect: (project: ProjectData) => void;
 }
 
-const ProjectCard: React.FC<ProjectCardProps> = ({ project, index, hoveredId, onHover, onSelect }) => {
+const ProjectCard: React.FC<ProjectCardProps> = ({ project, index, onSelect }) => {
     return (
         <motion.div
             key={index}
@@ -22,8 +20,6 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, index, hoveredId, on
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "0px 0px -50px 0px" }}
             transition={{ delay: index * 0.1, duration: 0.5, ease: "easeOut" }}
-            onMouseEnter={() => onHover(String(index))}
-            onMouseLeave={() => onHover(null)}
             onClick={() => onSelect(project)}
             className="group relative bg-[#0d0a1a] border-2 border-[#2d2754] overflow-hidden shadow-[4px_4px_0px_0px_#2d2754] transition-colors duration-200 flex flex-col cursor-pointer outline-none focus:outline-none"
         >

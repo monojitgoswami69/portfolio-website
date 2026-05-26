@@ -133,7 +133,6 @@ interface ProjectGridProps {
 }
 
 const ProjectGrid: React.FC<ProjectGridProps> = ({ projects, onSelect }) => {
-    const [hoveredId, setHoveredId] = useState<string | null>(null);
 
     return (
         <>
@@ -162,8 +161,6 @@ const ProjectGrid: React.FC<ProjectGridProps> = ({ projects, onSelect }) => {
                             key={index}
                             project={project}
                             index={index}
-                            hoveredId={hoveredId}
-                            onHover={setHoveredId}
                             onSelect={onSelect}
                         />
                     ))}

@@ -27,7 +27,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection, onSectionChange }) => {
 
         // Mute the IntersectionObserver during programmatically triggered scrolling
         if (typeof window !== "undefined") {
-            (window as any).isProgrammaticScroll = true;
+            (window as Window & typeof globalThis & { isProgrammaticScroll?: boolean }).isProgrammaticScroll = true;
         }
 
         // Set the active section immediately in the parent state for responsive pill translation
@@ -38,7 +38,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection, onSectionChange }) => {
             const clearScrollMute = () => {
                 setTimeout(() => {
                     if (typeof window !== "undefined") {
-                        (window as any).isProgrammaticScroll = false;
+                        (window as Window & typeof globalThis & { isProgrammaticScroll?: boolean }).isProgrammaticScroll = false;
                     }
                 }, 100);
             };
@@ -82,7 +82,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection, onSectionChange }) => {
             }
         } else {
             if (typeof window !== "undefined") {
-                (window as any).isProgrammaticScroll = false;
+                (window as Window & typeof globalThis & { isProgrammaticScroll?: boolean }).isProgrammaticScroll = false;
             }
         }
 
