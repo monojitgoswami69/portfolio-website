@@ -92,7 +92,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection, onSectionChange }) => {
     };
 
     return (
-        <nav className="fixed top-0 w-full z-50 border-b-2 border-[#2d2754] bg-[#070315]">
+        <nav className="fixed top-0 w-full z-50 border-b-2 border-[#2d2754] bg-[#080315]">
             <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between md:justify-center h-16">
 
@@ -133,7 +133,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection, onSectionChange }) => {
                                         {isActive && (
                                             <motion.div
                                                 layoutId="navbar-active-pill"
-                                                className="absolute inset-0 bg-cyan-400 border border-[#2d2754] z-0"
+                                                className="absolute inset-0 bg-cyan-400 border border-[#2d2754] z-0 rounded-sm"
                                                 transition={{ type: "spring", stiffness: 350, damping: 26 }}
                                             />
                                         )}

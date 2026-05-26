@@ -98,15 +98,6 @@ export default function HomePage({ projects, contact }: HomePageProps) {
 
       <Navbar activeSection={activeSection} onSectionChange={setActiveSection} />
 
-      {/* Top content mask — hides scrolling content behind the navbar */}
-      <div
-        className="fixed top-0 left-0 right-0 h-[88px] pointer-events-none z-30"
-        style={{
-          background:
-            "linear-gradient(to bottom, rgba(7, 3, 21, 1) 0%, rgba(7, 3, 21, 1) 72%, rgba(7, 3, 21, 0.4) 88%, transparent 100%)",
-        }}
-      />
-
       <main className="relative z-10">
         <Hero />
         <Skills />

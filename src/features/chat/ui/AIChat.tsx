@@ -199,7 +199,7 @@ const AIChat: React.FC<AIChatProps> = ({ projects, contact }) => {
     }, [scrollRef]);
 
     return (
-        <section id="chat" ref={containerRef} className="pb-[60px] lg:pb-[120px] relative z-10 scroll-mt-[85px]">
+        <section id="chat" ref={containerRef} className="pb-8 lg:pb-12 relative z-10 scroll-mt-[85px]">
             <motion.div
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}

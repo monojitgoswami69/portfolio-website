@@ -1,8 +1,42 @@
 import { motion } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
+import { useLenis } from 'lenis/react';
 import { HomeSection } from '../types';
 
 const Hero: React.FC = () => {
+    const lenis = useLenis();
+
+    const handleScrollToSkills = (e: React.MouseEvent<HTMLAnchorElement>) => {
+        e.preventDefault();
+        const target = document.getElementById(HomeSection.SKILLS);
+        if (target) {
+            // Mute the IntersectionObserver during programmatically triggered scrolling
+            if (typeof window !== "undefined") {
+                (window as Window & typeof globalThis & { isProgrammaticScroll?: boolean }).isProgrammaticScroll = true;
+            }
+
+            const clearScrollMute = () => {
+                setTimeout(() => {
+                    if (typeof window !== "undefined") {
+                        (window as Window & typeof globalThis & { isProgrammaticScroll?: boolean }).isProgrammaticScroll = false;
+                    }
+                }, 100);
+            };
+
+            if (lenis) {
+                lenis.scrollTo(target, {
+                    offset: 12, // Offset matches what Navbar.tsx uses for HomeSection.SKILLS
+                    duration: 1.5,
+                    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                    onComplete: clearScrollMute
+                });
+            } else {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                setTimeout(clearScrollMute, 1000);
+            }
+        }
+    };
+
     return (
         <section id={HomeSection.HERO} className="relative h-[100svh] md:h-screen flex items-center justify-center overflow-hidden" style={{ position: 'relative' }}>
 
@@ -50,6 +84,7 @@ const Hero: React.FC = () => {
             >
                 <a
                     href={`#${HomeSection.SKILLS}`}
+                    onClick={handleScrollToSkills}
                     className="text-slate-500 hover:text-cyan-400 transition-colors duration-300 cursor-pointer p-2"
                     aria-label="Scroll to Skills"
                 >
