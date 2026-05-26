@@ -4,7 +4,7 @@ import { HomeSection } from '../types';
 
 const Hero: React.FC = () => {
     return (
-        <section id={HomeSection.HERO} className="relative h-screen flex items-center justify-center overflow-hidden" style={{ position: 'relative' }}>
+        <section id={HomeSection.HERO} className="relative h-[100svh] md:h-screen flex items-center justify-center overflow-hidden" style={{ position: 'relative' }}>
 
             <div className="relative z-10 text-center px-4 max-w-5xl mx-auto">
 

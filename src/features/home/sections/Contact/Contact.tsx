@@ -121,7 +121,7 @@ const Contact: React.FC<ContactProps> = ({ contact }) => {
                                     href={sanitizeUrl(url)}
                                     target={url.startsWith('mailto') ? undefined : "_blank"}
                                     rel={url.startsWith('mailto') ? undefined : "noopener noreferrer"}
-                                    className="p-2 lg:p-3 bg-[#110e24] border-2 border-[#2d2754] text-slate-400 shadow-[3px_3px_0px_0px_#2d2754] hover:translate-x-[3px] hover:translate-y-[3px] hover:shadow-none hover:bg-cyan-400 hover:text-[#020208] transition-all duration-200"
+                                    className="p-2 lg:p-3 bg-[#110e24] border-2 border-[#2d2754] text-slate-400 shadow-[3px_3px_0px_0px_#2d2754] hover:translate-x-[3px] hover:translate-y-[3px] hover:shadow-none hover:bg-cyan-400 hover:text-[#020208] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none active:bg-cyan-500 active:text-[#020208] active:transition-none transition-all duration-200"
                                 >
                                     <Icon size={20} className="lg:w-6 lg:h-6" />
                                 </a>
@@ -182,7 +182,7 @@ const Contact: React.FC<ContactProps> = ({ contact }) => {
                             <button
                                 type="submit"
                                 disabled={isSubmitting}
-                                className="w-full py-3 lg:py-4 bg-cyan-400 text-[#020208] border-2 border-[#2d2754] disabled:bg-slate-700 disabled:text-slate-400 disabled:cursor-not-allowed text-sm lg:text-base font-bold tracking-widest transition-all font-mono uppercase shadow-[4px_4px_0px_0px_#2d2754] hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none active:translate-x-[4px] active:translate-y-[4px] active:shadow-none"
+                                className="w-full py-3 lg:py-4 bg-cyan-400 text-[#020208] border-2 border-[#2d2754] disabled:bg-slate-700 disabled:text-slate-400 disabled:cursor-not-allowed text-sm lg:text-base font-bold tracking-widest transition-all font-mono uppercase shadow-[4px_4px_0px_0px_#2d2754] hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none hover:bg-cyan-500 active:translate-x-[4px] active:translate-y-[4px] active:shadow-none active:bg-cyan-500 active:transition-none"
                             >
                                 {isSubmitting ? 'Transmitting...' : 'Transmit Data'}
                             </button>

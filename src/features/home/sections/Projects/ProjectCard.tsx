@@ -20,12 +20,12 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, index, hoveredId, on
             key={index}
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: index * 0.1 }}
+            viewport={{ once: true, margin: "0px 0px -50px 0px" }}
+            transition={{ delay: index * 0.1, duration: 0.5, ease: "easeOut" }}
             onMouseEnter={() => onHover(String(index))}
             onMouseLeave={() => onHover(null)}
             onClick={() => onSelect(project)}
-            className="group relative bg-[#0d0a1a] border-2 border-[#2d2754] overflow-hidden shadow-[4px_4px_0px_0px_#2d2754] hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[8px_8px_0px_0px_#2d2754] transition-all duration-200 flex flex-col cursor-pointer outline-none focus:outline-none"
+            className="group relative bg-[#0d0a1a] border-2 border-[#2d2754] overflow-hidden shadow-[4px_4px_0px_0px_#2d2754] transition-colors duration-200 flex flex-col cursor-pointer outline-none focus:outline-none"
         >
             {/* Featured Badge */}
             {project.featured && (
@@ -45,7 +45,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, index, hoveredId, on
                     alt={project.name}
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    className="object-cover scale-[1.02] md:group-hover:scale-110 transition-[transform,filter] duration-500 md:grayscale md:group-hover:grayscale-0 will-change-transform pointer-events-none select-none"
+                    className="object-cover scale-[1.02] md:group-hover:scale-110 transition-all duration-700 ease-out md:grayscale md:group-hover:grayscale-0 will-change-transform pointer-events-none select-none"
                     onError={(e) => {
                         (e.target as HTMLImageElement).src = 'https://placehold.co/600x400/0f172a/00eeff?text=Module+Offline';
                     }}
@@ -89,7 +89,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, index, hoveredId, on
                             e.stopPropagation();
                             onSelect(project);
                         }}
-                        className="md:hidden flex items-center justify-center gap-2 w-full px-4 py-2 bg-[#110e24] border-2 border-[#2d2754] text-slate-300 shadow-[3px_3px_0px_0px_#2d2754] hover:translate-x-[3px] hover:translate-y-[3px] hover:shadow-none active:translate-x-[3px] active:translate-y-[3px] active:shadow-none transition-all duration-200 text-[10px] font-mono font-bold"
+                        className="md:hidden flex items-center justify-center gap-2 w-full px-4 py-2 bg-[#110e24] border-2 border-[#2d2754] text-slate-300 shadow-[3px_3px_0px_0px_#2d2754] active:bg-[#1a153a] active:text-white active:translate-x-[3px] active:translate-y-[3px] active:shadow-none active:transition-none transition-all duration-200 text-[10px] font-mono font-bold"
                     >
                         <Maximize2 className="w-3.5 h-3.5" />
                         View Details
@@ -104,7 +104,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, index, hoveredId, on
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     onClick={(e) => e.stopPropagation()}
-                                    className={`flex-1 flex items-center justify-center gap-1.5 py-2 bg-cyan-400 text-[#020208] border-2 border-[#2d2754] font-mono font-bold shadow-[3px_3px_0px_0px_#2d2754] hover:translate-x-[3px] hover:translate-y-[3px] hover:shadow-none transition-all duration-200 whitespace-nowrap ${isValidLink(project.demoUrl) && isValidLink(project.githubUrl)
+                                    className={`flex-1 flex items-center justify-center gap-1.5 py-2 bg-cyan-400 text-[#020208] border-2 border-[#2d2754] font-mono font-bold shadow-[3px_3px_0px_0px_#2d2754] hover:bg-cyan-500 hover:translate-x-[3px] hover:translate-y-[3px] hover:shadow-none active:bg-cyan-500 active:translate-x-[3px] active:translate-y-[3px] active:shadow-none active:transition-none transition-all duration-200 whitespace-nowrap ${isValidLink(project.demoUrl) && isValidLink(project.githubUrl)
                                         ? 'text-[10px] px-2 md:text-sm md:px-4'
                                         : 'text-xs px-4 md:text-sm'
                                     }`}
@@ -119,7 +119,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, index, hoveredId, on
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     onClick={(e) => e.stopPropagation()}
-                                    className={`flex-1 flex items-center justify-center gap-1.5 py-2 bg-purple-500 border-2 border-[#2d2754] text-[#020208] font-mono font-bold shadow-[3px_3px_0px_0px_#2d2754] hover:translate-x-[3px] hover:translate-y-[3px] hover:shadow-none transition-all duration-200 whitespace-nowrap ${isValidLink(project.demoUrl) && isValidLink(project.githubUrl)
+                                    className={`flex-1 flex items-center justify-center gap-1.5 py-2 bg-purple-500 border-2 border-[#2d2754] text-[#020208] font-mono font-bold shadow-[3px_3px_0px_0px_#2d2754] hover:bg-purple-600 hover:translate-x-[3px] hover:translate-y-[3px] hover:shadow-none active:bg-purple-600 active:translate-x-[3px] active:translate-y-[3px] active:shadow-none active:transition-none transition-all duration-200 whitespace-nowrap ${isValidLink(project.demoUrl) && isValidLink(project.githubUrl)
                                         ? 'text-[10px] px-2 md:text-sm md:px-4'
                                         : 'text-xs px-4 md:text-sm'
                                     }`}

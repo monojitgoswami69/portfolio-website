@@ -147,7 +147,7 @@ const ProjectGrid: React.FC<ProjectGridProps> = ({ projects, onSelect }) => {
                         href="https://github.com/monojitgoswami69"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 px-6 py-3 bg-[#110e24] border-2 border-[#2d2754] text-cyan-400 shadow-[4px_4px_0px_0px_#2d2754] hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none transition-all duration-200 font-mono group font-bold"
+                        className="inline-flex items-center gap-2 px-6 py-3 bg-[#110e24] border-2 border-[#2d2754] text-cyan-400 shadow-[4px_4px_0px_0px_#2d2754] hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none active:bg-cyan-500 active:text-[#020208] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none active:transition-none transition-all duration-200 font-mono group font-bold"
                     >
                         Visit GitHub to explore <Github size={18} className="group-hover:translate-x-1 transition-transform" />
                     </a>

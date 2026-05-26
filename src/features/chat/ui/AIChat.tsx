@@ -396,7 +396,7 @@ const AIChat: React.FC<AIChatProps> = ({ projects, contact }) => {
                                         </p>
                                         <button
                                             onClick={handleReconnect}
-                                            className="px-6 py-2 bg-red-500 text-[#020208] border-2 border-red-800 font-mono text-sm uppercase tracking-[0.2em] font-bold shadow-[4px_4px_0px_0px_#991b1b] hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none transition-all duration-200"
+                                            className="px-6 py-2 bg-red-500 text-[#020208] border-2 border-red-800 font-mono text-sm uppercase tracking-[0.2em] font-bold shadow-[4px_4px_0px_0px_#991b1b] hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none active:bg-red-600 active:translate-x-[4px] active:translate-y-[4px] active:shadow-none active:transition-none transition-all duration-200"
                                         >
                                             &gt; RECONNECT &lt;
                                         </button>

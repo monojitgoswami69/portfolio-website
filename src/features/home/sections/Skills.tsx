@@ -152,7 +152,7 @@ const Skills: React.FC = () => {
                                             whileInView={{ opacity: 1 }}
                                             viewport={{ once: true }}
                                             transition={{ delay: index * 0.02 }}
-                                            className="px-2.5 py-1 text-[11px] lg:text-xs font-mono tracking-wide border-2 border-[#2d2754] bg-[#110e24] text-slate-300 shadow-[2px_2px_0px_0px_#2d2754] hover:bg-purple-500 hover:text-[#020208] hover:border-[#2d2754] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all duration-200 inline-block cursor-default font-medium"
+                                            className="px-2.5 py-1 text-[11px] lg:text-xs font-mono tracking-wide border-2 border-[#2d2754] bg-[#110e24] text-slate-300 shadow-[2px_2px_0px_0px_#2d2754] hover:bg-purple-500 hover:text-[#020208] hover:border-[#2d2754] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none active:bg-purple-500 active:text-[#020208] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none active:transition-none transition-all duration-200 inline-block cursor-default font-medium"
                                         >
                                             {tool}
                                         </motion.span>

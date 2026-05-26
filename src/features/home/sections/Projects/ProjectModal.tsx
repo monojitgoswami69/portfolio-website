@@ -117,10 +117,10 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
         >
             <motion.div
                 ref={modalRef}
-                initial={{ opacity: 0, scale: 0.96, y: 12 }}
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.96, y: 12 }}
-                transition={{ type: 'spring', damping: 32, stiffness: 280 }}
+                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
                 className="relative w-full max-w-5xl bg-[#0d0a1a] border-2 border-[#2d2754] shadow-[4px_4px_0px_0px_#2d2754] rounded-2xl overflow-hidden flex flex-col outline-none"
                 style={{ maxHeight: 'calc(100vh - 120px)' }}
                 onClick={(e) => e.stopPropagation()}
@@ -128,7 +128,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
                 {/* Close Button */}
                 <button
                     onClick={onClose}
-                    className="absolute top-4 right-4 z-30 p-2.5 bg-[#110e24] border-2 border-[#2d2754] text-slate-400 hover:bg-red-500 hover:text-[#020208] hover:border-[#2d2754] shadow-[2px_2px_0px_0px_#2d2754] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all duration-200 outline-none focus:outline-none focus-visible:outline-none select-none rounded-lg"
+                    className="absolute top-4 right-4 z-30 p-2.5 bg-[#110e24] border-2 border-[#2d2754] text-slate-400 hover:bg-red-500 hover:text-[#020208] hover:border-[#2d2754] shadow-[2px_2px_0px_0px_#2d2754] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none active:bg-red-500 active:text-[#020208] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none active:transition-none transition-all duration-200 outline-none focus:outline-none focus-visible:outline-none select-none rounded-lg"
                 >
                     <X size={20} />
                 </button>
@@ -217,7 +217,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
                                         {project.features.map((feature: string, idx: number) => (
                                             <div
                                                 key={idx}
-                                                className="flex items-start gap-3 p-3.5 bg-[#110e24] border-2 border-[#2d2754] shadow-[2px_2px_0px_0px_#2d2754] rounded-xl transition-all duration-200 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
+                                                className="flex items-start gap-3 p-3.5 bg-[#110e24] border-2 border-[#2d2754] shadow-[2px_2px_0px_0px_#2d2754] rounded-xl transition-all duration-200 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none active:bg-[#1a153a] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none active:transition-none"
                                             >
                                                 <div className="flex items-center justify-center w-5 h-5 border border-[#2d2754] bg-[#0d0a1a] text-cyan-400 font-mono text-[9px] font-bold shrink-0 mt-[2px] select-none rounded-md">
                                                     {String(idx + 1).padStart(2, '0')}
@@ -244,7 +244,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
                                     href={sanitizeUrl(project.demoUrl)}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className={`flex-1 flex items-center justify-center gap-1.5 py-3 bg-cyan-400 text-[#020208] font-bold border-2 border-[#2d2754] shadow-[2px_2px_0px_0px_#2d2754] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all duration-200 rounded-xl whitespace-nowrap outline-none focus:outline-none ${isValidLink(project.demoUrl) && isValidLink(project.githubUrl)
+                                    className={`flex-1 flex items-center justify-center gap-1.5 py-3 bg-cyan-400 text-[#020208] font-bold border-2 border-[#2d2754] shadow-[2px_2px_0px_0px_#2d2754] hover:bg-cyan-500 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none active:bg-cyan-500 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none active:transition-none transition-all duration-200 rounded-xl whitespace-nowrap outline-none focus:outline-none ${isValidLink(project.demoUrl) && isValidLink(project.githubUrl)
                                         ? 'text-[10px] px-2 md:text-base md:px-6'
                                         : 'text-sm px-6 md:text-base'
                                     }`}
@@ -258,7 +258,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
                                     href={sanitizeUrl(project.githubUrl)}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className={`flex-1 flex items-center justify-center gap-1.5 py-3 bg-purple-500 text-[#020208] font-bold border-2 border-[#2d2754] shadow-[2px_2px_0px_0px_#2d2754] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all duration-200 rounded-xl whitespace-nowrap outline-none focus:outline-none ${isValidLink(project.demoUrl) && isValidLink(project.githubUrl)
+                                    className={`flex-1 flex items-center justify-center gap-1.5 py-3 bg-purple-500 text-[#020208] font-bold border-2 border-[#2d2754] shadow-[2px_2px_0px_0px_#2d2754] hover:bg-purple-600 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none active:bg-purple-600 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none active:transition-none transition-all duration-200 rounded-xl whitespace-nowrap outline-none focus:outline-none ${isValidLink(project.demoUrl) && isValidLink(project.githubUrl)
                                         ? 'text-[10px] px-2 md:text-base md:px-6'
                                         : 'text-sm px-6 md:text-base'
                                     }`}
