@@ -2,7 +2,6 @@ import { motion } from '@/lib/motion';
 import { ChevronDown } from 'lucide-react';
 import { useLenis } from 'lenis/react';
 import { HomeSection } from '../types';
-import FuzzyText from './FuzzyText';
 
 interface HeroProps {
     onScrollToSkills: (section: HomeSection) => void;
@@ -35,74 +34,27 @@ const Hero: React.FC<HeroProps> = ({ onScrollToSkills }) => {
             <div className="relative z-10 text-center px-4 max-w-5xl mx-auto">
 
 
-                <h1 className="text-5xl md:text-7xl lg:text-9xl font-bold tracking-tighter text-white mb-6 font-quantico">
-                    <motion.span
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.2 }}
-                        className="block text-[#88c0d0] font-quantico text-xl md:text-3xl tracking-wider mb-4"
-                    >
+                <h1 className="flex flex-col items-center justify-center text-center mb-6">
+                    <span className="block text-[#88c0d0] font-quantico text-xl md:text-3xl tracking-wider mb-4">
                         1.0 // IDENTITY
-                    </motion.span>
-
-                    <motion.span
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 0.4, duration: 0.8 }}
-                        className="flex flex-col items-center justify-center gap-4 md:gap-6 my-6 md:my-10 select-none font-averia"
-                        style={{ fontFamily: 'var(--font-averia-serif-libre), serif' }}
+                    </span>
+                    <span 
+                        className="block font-black leading-none text-white tracking-wide uppercase"
+                        style={{ fontSize: 'clamp(3.6rem, 10vw, 8.5rem)', fontFamily: 'var(--font-averia-serif-libre), serif' }}
                     >
-                        <FuzzyText
-                            fontSize="clamp(2.5rem, 8.5vw, 8.5rem)"
-                            fontWeight={900}
-                            fontFamily="inherit"
-                            color="#ffffff"
-                            enableHover={true}
-                            baseIntensity={0.1}
-                            hoverIntensity={0.26}
-                            fuzzRange={20}
-                            fps={120}
-                            transitionDuration={0}
-                            letterSpacing={0}
-                            direction="horizontal"
-                            clickEffect={true}
-                            glitchMode={false}
-                            glitchInterval={2500}
-                            glitchDuration={100}
-                        >
-                            MONOJIT
-                        </FuzzyText>
-                        <FuzzyText
-                            fontSize="clamp(2.5rem, 8.5vw, 8.5rem)"
-                            fontWeight={900}
-                            fontFamily="inherit"
-                            gradient={["#88c0d0", "#b48ead", "#88c0d0"]}
-                            enableHover={true}
-                            baseIntensity={0.1}
-                            hoverIntensity={0.26}
-                            fuzzRange={20}
-                            fps={120}
-                            transitionDuration={0}
-                            letterSpacing={0}
-                            direction="horizontal"
-                            clickEffect={true}
-                            glitchMode={false}
-                            glitchInterval={2500}
-                            glitchDuration={100}
-                        >
-                            GOSWAMI
-                        </FuzzyText>
-                    </motion.span>
+                        MONOJIT
+                    </span>
+                    <span 
+                        className="block font-black leading-none bg-gradient-to-r from-[#88c0d0] via-[#b48ead] to-[#88c0d0] bg-clip-text text-transparent tracking-wide uppercase mt-0"
+                        style={{ fontSize: 'clamp(3.6rem, 10vw, 8.5rem)', fontFamily: 'var(--font-averia-serif-libre), serif' }}
+                    >
+                        GOSWAMI
+                    </span>
                 </h1>
 
-                <motion.p
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.6 }}
-                    className="text-slate-400 text-lg md:text-2xl font-mono max-w-2xl mx-auto leading-relaxed mb-10"
-                >
+                <p className="text-slate-400 text-lg md:text-2xl font-mono max-w-2xl mx-auto leading-relaxed mb-10">
                     Self-taught Backend Developer specializing in RAG based systems and high-performance Machine Learning pipelines.
-                </motion.p>
+                </p>
 
 
             </div>

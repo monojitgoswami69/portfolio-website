@@ -2,13 +2,13 @@ export const SITE_URL = "https://mgbuilds.in";
 
 export const SITE_NAME = "Monojit Goswami";
 
-export const SITE_TAGLINE = "AI Backend Developer";
+export const SITE_TAGLINE = "Backend Developer";
 
 export const SITE_HEADLINE =
-  "AI Backend Engineer specializing in production-grade RAG systems, agentic AI, and high-performance ML pipelines.";
+  "AIML & Backend Engineer specializing in production-grade RAG systems, agentic AI, and high-performance ML pipelines.";
 
 export const SITE_DESCRIPTION =
-  "Portfolio of Monojit Goswami, a self-taught Backend and AI Engineer specializing in production-grade RAG systems, agentic AI, and high-performance ML pipelines built with Python, FastAPI, and modern LLM stacks.";
+  "Portfolio of Monojit Goswami, a self-taught Backend and AIML Engineer specializing in production-grade RAG systems, agentic AI, and high-performance ML pipelines built with Python, FastAPI, and modern LLM stacks.";
 
 export const SITE_TITLE_DEFAULT = `${SITE_NAME} - ${SITE_TAGLINE}`;
 export const SITE_TITLE_TEMPLATE = `%s | ${SITE_NAME}`;

@@ -55,7 +55,7 @@ const Skills: React.FC = () => {
                         className="relative w-full lg:w-[380px] xl:w-[420px] z-10 flex"
                     >
                         <div className="relative group w-full h-full">
-                            <div className="relative w-full h-full border-2 border-[var(--border-color)] bg-[var(--bg-card)] overflow-hidden rounded-base shadow-[var(--shadow-offset)] min-h-[400px]">
+                            <div className="relative w-full h-full border-2 border-[var(--border-color)] bg-[var(--bg-card)] overflow-hidden rounded-t-base rounded-b-none lg:rounded-base shadow-[var(--shadow-offset)] min-h-[400px]">
                                 <Image
                                     src={PROFILE_IMG}
                                     alt="Monojit Goswami"
@@ -64,7 +64,7 @@ const Skills: React.FC = () => {
                                     sizes="(max-width: 1024px) 100vw, 420px"
                                     className="object-cover object-[center_30%] transition-all duration-700 ease-out
                                    filter grayscale sepia hue-rotate-[170deg] contrast-[1.2] brightness-75
-                                   group-hover:filter-none group-hover:scale-105 rounded-[calc(var(--radius-base)-2px)] select-none pointer-events-none"
+                                   group-hover:filter-none group-hover:scale-105 rounded-t-[calc(var(--radius-base)-2px)] rounded-b-none lg:rounded-[calc(var(--radius-base)-2px)] select-none pointer-events-none"
                                 />
 
                                 {/* Hologram Overlay */}
@@ -105,7 +105,7 @@ const Skills: React.FC = () => {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true, margin: "-50px" }}
                         transition={{ delay: 0.3 }}
-                        className="w-full lg:w-[380px] border-2 border-t-0 lg:border-t-2 border-[var(--border-color)] bg-[var(--bg-card)] overflow-hidden z-20 shadow-[var(--shadow-offset)] rounded-base"
+                        className="w-full lg:w-[380px] border-2 border-t-0 lg:border-t-2 border-[var(--border-color)] bg-[var(--bg-card)] overflow-hidden z-20 shadow-[var(--shadow-offset)] rounded-none lg:rounded-base"
                     >
                         <div className="py-5 px-6 lg:py-6 lg:px-6 xl:py-8 xl:px-8 flex flex-col justify-center">
                             <div>
@@ -168,7 +168,7 @@ const Skills: React.FC = () => {
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true, margin: "-50px" }}
                         transition={{ delay: 0.4 }}
-                        className="w-full lg:w-[380px] border-2 border-t-0 lg:border-t-2 border-[var(--border-color)] bg-[var(--bg-card)] overflow-hidden z-20 shadow-[var(--shadow-offset)] rounded-base"
+                        className="w-full lg:w-[380px] border-2 border-t-0 lg:border-t-2 border-[var(--border-color)] bg-[var(--bg-card)] overflow-hidden z-20 shadow-[var(--shadow-offset)] rounded-t-none rounded-b-base lg:rounded-base"
                     >
                         <div className="py-5 px-6 lg:py-6 lg:px-8 xl:py-8 xl:px-10 flex flex-col justify-center space-y-4 lg:space-y-5 text-slate-300 leading-relaxed text-[13px] md:text-sm lg:text-[15px] xl:text-base font-mono">
                             <p>

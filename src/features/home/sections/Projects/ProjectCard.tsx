@@ -139,7 +139,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, index, onSelect }) =
                             e.stopPropagation();
                             onSelect(project);
                         }}
-                        className="md:hidden flex items-center justify-center gap-2 w-full px-4 py-2 bg-[var(--bg-card-alt)] border-2 border-transparent text-slate-300 shadow-[3px_3px_0px_0px_var(--shadow-color)] active:bg-[#1a153a] active:text-white active:translate-x-[3px] active:translate-y-[3px] active:shadow-none active:transition-none transition-all duration-200 text-[10px] font-mono font-bold rounded-base cursor-pointer"
+                        className="md:hidden flex items-center justify-center gap-2 w-full px-4 py-2 bg-[var(--bg-card-alt)] border-2 border-[var(--border-color)] text-slate-300 shadow-[3px_3px_0px_0px_var(--shadow-color)] active:bg-[#1b2234] active:text-white active:translate-x-[3px] active:translate-y-[3px] active:shadow-none active:transition-none transition-all duration-200 text-[10px] font-mono font-bold rounded-base cursor-pointer"
                     >
                         <Maximize2 className="w-3.5 h-3.5" />
                         View Details

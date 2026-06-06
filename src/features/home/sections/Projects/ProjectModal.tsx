@@ -110,7 +110,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
                     type="button"
                     onClick={onClose}
                     aria-label="Close project details"
-                    className="absolute top-4 right-4 z-30 p-2.5 bg-[var(--bg-card-alt)] border-2 border-transparent text-slate-400 hover:bg-[#bf616a] hover:text-[#1b2234] hover:border-transparent shadow-[2px_2px_0px_0px_var(--shadow-color)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none active:bg-[#bf616a] active:text-[#1b2234] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none active:transition-none transition-all duration-200 outline-none focus:outline-none focus-visible:outline-none select-none rounded-base cursor-pointer"
+                    className="absolute top-4 right-4 z-30 p-2.5 bg-[var(--bg-card-alt)] border-2 border-[var(--border-color)] text-slate-400 hover:bg-[#bf616a] hover:text-[#1b2234] hover:border-[var(--border-color)] shadow-[2px_2px_0px_0px_var(--shadow-color)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none active:bg-[#bf616a] active:text-[#1b2234] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none active:transition-none transition-all duration-200 outline-none focus:outline-none focus-visible:outline-none select-none rounded-base cursor-pointer"
                 >
                     <X size={20} aria-hidden="true" />
                 </button>
@@ -204,7 +204,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
                                                 key={idx}
                                                 className="flex items-start gap-3 group/feat"
                                             >
-                                                <span className="flex items-center justify-center w-5 h-5 rounded bg-[#a3be8c]/10 text-[#a3be8c] border border-[#a3be8c]/20 shrink-0 mt-0.5 group-hover/feat:bg-[#a3be8c]/20 group-hover/feat:text-white transition-colors duration-200">
+                                                <span className="flex items-center justify-center w-5 h-5 rounded bg-[#a3be8c]/10 text-[#a3be8c] border border-[#a3be8c]/20 shrink-0 mt-0 md:mt-[1px] group-hover/feat:bg-[#a3be8c]/20 group-hover/feat:text-white transition-colors duration-200">
                                                     <Check className="w-3 h-3" />
                                                 </span>
                                                 <span className="text-slate-300 text-xs md:text-[13.5px] leading-relaxed group-hover/feat:text-white transition-colors duration-200">
