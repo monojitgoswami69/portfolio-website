@@ -1,14 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from '@/lib/motion';
 import { Clock, AlertCircle, RefreshCw, ListFilter } from 'lucide-react';
-import { clsx, type ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
-
-function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
+import { cn } from '@/lib/cn';
 
 // Reuse same generating logic from legacy for consistency
 const generateFallbackWeeklyData = () => {

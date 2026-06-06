@@ -31,7 +31,7 @@ export const activityLogs = pgTable('activity_logs', {
  */
 export const weeklyMetrics = pgTable('weekly_metrics', {
   id: text('id').primaryKey().default(sql`gen_random_uuid()`),
-  date: varchar('date', { length: 50 }).notNull(), // e.g., "2026-04-25"
+  date: varchar('date', { length: 50 }).notNull().unique(), // e.g., "2026-04-25"
   queries: integer('queries').notNull().default(0),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),

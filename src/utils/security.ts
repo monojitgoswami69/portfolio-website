@@ -67,37 +67,6 @@ export const isNonEmpty = (str: string): boolean => {
 };
 
 /**
- * Rate limiter class for client-side rate limiting
- */
-export class RateLimiter {
-  private lastCallTime: number = 0;
-  private interval: number;
-
-  constructor(intervalMs: number) {
-    this.interval = intervalMs;
-  }
-
-  canProceed(): boolean {
-    const now = Date.now();
-    if (now - this.lastCallTime >= this.interval) {
-      this.lastCallTime = now;
-      return true;
-    }
-    return false;
-  }
-
-  getRemainingTime(): number {
-    const now = Date.now();
-    const elapsed = now - this.lastCallTime;
-    return Math.max(0, this.interval - elapsed);
-  }
-
-  reset(): void {
-    this.lastCallTime = 0;
-  }
-}
-
-/**
  * Creates an AbortController with timeout
  */
 export const createTimeoutController = (timeoutMs: number): { controller: AbortController; timeoutId: ReturnType<typeof setTimeout> } => {

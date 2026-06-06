@@ -1,5 +1,5 @@
 import { useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from '@/lib/motion';
 import { useAIChat } from './useAIChat';
 import MarkdownRenderer from './markdown/MarkdownRenderer';
 import { APP_VERSION } from '@/lib/version';
@@ -27,7 +27,7 @@ const MatrixRain: React.FC = () => {
             ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
             ctx.fillRect(0, 0, width, height);
 
-            ctx.fillStyle = "#0F0";
+            ctx.fillStyle = "#88c0d0";
             ctx.font = "15px monospace";
 
             for (let i = 0; i < drops.length; i++) {
@@ -67,7 +67,7 @@ const MatrixRain: React.FC = () => {
     return (
         <canvas
             ref={canvasRef}
-            className="absolute inset-0 w-full h-full pointer-events-none opacity-80 z-0"
+            className="absolute inset-0 w-full h-full pointer-events-none opacity-[0.15] z-0"
         />
     );
 };
@@ -209,7 +209,7 @@ const AIChat: React.FC<AIChatProps> = ({ projects, contact }) => {
             >
                 <div className="w-full">
                     <div className="mb-2">
-                        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 font-quantico text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">
+                        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 font-quantico text-transparent bg-clip-text bg-gradient-to-r from-[#88c0d0] to-[#b48ead]">
                             4.0 // NEXUS
                         </h2>
                         <p className="text-slate-400 text-xs sm:text-sm md:text-base mb-0 font-mono uppercase tracking-widest">
@@ -218,7 +218,7 @@ const AIChat: React.FC<AIChatProps> = ({ projects, contact }) => {
                     </div>
 
                     <div className="relative pt-[15px]" ref={terminalRef}>
-                        <div className="relative w-full bg-[#08061a] overflow-hidden border-2 border-[#2d2754] shadow-[6px_6px_0px_0px_#2d2754]" style={{ height: '37rem' }}>
+                        <div className="relative w-full bg-[var(--bg-input)] overflow-hidden border-2 border-[var(--border-color)] shadow-[var(--shadow-lg)] rounded-base" style={{ height: '37rem' }}>
                             <div
                                 className={`relative w-full h-full flex flex-col transition-all duration-700 ${isTerminated ? 'grayscale blur-sm brightness-50' : ''}`}
                                 onClick={handleTerminalClick}
@@ -226,11 +226,11 @@ const AIChat: React.FC<AIChatProps> = ({ projects, contact }) => {
                                 {isMatrixActive && <MatrixRain />}
 
                                 {/* Title bar */}
-                                <div className="relative z-10 h-10 bg-[#0d0a1a] border-b-2 border-[#2d2754] px-4 flex items-center justify-between select-none">
+                                <div className="relative z-10 h-10 bg-[var(--bg-card)] border-b-2 border-[var(--border-color)] px-4 flex items-center justify-between select-none">
                                     <div className="flex space-x-2">
-                                        <div className="w-3 h-3 rounded-full bg-red-400 border border-red-600" />
-                                        <div className="w-3 h-3 rounded-full bg-yellow-400 border border-yellow-600" />
-                                        <div className="w-3 h-3 rounded-full bg-green-400 border border-green-600" />
+                                        <div className="w-3 h-3 rounded-full bg-[#bf616a] border border-[#bf616a]/20" />
+                                        <div className="w-3 h-3 rounded-full bg-[#ebcb8b] border border-[#ebcb8b]/20" />
+                                        <div className="w-3 h-3 rounded-full bg-[#a3be8c] border border-[#a3be8c]/20" />
                                     </div>
                                     <div className="text-xs font-mono text-slate-500 font-medium">
                                         <span className="hidden sm:inline">&gt;_ </span>guest — -zsh — 80x24
@@ -241,27 +241,27 @@ const AIChat: React.FC<AIChatProps> = ({ projects, contact }) => {
                                 <div className="relative flex-1 min-h-0">
                                     <div
                                         ref={scrollRef}
-                                        className="relative z-10 h-full p-4 md:p-6 overflow-y-auto space-y-4 cursor-text bg-[#08061a] terminal-scroll"
+                                        className={`relative z-10 h-full p-4 md:p-6 overflow-y-auto space-y-4 cursor-text terminal-scroll transition-colors duration-300 ${isMatrixActive ? 'bg-transparent' : 'bg-[var(--bg-input)]'}`}
                                         style={{ fontFamily: '"JetBrains Mono", "JetBrainsMono Nerd Font", monospace', lineHeight: '1.2' }}
                                     >
-                                        {history.map((msg, i) => (
-                                            <div key={i} className="break-words">
+                                        {history.map((msg) => (
+                                            <div key={msg.id} className="break-words">
                                                 {msg.role === 'user' ? (
                                                     <div className="flex gap-2 items-start font-mono">
-                                                        <span className="text-pink-400 font-bold shrink-0 mt-[2px]">➜</span>
-                                                        <span className="text-cyan-400 font-bold shrink-0 mt-[2px]">~</span>
-                                                        <span className="text-[#00f3ff] break-all whitespace-pre-wrap flex-1">{msg.text}</span>
+                                                        <span className="text-[#b48ead] font-bold shrink-0 mt-[2px]">➜</span>
+                                                        <span className="text-[#88c0d0] font-bold shrink-0 mt-[2px]">~</span>
+                                                        <span className="text-[#88c0d0] break-all whitespace-pre-wrap flex-1">{msg.text}</span>
                                                     </div>
                                                 ) : (
                                                     <div className={`mt-2 mb-4 space-y-1 font-mono ${msg.isSuccess ? 'text-slate-300' :
                                                         msg.isError && msg.isSystem ? 'text-slate-300' :
-                                                            msg.isError ? 'text-yellow-400 tracking-wide' :
-                                                                msg.isSystem ? 'text-yellow-500/80 text-xs italic' :
+                                                            msg.isError ? 'text-[#ebcb8b] tracking-wide' :
+                                                                msg.isSystem ? 'text-[#ebcb8b]/80 text-xs italic' :
                                                                     'text-slate-300'
                                                         }`}>
                                                         {msg.isMenu ? (
                                                             <div className="mt-2 space-y-2 font-mono">
-                                                                <p className="text-white font-bold tracking-[0.2em] uppercase text-xs border-b-2 border-[#2d2754] w-fit pb-1 mb-3">{msg.text}</p>
+                                                                <p className="text-white font-bold tracking-[0.2em] uppercase text-xs border-b-2 border-[var(--border-color)] w-fit pb-1 mb-3">{msg.text}</p>
                                                                 {msg.menuOptions?.map((opt, idx) => {
                                                                     const isMovingIndex = idx === msg.selectedIndex;
                                                                     return (
@@ -269,9 +269,9 @@ const AIChat: React.FC<AIChatProps> = ({ projects, contact }) => {
                                                                             key={opt}
                                                                             className={`flex items-center gap-2 transition-all duration-200 cursor-pointer group/item ${isMovingIndex ? 'text-white' : 'text-slate-500 hover:text-white'}`}
                                                                         >
-                                                                            <span className={`w-4 font-bold shrink-0 hidden sm:block ${isMovingIndex ? 'text-cyan-400 animate-pulse' : 'invisible'}`}>&gt;</span>
+                                                                            <span className={`w-4 font-bold shrink-0 hidden sm:block ${isMovingIndex ? 'text-[#88c0d0] animate-pulse' : 'invisible'}`}>&gt;</span>
                                                                             <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
-                                                                                <span className={`${isMovingIndex ? 'bg-cyan-400 text-[#020208] px-2 py-0.5 border-2 border-[#2d2754] font-bold' : 'px-2 opacity-80 group-hover/item:opacity-100'}`}>
+                                                                                <span className={`${isMovingIndex ? 'bg-[#88c0d0] text-[#1b2234] px-2 py-0.5 border-2 border-transparent font-bold rounded-base' : 'px-2 opacity-80 group-hover/item:opacity-100'}`}>
                                                                                     {opt}
                                                                                 </span>
                                                                                 {msg.menuOptionDescriptions && (
@@ -286,25 +286,25 @@ const AIChat: React.FC<AIChatProps> = ({ projects, contact }) => {
                                                             </div>
                                                         ) : msg.isNeofetch ? (
                                                             <div className="flex flex-col md:flex-row gap-4 md:gap-8 items-start select-none md:select-text font-mono">
-                                                                <pre className="text-purple-500/80 leading-none text-sm sm:text-base md:text-2xl font-bold shrink-0 ascii-art m-0">
+                                                                <pre className="text-[#b48ead]/80 leading-none text-sm sm:text-base md:text-2xl font-bold shrink-0 ascii-art m-0">
                                                                     {msg.neofetchArt?.join('\n')}
                                                                 </pre>
                                                                 <div className="flex flex-col gap-1 text-xs sm:text-sm">
                                                                     {msg.neofetchInfo?.map((info, idx) => (
                                                                         <div key={idx} className="flex gap-2">
-                                                                            <span className="text-cyan-400 font-bold min-w-[80px] md:min-w-[100px]">{info.label}:</span>
+                                                                            <span className="text-[#88c0d0] font-bold min-w-[80px] md:min-w-[100px]">{info.label}:</span>
                                                                             <span className="text-slate-300">{info.value}</span>
                                                                         </div>
                                                                     ))}
                                                                     <div className="flex gap-1 mt-2">
-                                                                        <div className="w-3 h-3 bg-black border border-[#2d2754]"></div>
-                                                                        <div className="w-3 h-3 bg-red-500 border border-[#2d2754]"></div>
-                                                                        <div className="w-3 h-3 bg-green-500 border border-[#2d2754]"></div>
-                                                                        <div className="w-3 h-3 bg-yellow-500 border border-[#2d2754]"></div>
-                                                                        <div className="w-3 h-3 bg-blue-500 border border-[#2d2754]"></div>
-                                                                        <div className="w-3 h-3 bg-purple-500 border border-[#2d2754]"></div>
-                                                                        <div className="w-3 h-3 bg-cyan-500 border border-[#2d2754]"></div>
-                                                                        <div className="w-3 h-3 bg-white border border-[#2d2754]"></div>
+                                                                        <div className="w-3 h-3 bg-[#2e3440] border border-[var(--border-color)]"></div>
+                                                                        <div className="w-3 h-3 bg-[#bf616a] border border-[var(--border-color)]"></div>
+                                                                        <div className="w-3 h-3 bg-[#a3be8c] border border-[var(--border-color)]"></div>
+                                                                        <div className="w-3 h-3 bg-[#ebcb8b] border border-[var(--border-color)]"></div>
+                                                                        <div className="w-3 h-3 bg-[#81a1c1] border border-[var(--border-color)]"></div>
+                                                                        <div className="w-3 h-3 bg-[#b48ead] border border-[var(--border-color)]"></div>
+                                                                        <div className="w-3 h-3 bg-[#88c0d0] border border-[var(--border-color)]"></div>
+                                                                        <div className="w-3 h-3 bg-[#eceff4] border border-[var(--border-color)]"></div>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -317,14 +317,14 @@ const AIChat: React.FC<AIChatProps> = ({ projects, contact }) => {
                                         ))}
 
                                         {isLoading && (
-                                            <div className="text-cyan-500 flex items-center gap-2 opacity-60 font-mono">
+                                            <div className="text-[#88c0d0] flex items-center gap-2 opacity-60 font-mono">
                                                 <span className="animate-spin">⠋</span>
                                                 <span>Processing...</span>
                                             </div>
                                         )}
 
                                         {error && (
-                                            <div className={`mt-2 text-xs md:text-sm p-3 border-2 border-[#2d2754] font-mono ${error.includes('limit') ? 'text-yellow-400 bg-yellow-950/30' : 'text-red-400 bg-red-950/30'}`}>
+                                            <div className={`mt-2 text-xs md:text-sm p-3 border-2 font-mono rounded-base ${error.includes('limit') ? 'text-[#ebcb8b] border-[#ebcb8b]/40 bg-[#ebcb8b]/10' : 'text-[#bf616a] border-[#bf616a]/40 bg-[#bf616a]/10'}`}>
                                                 <div className="font-bold mb-1">{error.includes('limit') ? '⚠ ACCESS LIMITED' : '⚠ ERROR'}</div>
                                                 <div className="whitespace-pre-line">{error}</div>
                                             </div>
@@ -333,8 +333,8 @@ const AIChat: React.FC<AIChatProps> = ({ projects, contact }) => {
                                         {hasBooted && !isBooting && !isLoading && (
                                             <div className="mt-4">
                                                 <form onSubmit={handleSend} className="flex items-start group">
-                                                    <span className="text-pink-400 font-bold mr-2 mt-[2px]">➜</span>
-                                                    <span className="text-cyan-400 font-bold mr-2 mt-[2px]">~</span>
+                                                    <span className="text-[#b48ead] font-bold mr-2 mt-[2px]">➜</span>
+                                                    <span className="text-[#88c0d0] font-bold mr-2 mt-[2px]">~</span>
                                                     <div className="relative flex-grow flex items-start">
                                                         <textarea
                                                             ref={inputRef}
@@ -343,7 +343,7 @@ const AIChat: React.FC<AIChatProps> = ({ projects, contact }) => {
                                                                 setInput(e.target.value);
                                                             }}
                                                             onKeyDown={handleKeyDown}
-                                                            className="w-full bg-transparent border-none outline-none text-[#00f3ff] text-sm md:text-[15px] caret-[#00f3ff] break-words resize-none overflow-hidden"
+                                                            className="w-full bg-transparent border-none outline-none text-[#88c0d0] text-sm md:text-[15px] caret-[#88c0d0] break-words resize-none overflow-hidden"
                                                             style={{ minHeight: '24px', paddingTop: '2px', fontFamily: '"JetBrains Mono", "JetBrainsMono Nerd Font", monospace' }}
                                                             rows={1}
                                                             maxLength={1024}
@@ -359,19 +359,21 @@ const AIChat: React.FC<AIChatProps> = ({ projects, contact }) => {
                                 </div>
 
                                 {/* Status bar */}
-                                <div className="px-4 py-2 bg-[#0d0a1a] border-t-2 border-[#2d2754] flex justify-between text-xs font-mono text-slate-600 uppercase tracking-widest relative z-10">
-                                    <div className="flex gap-4">
-                                        <span className="flex items-center gap-2">
-                                            <span className={`w-2 h-2 inline-block rounded-none ${hasInitFailed ? 'bg-red-500' : (hasBooted && !isBooting) ? 'bg-green-500' : 'bg-yellow-500'}`} />
-                                            {hasInitFailed ? 'System Offline' : (hasBooted && !isBooting) ? 'System Stable' : 'Connecting...'}
-                                        </span>
-                                        <span className="hidden md:inline">
-                                            :: Allocation: {sessionInfo && hasBooted && !isBooting ? sessionInfo.userRequestsLeft : 'N/A'}
+                                <div className="px-4 py-2 bg-[var(--bg-card)] border-t-2 border-[var(--border-color)] flex justify-between text-xs font-mono text-slate-600 uppercase tracking-widest relative z-10">
+                                    <div className="flex items-center gap-2">
+                                        <span className={`w-2 h-2 inline-block rounded-none ${hasInitFailed ? 'bg-[#bf616a]' : (hasBooted && !isBooting) ? 'bg-[#a3be8c]' : 'bg-[#ebcb8b]'}`} />
+                                        <span>
+                                            {hasInitFailed ? 'System Offline' : (hasBooted && !isBooting) ? 'System Online' : 'System Initializing'}
+                                            {sessionInfo && hasBooted && !isBooting && (
+                                                <span className="hidden md:inline">
+                                                    {" "}:: Allocation: {sessionInfo.userRequestsLeft}
+                                                </span>
+                                            )}
                                         </span>
                                     </div>
                                     <div className="flex gap-4 items-center">
                                         {input.length >= 1024 && (
-                                            <span className="text-red-500 font-bold animate-pulse">
+                                            <span className="text-[#bf616a] font-bold animate-pulse">
                                                 MAX LENGTH (1024) REACHED
                                             </span>
                                         )}
@@ -386,17 +388,17 @@ const AIChat: React.FC<AIChatProps> = ({ projects, contact }) => {
                                     <motion.div
                                         initial={{ scale: 0.8, opacity: 0 }}
                                         animate={{ scale: 1, opacity: 1 }}
-                                        className="text-center p-8 border-2 border-red-500 bg-[#020208] shadow-[6px_6px_0px_0px_#991b1b]"
+                                        className="text-center p-8 border-2 border-[#bf616a] bg-[var(--bg-card)] shadow-[6px_6px_0px_0px_#bf616a] rounded-base"
                                     >
-                                        <h2 className="text-4xl md:text-6xl font-bold text-red-500 font-mono tracking-tighter mb-4">
+                                        <h2 className="text-4xl md:text-6xl font-bold text-[#bf616a] font-mono tracking-tighter mb-4">
                                             NEXUS TERMINATED
                                         </h2>
-                                        <p className="text-red-400 font-mono text-sm uppercase tracking-widest opacity-70 mb-8">
+                                        <p className="text-[#bf616a] font-mono text-sm uppercase tracking-widest opacity-70 mb-8">
                                             Physical connection severed...
                                         </p>
                                         <button
                                             onClick={handleReconnect}
-                                            className="px-6 py-2 bg-red-500 text-[#020208] border-2 border-red-800 font-mono text-sm uppercase tracking-[0.2em] font-bold shadow-[4px_4px_0px_0px_#991b1b] hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none active:bg-red-600 active:translate-x-[4px] active:translate-y-[4px] active:shadow-none active:transition-none transition-all duration-200"
+                                            className="px-6 py-2 bg-[#bf616a] text-[#1b2234] border-2 border-transparent font-mono text-sm uppercase tracking-[0.2em] font-bold shadow-[4px_4px_0px_0px_var(--shadow-color)] hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none active:translate-x-[4px] active:translate-y-[4px] active:shadow-none active:transition-none transition-all duration-200 rounded-base cursor-pointer"
                                         >
                                             &gt; RECONNECT &lt;
                                         </button>

@@ -6,6 +6,10 @@ const securityHeaders = [
   { key: "X-XSS-Protection", value: "1; mode=block" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+  {
+    key: "Strict-Transport-Security",
+    value: "max-age=63072000; includeSubDomains; preload",
+  },
 ];
 
 const cacheHeaders = [
@@ -35,6 +39,22 @@ const nextConfig: NextConfig = {
       { source: "/(.*)", headers: securityHeaders },
       ...cacheHeaders,
     ];
+  },
+  images: {
+    formats: ["image/avif", "image/webp"],
+    remotePatterns: [
+      { protocol: "https", hostname: "raw.githubusercontent.com" },
+      { protocol: "https", hostname: "user-images.githubusercontent.com" },
+      { protocol: "https", hostname: "github.com" },
+      { protocol: "https", hostname: "i.imgur.com" },
+      { protocol: "https", hostname: "imgur.com" },
+      { protocol: "https", hostname: "placehold.co" },
+      { protocol: "https", hostname: "**.vercel.app" },
+      { protocol: "https", hostname: "**.cloudinary.com" },
+      { protocol: "https", hostname: "**.amazonaws.com" },
+      { protocol: "https", hostname: "**.r2.dev" },
+      { protocol: "https", hostname: "**.supabase.co" },
+    ],
   },
   compress: true,
   poweredByHeader: false,

@@ -2,8 +2,8 @@
 
 import React, { memo, useCallback } from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { usePathname } from 'next/navigation';
+import { motion } from '@/lib/motion';
 import { useAuth } from '@/features/admin/components/context/AuthContext';
 import { cn } from '@/lib/cn';
 import {
@@ -130,7 +130,6 @@ const Logo = memo(function Logo({ onClose }: { onClose?: () => void }) {
 
 export function Sidebar({ isMobileOpen, onCloseMobile }: { isMobileOpen: boolean; onCloseMobile: () => void }) {
   const { user, logout } = useAuth();
-  const router = useRouter();
   const pathname = usePathname();
 
   const userRole = user?.role || 'assistant';
@@ -140,9 +139,8 @@ export function Sidebar({ isMobileOpen, onCloseMobile }: { isMobileOpen: boolean
 
   const handleLogout = useCallback(() => {
     logout();
-    router.push('/admin/login');
     if (onCloseMobile) onCloseMobile();
-  }, [logout, router, onCloseMobile]);
+  }, [logout, onCloseMobile]);
 
   return (
     <aside className={cn(

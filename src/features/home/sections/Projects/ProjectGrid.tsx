@@ -1,131 +1,7 @@
-import { useState, useEffect, useRef } from 'react';
+import { memo } from 'react';
 import { Github } from '@/lib/icons';
 import ProjectCard from './ProjectCard';
 import { ProjectData } from './projectUtils';
-
-// Tech Stack Display Component with dynamic two-row detection
-export const TechStackDisplay: React.FC<{ techStack: string[]; sortByLength?: boolean }> = ({
-    techStack,
-    sortByLength = false
-}) => {
-    const containerRef = useRef<HTMLDivElement>(null);
-    const [visibleCount, setVisibleCount] = useState(techStack.length);
-
-    const sortedTechStack = sortByLength
-        ? [...techStack].sort((a, b) => a.length - b.length)
-        : techStack;
-
-    useEffect(() => {
-        const calculateVisibleBadges = () => {
-            if (!containerRef.current) return;
-
-            const container = containerRef.current;
-            const containerWidth = container.offsetWidth;
-
-            const tempContainer = document.createElement('div');
-            tempContainer.style.position = 'absolute';
-            tempContainer.style.visibility = 'hidden';
-            tempContainer.style.display = 'flex';
-            tempContainer.style.flexWrap = 'wrap';
-            tempContainer.style.gap = '0.5rem';
-            tempContainer.style.width = `${containerWidth}px`;
-            document.body.appendChild(tempContainer);
-
-            const badges: HTMLElement[] = [];
-            sortedTechStack.forEach((tech) => {
-                const badge = document.createElement('span');
-                badge.className = 'px-2 py-1 text-xs font-mono border-2';
-                badge.textContent = tech;
-                badge.style.whiteSpace = 'nowrap';
-                tempContainer.appendChild(badge);
-                badges.push(badge);
-            });
-
-            void tempContainer.offsetHeight;
-
-            let maxVisibleCount = 0;
-            if (badges.length > 0) {
-                const firstBadge = badges[0];
-                if (!firstBadge) return;
-
-                const firstBadgeTop = firstBadge.offsetTop;
-                const gap = 8;
-
-                const firstBadgeHeight = firstBadge.offsetHeight;
-                const secondRowTop = firstBadgeTop + firstBadgeHeight + gap;
-                const maxAllowedTop = secondRowTop + firstBadgeHeight;
-
-                for (let i = 0; i < badges.length; i++) {
-                    const badge = badges[i];
-                    if (!badge) continue;
-
-                    const badgeTop = badge.offsetTop;
-                    if (badgeTop < maxAllowedTop) {
-                        maxVisibleCount = i + 1;
-                    } else {
-                        break;
-                    }
-                }
-
-                if (maxVisibleCount < sortedTechStack.length) {
-                    const plusBadge = document.createElement('span');
-                    plusBadge.className = 'px-2 py-1 text-xs font-mono border-2';
-                    plusBadge.textContent = `+${sortedTechStack.length - maxVisibleCount}`;
-                    plusBadge.style.whiteSpace = 'nowrap';
-
-                    if (maxVisibleCount > 0) {
-                        const lastVisibleBadge = badges[maxVisibleCount - 1];
-                        if (lastVisibleBadge) {
-                            tempContainer.removeChild(lastVisibleBadge);
-                            tempContainer.appendChild(plusBadge);
-                            void tempContainer.offsetHeight;
-
-                            const plusBadgeTop = plusBadge.offsetTop;
-                            if (plusBadgeTop >= maxAllowedTop) {
-                                maxVisibleCount = Math.max(1, maxVisibleCount - 1);
-                            }
-                        }
-                    }
-                }
-            }
-
-            document.body.removeChild(tempContainer);
-            setVisibleCount(Math.max(1, maxVisibleCount));
-        };
-
-        calculateVisibleBadges();
-
-        const resizeObserver = new ResizeObserver(calculateVisibleBadges);
-        if (containerRef.current) {
-            resizeObserver.observe(containerRef.current);
-        }
-
-        return () => {
-            resizeObserver.disconnect();
-        };
-    }, [sortedTechStack]);
-
-    const visibleTechs = sortedTechStack.slice(0, visibleCount);
-    const remainingCount = sortedTechStack.length - visibleCount;
-
-    return (
-        <div ref={containerRef} className="flex flex-wrap gap-2 mb-4">
-            {visibleTechs.map((tech) => (
-                <span
-                     key={tech}
-                     className="px-2 py-1 text-[10px] md:text-xs font-mono bg-[#110e24] border-2 border-[#2d2754] text-cyan-200/80"
-                >
-                     {tech}
-                </span>
-            ))}
-            {remainingCount > 0 && (
-                <span className="px-2 py-1 text-[10px] md:text-xs font-mono bg-[#110e24] border-2 border-[#2d2754] text-slate-400">
-                    +{remainingCount}
-                </span>
-            )}
-        </div>
-    );
-};
 
 interface ProjectGridProps {
     projects: ProjectData[];
@@ -146,7 +22,7 @@ const ProjectGrid: React.FC<ProjectGridProps> = ({ projects, onSelect }) => {
                         href="https://github.com/monojitgoswami69"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 px-6 py-3 bg-[#110e24] border-2 border-[#2d2754] text-cyan-400 shadow-[4px_4px_0px_0px_#2d2754] hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none active:bg-cyan-500 active:text-[#020208] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none active:transition-none transition-all duration-200 font-mono group font-bold"
+                        className="inline-flex items-center gap-2 px-6 py-3 bg-[#88c0d0] border-2 border-transparent text-[#1b2234] shadow-[4px_4px_0px_0px_var(--shadow-color)] hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none active:translate-x-[4px] active:translate-y-[4px] active:shadow-none active:transition-none transition-all duration-200 font-mono group font-bold"
                     >
                         Visit GitHub to explore <Github size={18} className="group-hover:translate-x-1 transition-transform" />
                     </a>
@@ -158,7 +34,7 @@ const ProjectGrid: React.FC<ProjectGridProps> = ({ projects, onSelect }) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
                     {projects.map((project, index) => (
                         <ProjectCard
-                            key={index}
+                            key={project.id ?? `${project.name}-${index}`}
                             project={project}
                             index={index}
                             onSelect={onSelect}
@@ -170,4 +46,4 @@ const ProjectGrid: React.FC<ProjectGridProps> = ({ projects, onSelect }) => {
     );
 };
 
-export default ProjectGrid;
+export default memo(ProjectGrid);

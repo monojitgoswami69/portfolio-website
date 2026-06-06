@@ -24,28 +24,13 @@ export default function PWARegister() {
       navigator.serviceWorker
         .register("/sw.js", { scope: "/" })
         .then((registration) => {
-          console.log("✓ Service Worker registered successfully");
-
-          // Check for updates periodically
+          // Check for updates periodically (hourly)
           setInterval(() => {
             registration.update();
-          }, 60 * 60 * 1000); // Check hourly
-
-          // Handle new service worker updates
-          registration.addEventListener("updatefound", () => {
-            const newWorker = registration.installing;
-            if (newWorker) {
-              newWorker.addEventListener("statechange", () => {
-                if (newWorker.state === "activated") {
-                  // New service worker activated, could show update notification
-                  console.log("✓ App updated to latest version");
-                }
-              });
-            }
-          });
+          }, 60 * 60 * 1000);
         })
         .catch((error) => {
-          console.error("✗ Service Worker registration failed:", error);
+          console.error("Service Worker registration failed:", error);
         });
     };
 

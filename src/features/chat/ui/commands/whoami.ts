@@ -1,4 +1,5 @@
 import { ChatMessage } from '../types';
+import { makeMessageId } from '../messageId';
 
 export const whoamiCommand = (): ChatMessage => {
     const storedUid = sessionStorage.getItem('nexus_user_id') || 'GUEST_USER';
@@ -6,6 +7,7 @@ export const whoamiCommand = (): ChatMessage => {
     const globalRem = sessionStorage.getItem('nexus_global_requests') || 'N/A';
 
     return {
+        id: makeMessageId(),
         role: 'model',
         text: `## USER IDENTITY:\n\n- **ID**: \`${storedUid}\`\n- **Privileges**: \`READ_ONLY\`\n- **Session**: \`ACTIVE\`\n- **User Requests Left**: \`${userRem}\`\n- **Global Requests Left**: \`${globalRem}\``,
         timestamp: new Date(),

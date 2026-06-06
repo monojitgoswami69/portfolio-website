@@ -18,7 +18,6 @@ interface AuthUser {
 
 interface AuthContextType {
   user: AuthUser | null;
-  token: string | null;
   isLoading: boolean;
   error: string | null;
   login: (username: string, password: string, rememberMe?: boolean) => Promise<boolean>;
@@ -31,7 +30,6 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const [user, setUser] = useState<AuthUser | null>(null);
-  const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -44,27 +42,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (!response.ok) {
         setUser(null);
-        setToken(null);
         return;
       }
 
       const data = await response.json();
       setUser(data.user ?? null);
-      setToken('session');
     } catch {
       setUser(null);
-      setToken(null);
     } finally {
       setIsLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    const timer = window.setTimeout(() => {
-      void hydrateSession();
-    }, 0);
-
-    return () => window.clearTimeout(timer);
+    void hydrateSession();
   }, [hydrateSession]);
 
   const login = useCallback(async (username: string, password: string, rememberMe = false) => {
@@ -75,7 +66,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const response = await fetch('/api/v1/auth/login', {
         method: 'POST',
         credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+        },
         body: JSON.stringify({ username, password, rememberMe }),
       });
 
@@ -87,7 +81,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       setUser(data.user ?? null);
-      setToken('session');
       return true;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'An error occurred';
@@ -105,12 +98,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await fetch('/api/v1/auth/logout', {
         method: 'POST',
         credentials: 'include',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' },
       });
     } catch (err) {
       console.error('Logout failed:', err);
     } finally {
       setUser(null);
-      setToken(null);
       setIsLoading(false);
       router.push('/admin/login');
     }
@@ -120,7 +113,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     <AuthContext.Provider
       value={{
         user,
-        token,
         isLoading,
         error,
         login,

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from '@/lib/motion';
 import { 
   Folder, 
   Plus, 
@@ -183,7 +183,11 @@ export default function ProjectsPage() {
     try {
       const res = await fetch('/api/v1/projects', {
         method,
-        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+        },
         body: JSON.stringify(body)
       });
       const data = await res.json();
@@ -215,7 +219,11 @@ export default function ProjectsPage() {
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this project?')) return;
     try {
-      const res = await fetch(`/api/v1/projects?id=${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/v1/projects?id=${id}`, {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+      });
       const data = await res.json();
       if (res.ok) {
         fetchProjects();

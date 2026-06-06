@@ -1,4 +1,5 @@
 import { ChatMessage } from '../types';
+import { makeMessageId } from '../messageId';
 import { APP_VERSION } from '@/lib/version';
 
 export const neofetchCommand = (): ChatMessage => {
@@ -13,6 +14,7 @@ export const neofetchCommand = (): ChatMessage => {
     const uptime = `${years} years, ${months} months`;
 
     return {
+        id: makeMessageId(),
         role: 'model',
         text: '',
         neofetchArt: [

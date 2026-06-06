@@ -6,7 +6,7 @@ import { createHmac, randomBytes } from "crypto";
 import Groq from "groq-sdk";
 import type { ChatCompletionMessageParam } from "groq-sdk/resources/chat/completions";
 import { Redis } from "@upstash/redis";
-import { eq } from "drizzle-orm";
+import { sql } from "drizzle-orm";
 import { initializeDatabase, isDatabaseConfigured } from "@/features/admin/server/db-utils";
 import { weeklyMetrics } from "@/features/admin/server/schema";
 import { APP_VERSION } from "@/lib/version";
@@ -40,7 +40,18 @@ const SAFEGUARD_MODEL = process.env.SAFEGUARD_MODEL || "meta-llama/llama-prompt-
 const DAILY_RATE_LIMIT = Number(process.env.DAILY_RATE_LIMIT || "50");
 const GLOBAL_RATE_LIMIT = Number(process.env.GLOBAL_RATE_LIMIT || "1000");
 const RATE_LIMIT_TIMEZONE = process.env.RATE_LIMIT_TIMEZONE || "UTC";
-const GUEST_SECRET = process.env.GUEST_SECRET || randomBytes(32).toString("hex");
+const GUEST_SECRET = (() => {
+  const value = process.env.GUEST_SECRET;
+  if (value) return value;
+  if (process.env.NODE_ENV === "production") {
+    throw new Error(
+      "GUEST_SECRET environment variable is required in production. " +
+        "Generate one with: openssl rand -hex 32"
+    );
+  }
+  // Dev fallback only — per-process random key OK locally
+  return randomBytes(32).toString("hex");
+})();
 const MAX_REQUEST_SIZE = Number(process.env.MAX_REQUEST_SIZE || "1048576");
 const MAX_MESSAGE_LENGTH = 1000;
 const MAX_HISTORY_LENGTH = 100;
@@ -116,6 +127,7 @@ function loadNexusContext() {
 }
 
 const NEXUS_CONTEXT = loadNexusContext();
+const NEXUS_CONTEXT_JSON = JSON.stringify(NEXUS_CONTEXT, null, 2);
 
 function getDateParts(date: Date, timeZone: string) {
   const formatter = new Intl.DateTimeFormat("en-CA", {
@@ -265,11 +277,16 @@ function getCommonExposedHeaders() {
 }
 
 export function getClientIp(request: Request) {
+  // Vercel sets x-vercel-forwarded-for which is authoritative on their platform
+  const vercelForwarded = request.headers.get("x-vercel-forwarded-for");
+  if (vercelForwarded) {
+    return vercelForwarded.split(",")[0]?.trim() || "unknown";
+  }
+  // Generic x-forwarded-for: first entry is the client (subsequent are intermediate proxies).
   const forwarded = request.headers.get("x-forwarded-for");
   if (forwarded) {
     return forwarded.split(",")[0]?.trim() || "unknown";
   }
-
   return request.headers.get("x-real-ip")?.trim() || "unknown";
 }
 
@@ -484,7 +501,7 @@ async function runSafeguardCheck(message: string) {
 
 function buildSystemPrompt(safeguardResult: SafeguardResult) {
   const safeguardJson = JSON.stringify(safeguardResult, null, 2);
-  const contextJson = JSON.stringify(NEXUS_CONTEXT, null, 2);
+  const contextJson = NEXUS_CONTEXT_JSON;
 
   return `${BASE_SYSTEM_PROMPT}
 
@@ -537,29 +554,20 @@ export async function incrementCounter() {
   try {
     const db = initializeDatabase();
     const today = isoDate(new Date());
-    const existing = await db
-      .select()
-      .from(weeklyMetrics)
-      .where(eq(weeklyMetrics.date, today))
-      .limit(1);
 
-    const todayRow = existing[0];
-
-    if (todayRow) {
-      await db
-        .update(weeklyMetrics)
-        .set({
-          queries: todayRow.queries + 1,
+    await db
+      .insert(weeklyMetrics)
+      .values({
+        date: today,
+        queries: 1,
+      })
+      .onConflictDoUpdate({
+        target: weeklyMetrics.date,
+        set: {
+          queries: sql`${weeklyMetrics.queries} + 1`,
           updatedAt: new Date(),
-        })
-        .where(eq(weeklyMetrics.id, todayRow.id));
-      return;
-    }
-
-    await db.insert(weeklyMetrics).values({
-      date: today,
-      queries: 1,
-    });
+        },
+      });
   } catch (error) {
     console.error("Failed to increment weekly metrics:", error);
   }

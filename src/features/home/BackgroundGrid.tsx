@@ -44,8 +44,8 @@ uniform vec3 uColor3;
 uniform float uOverlayOpacity;
 out vec4 fragColor;
 #define S(a,b,t) smoothstep(a,b,t)
-mat2 Rot(float a){float s=sin(a),c=cos(a);return mat2(c,-s,s,c);} 
-vec2 hash(vec2 p){p=vec2(dot(p,vec2(2127.1,81.17)),dot(p,vec2(1269.5,283.37)));return fract(sin(p)*43758.5453);} 
+mat2 Rot(float a){float s=sin(a),c=cos(a);return mat2(c,-s,s,c);}
+vec2 hash(vec2 p){p=vec2(dot(p,vec2(2127.1,81.17)),dot(p,vec2(1269.5,283.37)));return fract(sin(p)*43758.5453);}
 float noise(vec2 p){vec2 i=floor(p),f=fract(p),u=f*f*(3.0-2.0*f);float n=mix(mix(dot(-1.0+2.0*hash(i+vec2(0.0,0.0)),f-vec2(0.0,0.0)),dot(-1.0+2.0*hash(i+vec2(1.0,0.0)),f-vec2(1.0,0.0)),u.x),mix(dot(-1.0+2.0*hash(i+vec2(0.0,1.0)),f-vec2(0.0,1.0)),dot(-1.0+2.0*hash(i+vec2(1.0,1.0)),f-vec2(1.0,1.0)),u.x),u.y);return 0.5+0.5*n;}
 void mainImage(out vec4 o, vec2 C){
   float t=iTime*uTimeSpeed;
@@ -81,24 +81,20 @@ void mainImage(out vec4 o, vec2 C){
   vec3 layer2=mix(colOrg,colLav,S(edge0,edge1,blendX));
   vec3 col=mix(layer1,layer2,S(v0,v1,tuv.y));
 
-  // 1. Contrast, saturation, gamma adjustments (applied to vibrant gradient first)
   col=(col-0.5)*uContrast+0.5;
   float luma=dot(col,vec3(0.2126,0.7152,0.0722));
   col=mix(vec3(luma),col,uSaturation);
   col=pow(max(col,0.0),vec3(1.0/max(uGamma,0.001)));
 
-  // 2. Screen blend with midnight blue background (#020208) for a natural, soft glow
   vec3 midnightBg = vec3(2.0 / 255.0, 2.0 / 255.0, 8.0 / 255.0);
   float glowStrength = 1.0 - clamp(uOverlayOpacity, 0.0, 1.0);
   col = 1.0 - (1.0 - midnightBg) * (1.0 - col * glowStrength);
 
-  // 3. Apply grain texture on top of the blended background so it is fully visible
   vec2 grainUv=uv*max(uGrainScale,0.001);
-  if(uGrainAnimated>0.5){grainUv+=vec2(iTime*0.05);} 
+  if(uGrainAnimated>0.5){grainUv+=vec2(iTime*0.05);}
   float grain=fract(sin(dot(grainUv,vec2(12.9898,78.233)))*43758.5453);
   col+=(grain-0.5)*uGrainAmount;
 
-  // 4. Final clamping
   col=clamp(col,0.0,1.0);
 
   o=vec4(col,1.0);
@@ -110,14 +106,13 @@ void main(){
 }
 `;
 
-// Keep renderer/program alive across re-renders
 const ctxMap = new WeakMap<HTMLDivElement, {
   renderer: Renderer;
   program: Program;
   mesh: Mesh;
 }>();
 
-interface BackgroundGridProps {
+interface BackgroundGridConfig {
   timeSpeed?: number;
   colorBalance?: number;
   warpStrength?: number;
@@ -143,7 +138,7 @@ interface BackgroundGridProps {
   overlayOpacity?: number;
 }
 
-const BackgroundGrid: React.FC<BackgroundGridProps> = ({
+const BackgroundGrid: React.FC<BackgroundGridConfig> = ({
   timeSpeed = 0.25,
   colorBalance = 0.0,
   warpStrength = 1.0,
@@ -154,19 +149,19 @@ const BackgroundGrid: React.FC<BackgroundGridProps> = ({
   blendSoftness = 0.05,
   rotationAmount = 500.0,
   noiseScale = 2.0,
-  grainAmount = 0.03,
+  grainAmount = 0.04,
   grainScale = 2.0,
   grainAnimated = false,
-  contrast = 1.5,
-  gamma = 1.0,
-  saturation = 1.0,
+  contrast = 1.8,
+  gamma = 0.95,
+  saturation = 1.3,
   centerX = 0.0,
   centerY = 0.0,
   zoom = 0.9,
-  color1 = '#FF9FFC',
-  color2 = '#5227FF',
-  color3 = '#B497CF',
-  overlayOpacity = 0.95
+  color1 = '#00D9FF',  // Bright cyan
+  color2 = '#FFB84D',  // Warm orange
+  color3 = '#4D9FFF',  // Light blue
+  overlayOpacity = 0.92
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -336,7 +331,6 @@ const BackgroundGrid: React.FC<BackgroundGridProps> = ({
 
   return (
     <div className="fixed inset-0 -z-10 pointer-events-none overflow-hidden">
-      {/* WebGL Canvas Container */}
       <div ref={containerRef} className="absolute inset-0" />
     </div>
   );

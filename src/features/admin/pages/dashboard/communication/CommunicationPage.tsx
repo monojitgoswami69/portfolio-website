@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from '@/lib/motion';
 import { Mail, Check, X, Trash2, RefreshCw, Clock, CheckCircle, XCircle } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import { useToast } from '@/features/admin/components/context/ToastContext';
@@ -68,7 +68,11 @@ export default function CommunicationPage() {
     try {
       const res = await fetch(`/api/v1/communication/${id}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+        },
         body: JSON.stringify({ status })
       });
       if (res.ok) {
@@ -100,7 +104,9 @@ export default function CommunicationPage() {
 
     try {
       const res = await fetch(`/api/v1/communication/${id}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        credentials: 'include',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' },
       });
       if (res.ok) {
         await loadSubmissions();

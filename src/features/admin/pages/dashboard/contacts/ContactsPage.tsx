@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from '@/lib/motion';
 import { Save, Mail, Code, Link2, AtSign, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import { useToast } from '@/features/admin/components/context/ToastContext';
@@ -81,7 +81,11 @@ export default function ContactsPage() {
     try {
       const res = await fetch('/api/v1/contacts', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+        },
         body: JSON.stringify(contact)
       });
       const data = await res.json();

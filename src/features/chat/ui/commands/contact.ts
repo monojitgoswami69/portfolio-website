@@ -1,4 +1,5 @@
 import { ChatMessage } from '../types';
+import { makeMessageId } from '../messageId';
 
 interface ContactInfo {
     email: string;
@@ -18,6 +19,7 @@ export const contactCommand = (contact: ContactInfo): ChatMessage => {
     ].filter(Boolean);
 
     return {
+        id: makeMessageId(),
         role: 'model',
         text: `## ESTABLISHING SIGNAL...\n\n${lines.join('\n') || 'Contact data unavailable.'}`,
         timestamp: new Date(),

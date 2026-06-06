@@ -5,16 +5,6 @@ const BACKEND_URL = "/api/chat";
 const REQUEST_TIMEOUT_MS = 30000; // 30 seconds
 const MAX_MESSAGE_LENGTH = 1000;
 
-export interface ChatRequest {
-  message: string;
-  history?: Array<{ role: string; parts: string[] }>;
-}
-
-export interface ChatResponse {
-  response: string;
-  timestamp: string;
-}
-
 // Callback for receiving streaming chunks with full text
 export type StreamCallback = (chunk: string) => void;
 
@@ -59,109 +49,6 @@ export const initializeSession = async (): Promise<{ userId: string; userRequest
   } catch (error) {
     console.error("Initialization failed:", error);
     return null;
-  }
-};
-
-// Check backend health
-export const checkHealth = async (): Promise<boolean> => {
-  try {
-    const { controller, timeoutId } = createTimeoutController(30000);
-    const response = await fetch(BACKEND_URL, {
-      method: 'GET',
-      signal: controller.signal,
-    });
-    clearTimeout(timeoutId);
-    return response.ok;
-  } catch {
-    return false;
-  }
-};
-
-// Send message using non-streaming endpoint (default)
-export const sendMessage = async (
-  message: string,
-  onResponse: (response: string) => void,
-  onComplete: () => void,
-  onError: (error: Error) => void,
-  history: Array<{ role: string; text: string }> = [],
-  onUpdateLimits?: (limits: { userRequestsLeft: string; globalRequestsLeft: string }) => void
-): Promise<void> => {
-  try {
-    if (!isNonEmpty(message)) {
-      throw new Error("Message cannot be empty");
-    }
-
-    const sanitizedMessage = sanitizeInput(message, MAX_MESSAGE_LENGTH);
-
-    // Format history for backend: { role: "user" | "model", parts: ["text"] }
-    const formattedHistory = history.map(msg => ({
-      role: msg.role === 'model' ? 'model' : 'user',
-      parts: [msg.text]
-    }));
-
-    const { controller, timeoutId } = createTimeoutController(REQUEST_TIMEOUT_MS);
-
-    const payload: ChatRequest = {
-      message: sanitizedMessage,
-      history: formattedHistory
-    };
-
-    const response = await fetch(BACKEND_URL, {
-      method: "POST",
-      signal: controller.signal,
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
-
-    clearTimeout(timeoutId);
-
-    // Handle rate limiting (429 status)
-    if (response.status === 429) {
-      await handleRateLimitError(response, onUpdateLimits);
-    }
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    updateRateLimitsFromHeaders(response, onUpdateLimits);
-
-    // Check if response is JSON before parsing
-    const contentType = response.headers.get('content-type');
-    if (!contentType || !contentType.includes('application/json')) {
-      throw new Error('Server returned non-JSON response');
-    }
-
-    const data = await response.json();
-
-    if (data.response) {
-      onResponse(data.response);
-      onComplete();
-    } else {
-      throw new Error(data.error || 'Invalid response format from server');
-    }
-  } catch (error) {
-    // Fallback to offline response if backend is unavailable
-    if (error instanceof TypeError && error.message.includes('fetch')) {
-      const offlineResponse = getOfflineResponse(message);
-      onResponse(offlineResponse);
-      onComplete();
-      return;
-    }
-
-    // Handle abort/timeout
-    if (error instanceof Error && error.name === 'AbortError') {
-      onError(new Error('Request timeout - please try again'));
-      return;
-    }
-
-    if (error instanceof Error) {
-      onError(error);
-    } else {
-      onError(new Error('Unknown error occurred'));
-    }
   }
 };
 

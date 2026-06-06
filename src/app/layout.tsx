@@ -1,13 +1,27 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import {
   Averia_Serif_Libre,
   JetBrains_Mono,
   Quantico,
+  Rubik_Bubbles,
   Space_Grotesk,
 } from "next/font/google";
 import "./globals.css";
 import PWARegister from "@/features/pwa/PWARegister";
 import LenisProvider from "@/lib/LenisProvider";
+import {
+  SITE_DESCRIPTION,
+  SITE_NAME,
+  SITE_OG_IMAGE,
+  SITE_OG_IMAGE_ALT,
+  SITE_OG_IMAGE_HEIGHT,
+  SITE_OG_IMAGE_TYPE,
+  SITE_OG_IMAGE_WIDTH,
+  SITE_TITLE_DEFAULT,
+  SITE_TITLE_TEMPLATE,
+  SITE_URL,
+  TWITTER_HANDLE,
+} from "@/lib/seo/site";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -35,20 +49,56 @@ const quantico = Quantico({
   variable: "--font-quantico",
 });
 
+const rubikBubbles = Rubik_Bubbles({
+  subsets: ["latin"],
+  weight: ["400"],
+  display: "swap",
+  variable: "--font-rubik-bubbles",
+});
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#0f172a",
+  colorScheme: "dark",
+};
+
 export const metadata: Metadata = {
-  metadataBase: new URL("https://mgbuilds.in"),
-  title: "Monojit Goswami | Portfolio",
-  description: "Monojit Goswami - Backend & AI Engineer specializing in RAG systems and high-performance ML pipelines",
-  keywords: "AI Engineer, Backend Developer, RAG, Machine Learning, Python, React",
-  authors: [{ name: "Monojit Goswami" }],
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: SITE_TITLE_DEFAULT,
+    template: SITE_TITLE_TEMPLATE,
+  },
+  description: SITE_DESCRIPTION,
+  applicationName: `${SITE_NAME} Portfolio`,
+  authors: [{ name: SITE_NAME, url: SITE_URL }],
+  creator: SITE_NAME,
+  publisher: SITE_NAME,
   manifest: "/favicons/site.webmanifest",
+  alternates: {
+    canonical: SITE_URL,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-snippet": -1,
+      "max-image-preview": "large",
+      "max-video-preview": -1,
+    },
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "MG | Portfolio",
+    title: `${SITE_NAME} | Portfolio`,
   },
   formatDetection: {
     telephone: false,
+    email: false,
+    address: false,
   },
   icons: {
     icon: [
@@ -59,23 +109,36 @@ export const metadata: Metadata = {
     apple: "/favicons/apple-touch-icon.png",
   },
   openGraph: {
-    title: "Monojit Goswami | Portfolio",
-    description: "Monojit Goswami - Backend & AI Engineer specializing in RAG systems and high-performance ML pipelines",
-    url: "https://mgbuilds.in",
-    siteName: "Monojit Goswami Portfolio",
+    type: "profile",
+    title: SITE_TITLE_DEFAULT,
+    description: SITE_DESCRIPTION,
+    url: SITE_URL,
+    siteName: `${SITE_NAME} Portfolio`,
+    locale: "en_US",
     images: [
       {
-        url: "https://mgbuilds.in/og_image/og-image.png",
+        url: SITE_OG_IMAGE,
+        width: SITE_OG_IMAGE_WIDTH,
+        height: SITE_OG_IMAGE_HEIGHT,
+        alt: SITE_OG_IMAGE_ALT,
+        type: SITE_OG_IMAGE_TYPE,
       },
     ],
-    type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Monojit Goswami | Portfolio",
-    description: "Monojit Goswami - Backend & AI Engineer specializing in RAG systems and high-performance ML pipelines",
-    images: ["https://mgbuilds.in/og_image/og-image.png"],
+    title: SITE_TITLE_DEFAULT,
+    description: SITE_DESCRIPTION,
+    site: TWITTER_HANDLE,
+    creator: TWITTER_HANDLE,
+    images: [
+      {
+        url: SITE_OG_IMAGE,
+        alt: SITE_OG_IMAGE_ALT,
+      },
+    ],
   },
+  category: "technology",
 };
 
 export default function RootLayout({
@@ -85,22 +148,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <head>
-        <meta name="theme-color" content="#0f172a" />
-        <meta name="mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <meta name="apple-mobile-web-app-title" content="MG | Portfolio" />
-        <link rel="manifest" href="/favicons/site.webmanifest" />
-      </head>
       <body
         className={[
           spaceGrotesk.variable,
           jetBrainsMono.variable,
           averiaSerifLibre.variable,
           quantico.variable,
+          rubikBubbles.variable,
         ].join(" ")}
       >
+        <a href="#main-content" className="skip-to-content">
+          Skip to main content
+        </a>
         <LenisProvider>
           <PWARegister />
           {children}

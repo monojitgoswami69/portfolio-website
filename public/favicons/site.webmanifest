@@ -35,9 +35,9 @@
     "categories": ["portfolio", "business", "technology"],
     "screenshots": [
         {
-            "src": "/og_image/og-image.png",
+            "src": "/og_image/og-image.webp",
             "sizes": "1200x630",
-            "type": "image/png",
+            "type": "image/webp",
             "form_factor": "wide"
         }
     ],
@@ -46,7 +46,7 @@
             "name": "View Projects",
             "short_name": "Projects",
             "description": "View portfolio projects",
-            "url": "/?tab=projects",
+            "url": "/#projects",
             "icons": [
                 {
                     "src": "/favicons/android-chrome-192x192.png",
@@ -58,7 +58,7 @@
             "name": "Contact Me",
             "short_name": "Contact",
             "description": "Get in touch",
-            "url": "/?tab=contact",
+            "url": "/#contact",
             "icons": [
                 {
                     "src": "/favicons/android-chrome-192x192.png",

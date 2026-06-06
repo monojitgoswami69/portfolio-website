@@ -4,9 +4,15 @@ import { getAuthenticatedUser } from "@/features/admin/server/auth";
 import { logActivity } from "@/features/admin/server/activity";
 import { initializeDatabase, isDatabaseConfigured } from "@/features/admin/server/db-utils";
 import { communications } from "@/features/admin/server/schema";
+import { getClientIp } from "@/features/chat/server/server";
+import { checkRateLimit } from "@/lib/server/rate-limit";
 
 const ALLOWED_STATUSES = new Set(["new", "done", "dismissed"]);
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const SUBMIT_BUCKET = "contact-form";
+const SUBMIT_LIMIT = 5;
+const SUBMIT_WINDOW_SECONDS = 60 * 60;
 
 export async function GET(request: Request) {
   const auth = await getAuthenticatedUser();
@@ -54,6 +60,24 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    const ip = getClientIp(request);
+    const rateLimit = await checkRateLimit({
+      bucket: SUBMIT_BUCKET,
+      subject: ip,
+      limit: SUBMIT_LIMIT,
+      windowSeconds: SUBMIT_WINDOW_SECONDS,
+    });
+    if (!rateLimit.allowed) {
+      const retryAfterSeconds = Math.max(1, Math.ceil((rateLimit.resetAt - Date.now()) / 1000));
+      return NextResponse.json(
+        { error: "You've submitted too many messages. Please try again later." },
+        {
+          status: 429,
+          headers: { "Retry-After": String(retryAfterSeconds) },
+        }
+      );
+    }
+
     if (!isDatabaseConfigured()) {
       return NextResponse.json(
         { error: "Database is not configured for communication submissions yet." },

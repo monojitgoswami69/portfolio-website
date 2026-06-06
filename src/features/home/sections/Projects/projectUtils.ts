@@ -1,6 +1,7 @@
 import { isSafeUrl } from '@/utils/security';
 
 export interface ProjectData {
+    id?: string;
     name: string;
     description: string;
     longDescription?: string;
@@ -22,13 +23,13 @@ export const isValidLink = (link?: string): boolean => {
 export const getStatusColor = (status?: string): string => {
     switch (status?.toLowerCase()) {
         case 'completed':
-            return 'bg-green-500/20 text-green-400 border-green-500/30';
+            return 'bg-[#a3be8c]/15 text-[#a3be8c]';
         case 'in development':
         case 'under development':
-            return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
+            return 'bg-[#ebcb8b]/15 text-[#ebcb8b]';
         case 'on hold':
-            return 'bg-red-500/20 text-red-400 border-red-500/30';
+            return 'bg-[#bf616a]/15 text-[#bf616a]';
         default:
-            return 'bg-slate-500/20 text-slate-400 border-slate-500/30';
+            return 'bg-[#d8dee9]/10 text-[#d8dee9]';
     }
 };

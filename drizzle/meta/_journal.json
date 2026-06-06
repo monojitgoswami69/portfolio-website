@@ -22,6 +22,13 @@
       "when": 1777385770825,
       "tag": "0002_cooing_post",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1777385900000,
+      "tag": "0003_weekly_metrics_unique_date",
+      "breakpoints": true
     }
   ]
 }

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { OfflineActions } from "./offline-actions";
 
 export const metadata: Metadata = {
   title: "Offline | MG Portfolio",
@@ -7,12 +8,13 @@ export const metadata: Metadata = {
 
 export default function OfflinePage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-slate-950 to-slate-900 px-4">
-      <div className="text-center max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-[var(--bg-base)] px-6 py-12 relative overflow-hidden">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(136,192,208,0.05),transparent_40%),radial-gradient(circle_at_bottom,rgba(180,142,173,0.05),transparent_35%)]" />
+      <div className="text-center max-w-md relative z-10 border-2 border-[var(--border-color)] bg-[var(--bg-card)] p-8 md:p-10 shadow-[var(--shadow-lg)] rounded-base">
         <div className="mb-6">
-          <div className="w-20 h-20 mx-auto bg-slate-800 rounded-full flex items-center justify-center">
+          <div className="w-20 h-20 mx-auto bg-[var(--bg-card-alt)] border-2 border-[var(--border-color)] rounded-base flex items-center justify-center shadow-[3px_3px_0px_0px_var(--shadow-color)]">
             <svg
-              className="w-10 h-10 text-slate-400"
+              className="w-10 h-10 text-[#88c0d0]"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -27,37 +29,24 @@ export default function OfflinePage() {
           </div>
         </div>
 
-        <h1 className="text-4xl font-space-grotesk font-bold text-white mb-2">You&rsquo;re Offline</h1>
-        <p className="text-slate-400 mb-8">
-          It looks like you&rsquo;ve lost your internet connection. Some features may be limited.
+        <h1 className="text-3xl font-quantico font-bold text-white mb-2 uppercase tracking-wider">Connection Severed</h1>
+        <p className="text-slate-400 text-xs md:text-sm font-mono mb-8">
+          The network link is down. Offline cached state active.
         </p>
 
-        <div className="space-y-4 mb-8 text-left bg-slate-800/50 rounded-lg p-4 border border-slate-700">
-          <p className="text-sm text-slate-300 font-medium">✓ Available offline:</p>
-          <ul className="space-y-2 text-sm text-slate-400">
+        <div className="space-y-3 mb-8 text-left bg-[var(--bg-card-alt)] rounded-base p-5 border-2 border-[var(--border-color)] shadow-[3px_3px_0px_0px_var(--shadow-color)]">
+          <p className="text-xs text-[#88c0d0] font-mono font-bold uppercase tracking-wider">✓ CACHED PROCEDURES ACTIVE:</p>
+          <ul className="space-y-2 text-[11px] md:text-xs text-slate-400 font-mono">
             <li>• View cached pages and projects</li>
             <li>• Access previously loaded content</li>
-            <li>• Read skills and experience</li>
+            <li>• Read technical skills and experience</li>
           </ul>
         </div>
 
-        <div className="space-y-2">
-          <button
-            onClick={() => window.location.href = "/"}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors"
-          >
-            Go to Home
-          </button>
-          <button
-            onClick={() => window.location.reload()}
-            className="w-full bg-slate-700 hover:bg-slate-600 text-white font-medium py-3 px-4 rounded-lg transition-colors"
-          >
-            Try Again
-          </button>
-        </div>
+        <OfflineActions />
 
-        <p className="text-xs text-slate-500 mt-6">
-          Reconnect to your internet to access all features.
+        <p className="text-[10px] text-slate-500 mt-6 font-mono uppercase tracking-widest">
+          Reconnect physical link to restore live chat
         </p>
       </div>
     </div>
