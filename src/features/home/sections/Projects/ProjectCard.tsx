@@ -305,9 +305,9 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, index, onSelect }) =
                             e.stopPropagation();
                             onSelect(project);
                         }}
-                        className="md:hidden flex items-center justify-center gap-2 w-full px-4 py-2 bg-[var(--bg-card-alt)] border-2 border-[var(--border-color)] text-slate-300 shadow-[3px_3px_0px_0px_var(--shadow-color)] active:bg-[#1b2234] active:text-white active:translate-x-[3px] active:translate-y-[3px] active:shadow-none active:transition-none transition-all duration-200 text-[10px] font-mono font-bold rounded-base cursor-pointer"
+                        className="md:hidden flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-[var(--bg-card-alt)] border-2 border-[var(--border-color)] text-slate-300 shadow-[3px_3px_0px_0px_var(--shadow-color)] hover:translate-x-[3px] hover:translate-y-[3px] hover:shadow-none active:bg-[#1b2234] active:text-white active:translate-x-[3px] active:translate-y-[3px] active:shadow-none active:transition-none transition-all duration-200 text-xs font-mono font-bold leading-none rounded-base cursor-pointer"
                     >
-                        <Maximize2 className="w-3.5 h-3.5" />
+                        <Maximize2 className="w-4 h-4 shrink-0" />
                         View Details
                     </button>
 
@@ -321,12 +321,12 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, index, onSelect }) =
                                     rel="noopener noreferrer"
                                     aria-label={`Live demo of ${project.name}`}
                                     onClick={(e) => e.stopPropagation()}
-                                    className={`flex-1 flex items-center justify-center gap-1.5 py-2 bg-[#88c0d0] text-[#1b2234] border-2 border-transparent font-mono font-bold shadow-[3px_3px_0px_0px_var(--shadow-color)] hover:translate-x-[3px] hover:translate-y-[3px] hover:shadow-none active:translate-x-[3px] active:translate-y-[3px] active:shadow-none active:transition-none transition-all duration-200 whitespace-nowrap rounded-base ${isValidLink(project.demoUrl) && isValidLink(project.githubUrl)
-                                        ? 'text-[10px] px-2 md:text-sm md:px-4'
+                                    className={`flex-1 flex items-center justify-center gap-2 py-2.5 bg-[#88c0d0] text-[#1b2234] border-2 border-transparent font-mono font-bold leading-none shadow-[3px_3px_0px_0px_var(--shadow-color)] hover:translate-x-[3px] hover:translate-y-[3px] hover:shadow-none active:translate-x-[3px] active:translate-y-[3px] active:shadow-none active:transition-none transition-all duration-200 whitespace-nowrap rounded-base ${isValidLink(project.demoUrl) && isValidLink(project.githubUrl)
+                                        ? 'text-xs px-2.5 md:text-sm md:px-4'
                                         : 'text-xs px-4 md:text-sm'
                                     }`}
                                 >
-                                    <ExternalLink className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                                    <ExternalLink className="w-4 h-4 shrink-0" />
                                     Live Demo
                                 </a>
                             )}
@@ -337,12 +337,12 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, index, onSelect }) =
                                     rel="noopener noreferrer"
                                     aria-label={`Source code for ${project.name} on GitHub`}
                                     onClick={(e) => e.stopPropagation()}
-                                    className={`flex-1 flex items-center justify-center gap-1.5 py-2 bg-[#b48ead] text-[#1b2234] border-2 border-transparent font-mono font-bold shadow-[3px_3px_0px_0px_var(--shadow-color)] hover:translate-x-[3px] hover:translate-y-[3px] hover:shadow-none active:translate-x-[3px] active:translate-y-[3px] active:shadow-none active:transition-none transition-all duration-200 whitespace-nowrap rounded-base ${isValidLink(project.demoUrl) && isValidLink(project.githubUrl)
-                                        ? 'text-[10px] px-2 md:text-sm md:px-4'
+                                    className={`flex-1 flex items-center justify-center gap-2 py-2.5 bg-[#b48ead] text-[#1b2234] border-2 border-transparent font-mono font-bold leading-none shadow-[3px_3px_0px_0px_var(--shadow-color)] hover:translate-x-[3px] hover:translate-y-[3px] hover:shadow-none active:translate-x-[3px] active:translate-y-[3px] active:shadow-none active:transition-none transition-all duration-200 whitespace-nowrap rounded-base ${isValidLink(project.demoUrl) && isValidLink(project.githubUrl)
+                                        ? 'text-xs px-2.5 md:text-sm md:px-4'
                                         : 'text-xs px-4 md:text-sm'
                                     }`}
                                 >
-                                    <Github className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                                    <Github className="w-4 h-4 shrink-0" />
                                     Source Code
                                 </a>
                             )}
