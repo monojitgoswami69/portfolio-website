@@ -28,7 +28,7 @@ const Projects: React.FC<ProjectsProps> = ({ projects }) => {
     }, [selectedProject]);
 
     const sortedProjects = useMemo(() => {
-        return [...projects].sort((a, b) => {
+        return projects.filter((project) => project.visible !== false).sort((a, b) => {
             const aFeatured = !!a.featured;
             const bFeatured = !!b.featured;
             if (aFeatured && !bFeatured) return -1;

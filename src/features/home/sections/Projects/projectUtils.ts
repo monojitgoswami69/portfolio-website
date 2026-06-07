@@ -14,6 +14,7 @@ export interface ProjectData {
 
     category?: string;
     featured?: boolean;
+    visible?: boolean;
 }
 
 export const isValidLink = (link?: string): boolean => {
