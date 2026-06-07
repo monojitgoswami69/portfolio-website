@@ -6,10 +6,18 @@ interface GitHubSyncTarget {
 
 const GITHUB_API_BASE = "https://api.github.com";
 
+function normalizeRepo(raw: string) {
+  return raw
+    .trim()
+    .replace(/^https?:\/\/github\.com\//i, "")
+    .replace(/\.git$/i, "")
+    .replace(/\/+$/, "");
+}
+
 function getGitHubConfig() {
   return {
     token: process.env.GITHUB_TOKEN ?? "",
-    repo: process.env.GITHUB_REPO ?? "",
+    repo: normalizeRepo(process.env.GITHUB_REPO ?? ""),
     branch: process.env.GITHUB_BRANCH ?? "main",
   };
 }

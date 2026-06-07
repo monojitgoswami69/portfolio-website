@@ -11,8 +11,8 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variants = {
   primary:
-    'bg-indigo-600 hover:bg-indigo-700 text-white font-bold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed',
-  secondary: 'bg-slate-200 hover:bg-slate-300 text-slate-900 font-semibold transition-colors',
+    'bg-indigo-600 hover:bg-indigo-700 text-white font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed',
+  secondary: 'bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold transition-colors',
   ghost: 'text-slate-700 hover:bg-slate-100 transition-colors',
 };
 

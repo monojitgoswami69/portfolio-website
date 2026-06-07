@@ -1,6 +1,10 @@
 import { promises as fs } from "fs";
 import path from "path";
-import { isGitHubSyncConfigured, syncJsonFileToGitHub } from "@/features/admin/server/github-sync";
+import {
+  getGitHubTextFile,
+  isGitHubSyncConfigured,
+  syncJsonFileToGitHub,
+} from "@/features/admin/server/github-sync";
 
 export interface SiteContact {
   email: string;
@@ -68,8 +72,25 @@ function normalizeProject(project: SiteProject, index: number): SiteProject {
   };
 }
 
+async function readJsonSource(githubPath: string, localPath: string) {
+  if (isGitHubSyncConfigured()) {
+    try {
+      const remote = await getGitHubTextFile(githubPath);
+      if (remote.content) {
+        return remote.content;
+      }
+    } catch (error) {
+      console.warn(
+        `Falling back to local file for ${githubPath}; GitHub read failed:`,
+        error
+      );
+    }
+  }
+  return fs.readFile(localPath, "utf8");
+}
+
 export async function readProjectsFile() {
-  const content = await fs.readFile(PROJECTS_FILE, "utf8");
+  const content = await readJsonSource(GITHUB_PROJECTS_FILE, PROJECTS_FILE);
   const parsed = JSON.parse(content) as SiteProject[];
   return parsed.map(normalizeProject);
 }
@@ -103,7 +124,7 @@ export async function writeProjectsFile(
 }
 
 export async function readContactFile() {
-  const content = await fs.readFile(CONTACT_FILE, "utf8");
+  const content = await readJsonSource(GITHUB_CONTACT_FILE, CONTACT_FILE);
   const parsed = JSON.parse(content) as Partial<SiteContactFile> | SiteContact;
   const contact =
     parsed && typeof parsed === "object" && "contact" in parsed

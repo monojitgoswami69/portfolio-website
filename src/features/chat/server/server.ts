@@ -555,7 +555,7 @@ export async function incrementCounter() {
     const db = initializeDatabase();
     const today = isoDate(new Date());
 
-    await db
+    const result = await db
       .insert(weeklyMetrics)
       .values({
         date: today,
@@ -567,7 +567,12 @@ export async function incrementCounter() {
           queries: sql`${weeklyMetrics.queries} + 1`,
           updatedAt: new Date(),
         },
-      });
+      })
+      .returning({ date: weeklyMetrics.date, queries: weeklyMetrics.queries });
+
+    if (!result[0]) {
+      console.error("incrementCounter: upsert returned no row for", today);
+    }
   } catch (error) {
     console.error("Failed to increment weekly metrics:", error);
   }

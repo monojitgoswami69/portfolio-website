@@ -39,7 +39,7 @@ export async function POST(request: Request) {
       payload.message,
       payload.history || []
     );
-    void incrementCounter();
+    await incrementCounter();
 
     return NextResponse.json(
       {

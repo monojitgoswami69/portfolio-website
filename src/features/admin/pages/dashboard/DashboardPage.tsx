@@ -4,6 +4,10 @@ import React, { useState, useEffect } from 'react';
 import { motion } from '@/lib/motion';
 import { Clock, AlertCircle, RefreshCw, ListFilter } from 'lucide-react';
 import { cn } from '@/lib/cn';
+import { getCached, setCached } from '@/features/admin/lib/cache';
+
+const CACHE_KEY_WEEKLY = 'admin:dashboard:weekly';
+const CACHE_KEY_ACTIVITY = 'admin:dashboard:activity';
 
 // Reuse same generating logic from legacy for consistency
 const generateFallbackWeeklyData = () => {
@@ -64,34 +68,28 @@ function MiniBarChart({ data }: { data: WeeklyDataItem[] }) {
   const maxValue = Math.max(...data.map(d => d.queries), 1);
 
   return (
-    <div className="flex items-end justify-between gap-1 sm:gap-4 h-32 sm:h-48 px-2">
+    <div className="flex items-end justify-between gap-2 sm:gap-6 h-32 px-1">
       {data.map((item, index) => {
         const height = (item.queries / maxValue) * 100;
         return (
           <div
             key={index}
-            className="flex-1 flex flex-col items-center gap-2 h-full min-w-0 group"
+            className="flex-1 flex flex-col items-center gap-1.5 h-full min-w-0"
           >
-            <span className="text-[11px] font-bold text-neutral-900 font-display">
+            <span className="text-[10px] font-semibold text-neutral-800 font-display">
                {item.queries}
             </span>
             <div className="w-full flex-1 relative">
-              <div className="absolute inset-0 bg-neutral-100 rounded-lg overflow-hidden border border-neutral-200/50">
+              <div className="absolute inset-0 bg-neutral-100 rounded-md overflow-hidden">
                 <motion.div
-                  className="w-full bg-primary/20 absolute bottom-0"
-                  initial={{ height: 0 }}
-                  animate={{ height: `100%` }}
-                  transition={{ duration: 0.8, ease: "easeInOut" }}
-                />
-                <motion.div
-                  className="w-full bg-primary/40 rounded-t-lg absolute bottom-0 border-t-2 border-primary"
+                  className="w-full bg-indigo-600 absolute bottom-0"
                   initial={{ height: 0 }}
                   animate={{ height: `${Math.max(height, 2)}%` }}
-                  transition={{ delay: index * 0.05, duration: 0.4, ease: 'easeOut' }}
+                  transition={{ delay: index * 0.03, duration: 0.3, ease: 'easeOut' }}
                 />
               </div>
             </div>
-            <div className="text-[11px] text-neutral-500 font-bold uppercase tracking-wider text-center truncate w-full font-display">
+            <div className="text-[10px] text-neutral-400 font-semibold uppercase tracking-wider text-center truncate w-full font-display">
               {item.date}
             </div>
           </div>
@@ -145,20 +143,18 @@ function ActivityItem({
 
   return (
     <motion.div
-      className="flex items-start gap-4 py-5 border-b border-neutral-100 last:border-0 group"
+      className="flex items-start gap-3 py-4 border-b border-neutral-100 last:border-0"
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05, duration: 0.2 }}
     >
-      <div className="w-10 h-10 bg-indigo-50 rounded-full flex items-center justify-center flex-shrink-0 group-hover:bg-indigo-100 transition-colors">
-        <Clock className="w-5 h-5 text-indigo-500" />
-      </div>
+      <Clock className="w-4 h-4 text-neutral-400 mt-1 flex-shrink-0" />
       <div className="flex-1 min-w-0">
-        <p className="text-[15px] font-bold text-neutral-900 tracking-tight leading-snug font-display">{formatAction()}</p>
+        <p className="text-sm font-semibold text-neutral-800 tracking-tight leading-snug font-display">{formatAction()}</p>
         <div className="flex items-center gap-2 mt-1">
-          <span className="text-[11px] font-bold text-primary uppercase font-display">{actor}</span>
+          <span className="text-[10px] font-bold text-indigo-650 uppercase font-display">{actor}</span>
           <span className="text-neutral-300">•</span>
-          <span className="text-[11px] text-neutral-400 font-bold uppercase tracking-wider font-display">
+          <span className="text-[10px] text-neutral-400 font-bold uppercase tracking-wider font-display">
             {formatToIST(timestamp)} IST
           </span>
         </div>
@@ -180,14 +176,18 @@ const cardVariants = {
 };
 
 export default function DashboardPage() {
-  const [weeklyData, setWeeklyData] = useState<WeeklyDataItem[]>(generateFallbackWeeklyData());
-  const [activityData, setActivityData] = useState<DashboardActivity[]>([]);
-  const [loading, setLoading] = useState(true);
+  const cachedWeekly = getCached<WeeklyDataItem[]>(CACHE_KEY_WEEKLY);
+  const cachedActivity = getCached<DashboardActivity[]>(CACHE_KEY_ACTIVITY);
+  const [weeklyData, setWeeklyData] = useState<WeeklyDataItem[]>(
+    cachedWeekly ?? generateFallbackWeeklyData()
+  );
+  const [activityData, setActivityData] = useState<DashboardActivity[]>(cachedActivity ?? []);
+  const [loading, setLoading] = useState(!cachedWeekly || !cachedActivity);
   const [error, setError] = useState<string | null>(null);
   const [dataStatusMessage, setDataStatusMessage] = useState<string | null>(null);
 
-  const fetchDashboardData = async () => {
-    setLoading(true);
+  const fetchDashboardData = async (options: { silent?: boolean } = {}) => {
+    if (!options.silent) setLoading(true);
     setError(null);
     setDataStatusMessage(null);
     try {
@@ -204,13 +204,19 @@ export default function DashboardPage() {
         weeklyDataJson.message || activityDataJson.message || null;
 
       if (weeklyDataJson.weekly) {
-        setWeeklyData(weeklyDataJson.weekly.map((item: { date: string; queries?: number }) => ({
-          date: formatChartDate(item.date),
-          queries: item.queries || 0
-        })));
+        const weekly = weeklyDataJson.weekly.map(
+          (item: { date: string; queries?: number }) => ({
+            date: formatChartDate(item.date),
+            queries: item.queries || 0,
+          })
+        );
+        setWeeklyData(weekly);
+        setCached(CACHE_KEY_WEEKLY, weekly);
       }
 
-      setActivityData(activityDataJson.activity || []);
+      const activity: DashboardActivity[] = activityDataJson.activity || [];
+      setActivityData(activity);
+      setCached(CACHE_KEY_ACTIVITY, activity);
       setDataStatusMessage(statusMessage);
     } catch (err) {
       console.error('Dashboard fetch error:', err);
@@ -247,7 +253,7 @@ export default function DashboardPage() {
             </p>
           </div>
           <button
-            onClick={fetchDashboardData}
+            onClick={() => fetchDashboardData({ silent: true })}
             className="p-3 bg-white border border-neutral-200 text-neutral-600 rounded-xl hover:bg-neutral-50 hover:text-neutral-900 transition-all shadow-sm"
             title="Refresh Data"
           >
@@ -275,8 +281,8 @@ export default function DashboardPage() {
             </div>
             <div className="flex-1 flex flex-col items-center justify-center p-12 text-center">
                <p className="text-neutral-400 font-medium">Unable to load activity history.</p>
-               <button 
-                 onClick={fetchDashboardData}
+               <button
+                 onClick={() => fetchDashboardData()}
                  className="mt-4 text-primary font-bold text-sm hover:underline"
                >
                  Try to reconnect
@@ -299,31 +305,31 @@ export default function DashboardPage() {
       {/* Header Area */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-black text-neutral-900 tracking-tight font-display">
+          <h1 className="text-2xl font-bold text-neutral-900 tracking-tight font-display uppercase">
             Dashboard
           </h1>
-          <p className="text-neutral-500 font-medium mt-1">
+          <p className="text-neutral-500 font-medium text-[11px] tracking-widest uppercase mt-0.5">
             System overview and recent activities.
           </p>
         </div>
         <button
-          onClick={fetchDashboardData}
+          onClick={() => fetchDashboardData({ silent: true })}
           disabled={loading}
-          className="p-3 bg-white border border-neutral-200 text-neutral-600 rounded-xl hover:bg-neutral-50 hover:text-neutral-900 transition-all disabled:opacity-50 shadow-sm"
+          className="p-2.5 bg-white border border-neutral-200 text-neutral-600 rounded-lg hover:bg-neutral-50 hover:text-neutral-900 transition-colors disabled:opacity-50"
           title="Refresh Data"
         >
-          <RefreshCw className={cn("w-5 h-5", loading && "animate-spin")} />
+          <RefreshCw className={cn("w-4 h-4", loading && "animate-spin")} />
         </button>
       </div>
 
       {dataStatusMessage ? (
         <motion.div
-          className="flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-amber-900"
+          className="flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-amber-900 animate-fade-in"
           variants={cardVariants}
         >
-          <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0" />
+          <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0" />
           <div>
-            <p className="text-sm font-bold uppercase tracking-wide">Limited Data Mode</p>
+            <p className="text-xs font-bold uppercase tracking-wide">Limited Data Mode</p>
             <p className="text-sm text-amber-800">{dataStatusMessage}</p>
           </div>
         </motion.div>
@@ -332,25 +338,24 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 gap-6">
         {/* Weekly Activity Chart Card */}
         <motion.div
-          className="bg-white rounded-2xl shadow-sm border border-neutral-100 overflow-hidden"
+          className="bg-white rounded-xl border border-neutral-200 overflow-hidden"
           variants={cardVariants}
         >
-          <div className="p-6 border-b border-neutral-50 flex items-center justify-between">
-            <h3 className="font-bold text-neutral-900 tracking-tight text-sm uppercase">Weekly Activity</h3>
+          <div className="p-5 border-b border-neutral-200 flex items-center justify-between">
+            <h3 className="font-bold text-neutral-900 tracking-tight text-[11px] uppercase tracking-wider">Weekly Activity</h3>
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-1.5">
-                <div className="w-2 h-2 bg-primary rounded-full" />
-                <span className="text-[11px] font-bold text-neutral-400 uppercase tracking-widest">Queries</span>
+                <div className="w-2 h-2 bg-indigo-650 rounded-full" />
+                <span className="text-[10px] font-semibold text-neutral-400 uppercase tracking-wider">Queries</span>
               </div>
             </div>
           </div>
-          <div className="p-8">
+          <div className="p-6">
             {loading && activityData.length === 0 ? (
-
-               <div className="h-40 flex items-center justify-center">
+               <div className="h-32 flex items-center justify-center">
                   <div className="flex gap-1.5">
                     {[0, 1, 2].map(i => (
-                      <div key={i} className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: `${i*0.1}s` }} />
+                      <div key={i} className="w-2.5 h-2.5 bg-indigo-600 rounded-full animate-bounce" style={{ animationDelay: `${i*0.1}s` }} />
                     ))}
                   </div>
                </div>
@@ -362,21 +367,25 @@ export default function DashboardPage() {
 
         {/* Activity Feed */}
         <motion.div
-          className="bg-white rounded-2xl shadow-sm border border-neutral-100 overflow-hidden"
+          className="bg-white rounded-xl border border-neutral-200 overflow-hidden"
           variants={cardVariants}
         >
-          <div className="p-6 border-b border-neutral-50 flex items-center justify-between">
-            <h3 className="font-bold text-neutral-900 tracking-tight text-sm uppercase">Recent Activity</h3>
-            <button className="text-[11px] font-bold text-primary uppercase tracking-widest hover:underline px-2 py-1">See More &gt;</button>
+          <div className="p-5 border-b border-neutral-200 flex items-center justify-between">
+            <h3 className="font-bold text-neutral-900 tracking-tight text-[11px] uppercase tracking-wider">Recent Activity</h3>
+            <button
+              onClick={() => fetchDashboardData({ silent: true })}
+              className="text-[10px] font-semibold text-indigo-650 uppercase tracking-wider hover:underline"
+            >
+              Sync Log
+            </button>
           </div>
-          <div className="divide-y divide-neutral-100 px-6">
-
+          <div className="divide-y divide-neutral-100 px-5">
             {loading && activityData.length === 0 ? (
               Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="py-6 flex items-start gap-4 animate-pulse">
-                  <div className="w-10 h-10 bg-neutral-100 rounded-xl" />
+                <div key={i} className="py-5 flex items-start gap-4 animate-pulse">
+                  <div className="w-8 h-8 bg-neutral-100 rounded-lg" />
                   <div className="flex-1 space-y-2">
-                    <div className="h-4 bg-neutral-100 rounded w-1/4" />
+                    <div className="h-3.5 bg-neutral-100 rounded w-1/4" />
                     <div className="h-3 bg-neutral-100 rounded w-1/2" />
                   </div>
                 </div>
@@ -390,7 +399,7 @@ export default function DashboardPage() {
                 />
               ))
             ) : (
-              <div className="py-12 text-center text-neutral-400 font-medium">
+              <div className="py-10 text-center text-neutral-450 text-sm font-medium">
                 No recent activity found.
               </div>
             )}

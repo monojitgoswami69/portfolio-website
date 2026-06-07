@@ -1,12 +1,17 @@
 'use client';
 
 import Image from 'next/image';
+import loginBackground from '../../../../../public/admin/login/login_background.webp';
+import loginLeftCard from '../../../../../public/admin/login/login_leftcard.webp';
 import { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/features/admin/components/ui/Button';
 import { useAuth } from '@/features/admin/components/context/AuthContext';
 import { useToast } from '@/features/admin/components/context/ToastContext';
 import { useRouter } from 'next/navigation';
+
+const backgroundImageSizes = '100vw';
+const leftCardImageSizes = '(max-width: 768px) calc(100vw - 3.5rem), 461px';
 
 export default function LoginPage() {
   const [username, setUsername] = useState(() => {
@@ -67,26 +72,32 @@ export default function LoginPage() {
         <Image
           alt="Scenic mountain landscape at dawn"
           className="scenic-image"
-          src="/admin/login/login_background.webp"
+          src={loginBackground}
           fill
           priority
-          sizes="100vw"
+          fetchPriority="high"
+          placeholder="blur"
+          quality={70}
+          sizes={backgroundImageSizes}
         />
       </div>
 
       {/* Main Glass Card Container */}
-      <div className="w-full max-w-5xl glass-card rounded-card flex flex-col md:flex-row overflow-hidden min-h-[600px] transition-all duration-300">
+      <div className="w-full max-w-5xl glass-card rounded-[28px] md:rounded-[32px] flex flex-col md:flex-row overflow-hidden min-h-[600px] transition-all duration-300">
         {/* Left Panel */}
         <div className="md:w-[45%] p-3 md:p-4 flex flex-col">
           <div className="relative rounded-[24px] w-full h-full flex flex-col justify-end text-white overflow-hidden shadow-2xl bg-white/10 backdrop-blur-2xl min-h-[300px] md:min-h-0">
             {/* Background Image */}
             <Image
-              src="/admin/login/login_leftcard.webp"
+              src={loginLeftCard}
               className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 hover:scale-105 opacity-85"
               alt="Login Visual"
               fill
               priority
-              sizes="(max-width: 768px) 100vw, 45vw"
+              fetchPriority="high"
+              placeholder="blur"
+              quality={80}
+              sizes={leftCardImageSizes}
             />
 
             {/* Soft Gradient Overlay for text readability */}

@@ -3,13 +3,17 @@
 import { ReactNode } from 'react';
 import { AuthProvider } from './AuthContext';
 import { ToastProvider } from './ToastContext';
+import { LazyMotion, domMax } from '@/lib/motion';
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
-    <AuthProvider>
-      <ToastProvider>
-        {children}
-      </ToastProvider>
-    </AuthProvider>
+    <LazyMotion features={domMax} strict>
+      <AuthProvider>
+        <ToastProvider>
+          {children}
+        </ToastProvider>
+      </AuthProvider>
+    </LazyMotion>
   );
 }
+

@@ -35,7 +35,7 @@ const Hero: React.FC<HeroProps> = ({ onScrollToSkills }) => {
 
 
                 <h1 className="flex flex-col items-center justify-center text-center mb-6">
-                    <span className="block text-[#88c0d0] font-quantico text-xl md:text-3xl tracking-wider mb-4">
+                    <span className="block text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 font-quantico text-transparent bg-clip-text bg-gradient-to-r from-[#88c0d0] to-[#b48ead]">
                         1.0 // IDENTITY
                     </span>
                     <span 

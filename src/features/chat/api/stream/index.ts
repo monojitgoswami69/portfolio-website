@@ -45,7 +45,7 @@ export async function POST(request: Request) {
           }
 
           controller.enqueue(encoder.encode("data: [DONE]\n\n"));
-          void incrementCounter();
+          await incrementCounter();
           controller.close();
         } catch (error) {
           console.error("POST /api/chat/stream error:", error);

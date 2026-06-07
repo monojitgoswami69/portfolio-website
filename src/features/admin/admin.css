@@ -62,7 +62,7 @@
 
 .admin-theme .mountain-bg {
   position: absolute;
-  inset: 0;
+  inset: -24px;
   z-index: 0;
 }
 
@@ -83,6 +83,7 @@
   background: rgba(255, 255, 255, 0.25);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+  border-radius: 32px;
   border: none;
   box-shadow:
     0 20px 40px rgba(0, 0, 0, 0.05),
@@ -125,4 +126,81 @@
   align-items: center;
   justify-content: center;
   background: #f8fafc;
+}
+
+.admin-theme {
+  scrollbar-width: thin;
+  scrollbar-color: var(--admin-neutral-300) transparent;
+}
+
+.admin-theme::-webkit-scrollbar {
+  width: 7px;
+}
+
+.admin-theme::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.admin-theme::-webkit-scrollbar-thumb {
+  background: var(--admin-neutral-300);
+  border-radius: 10px;
+}
+
+.admin-theme::-webkit-scrollbar-thumb:hover {
+  background: var(--admin-neutral-400);
+}
+
+/* Custom scrollbar for admin pages / light theme modals */
+.admin-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--admin-neutral-300) var(--admin-neutral-50);
+}
+
+.admin-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.admin-scrollbar::-webkit-scrollbar-track {
+  background: var(--admin-neutral-50);
+  border-left: 1px solid var(--admin-neutral-200);
+}
+
+.admin-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--admin-neutral-300);
+  border-radius: 3px;
+}
+
+.admin-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--admin-neutral-400);
+}
+
+/* Custom dark scrollbar for fields */
+.dark-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--admin-neutral-500) transparent;
+}
+
+.dark-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.dark-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dark-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--admin-neutral-500);
+  border-radius: 3px;
+}
+
+.dark-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--admin-neutral-600);
+}
+
+/* Ensure standard pointer cursor on hover for all active buttons/clickable components */
+.admin-theme button:not(:disabled),
+.admin-theme [role="button"]:not(:disabled) {
+  cursor: pointer;
 }

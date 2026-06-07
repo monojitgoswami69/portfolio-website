@@ -70,21 +70,21 @@ const SidebarItem = memo(function SidebarItem({
         href={item.path}
         onClick={onClick}
         className={cn(
-            "flex items-center gap-3 px-4 py-3 rounded-xl transition-all min-h-[44px] group relative overflow-hidden",
+            "flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all min-h-[40px] group relative overflow-hidden",
             "focus:outline-none",
             isActive
-              ? "text-white sidebar-active-gradient shadow-md shadow-primary/20"
-              : "text-neutral-500 hover:bg-gray-100 hover:text-neutral-900"
+              ? "text-indigo-600 bg-neutral-100"
+              : "text-neutral-500 hover:bg-neutral-50 hover:text-neutral-900"
         )}
       >
         <div className="flex items-center gap-3 w-full relative z-10">
             <Icon className={cn(
               "w-5 h-5 flex-shrink-0 transition-colors",
-              isActive ? "text-white" : "group-hover:text-primary"
+              isActive ? "text-indigo-600" : "text-neutral-400 group-hover:text-neutral-700"
             )} aria-hidden="true" />
             <span className={cn(
-              "font-bold text-[13px] tracking-tight font-display",
-              isActive ? "text-white" : "text-neutral-500 group-hover:text-neutral-900"
+              "font-semibold text-[13px] tracking-tight font-display",
+              isActive ? "text-indigo-600" : "text-neutral-500 group-hover:text-neutral-900"
             )}>{item.label}</span>
         </div>
       </Link>
@@ -97,9 +97,9 @@ const UserSection = memo(function UserSection({ onLogout }: { onLogout: () => vo
     <div className="mt-auto px-4 pb-6">
       <button
         onClick={onLogout}
-        className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl text-red-500 hover:bg-red-50 transition-colors focus:outline-none bg-neutral-50/50"
+        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-semibold rounded-lg text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors focus:outline-none bg-neutral-50"
       >
-        <LogOut className="w-5 h-5 flex-shrink-0" aria-hidden="true" />
+        <LogOut className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
         <span>Logout</span>
       </button>
     </div>
@@ -110,9 +110,12 @@ const Logo = memo(function Logo({ onClose }: { onClose?: () => void }) {
   return (
     <div className="h-16 flex items-center justify-between px-4 border-b border-gray-100">
       <Link href="/admin/dashboard" className="flex items-center gap-2.5 no-underline ml-1">
-          <div className="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center flex-shrink-0 font-display font-bold text-sm" aria-hidden="true">
-              PM
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/assets/logo.png"
+            alt="Logo"
+            className="w-8 h-8 object-contain rounded-lg flex-shrink-0"
+          />
           <span className="font-bold text-[18px] tracking-tight text-neutral-900 truncate">Portfolio Manager</span>
       </Link>
       {onClose && (

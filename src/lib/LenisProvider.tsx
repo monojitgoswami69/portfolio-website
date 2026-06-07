@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { ReactLenis } from 'lenis/react';
+import { usePathname } from 'next/navigation';
 
 interface LenisProviderProps {
     children: React.ReactNode;
@@ -9,6 +10,7 @@ interface LenisProviderProps {
 
 export default function LenisProvider({ children }: LenisProviderProps) {
     const [reduceMotion, setReduceMotion] = useState(false);
+    const pathname = usePathname();
 
     useEffect(() => {
         const media = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -18,7 +20,9 @@ export default function LenisProvider({ children }: LenisProviderProps) {
         return () => media.removeEventListener('change', update);
     }, []);
 
-    if (reduceMotion) {
+    const isAdmin = pathname?.startsWith('/admin');
+
+    if (reduceMotion || isAdmin) {
         return <>{children}</>;
     }
 
@@ -28,3 +32,4 @@ export default function LenisProvider({ children }: LenisProviderProps) {
         </ReactLenis>
     );
 }
+

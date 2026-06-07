@@ -11,6 +11,12 @@ interface ContactProps {
     contact: SiteContact;
 }
 
+const CONTACT_FIELD_LIMITS = {
+    name: 100,
+    email: 254,
+    message: 2000
+} as const;
+
 const Contact: React.FC<ContactProps> = ({ contact }) => {
     const ref = useRef<HTMLElement>(null);
     const [formData, setFormData] = useState({
@@ -141,12 +147,18 @@ const Contact: React.FC<ContactProps> = ({ contact }) => {
                                         name="name"
                                         type="text"
                                         autoComplete="name"
+                                        maxLength={CONTACT_FIELD_LIMITS.name}
                                         value={formData.name}
                                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                         className="w-full bg-[var(--bg-input)] border-2 border-[var(--border-color)] px-3 py-2 lg:py-2.5 text-xs lg:text-sm font-mono text-white focus:border-[#88c0d0] focus:ring-0 outline-none transition-colors rounded-base mt-1.5"
                                         placeholder="Name"
                                         required
                                     />
+                                    {formData.name.length >= CONTACT_FIELD_LIMITS.name && (
+                                        <p className="mt-1 text-right text-[10px] lg:text-xs font-mono uppercase tracking-wider text-[#ebcb8b]">
+                                            Max characters reached
+                                        </p>
+                                    )}
                                 </div>
                                 <div>
                                     <label htmlFor="contact-email" className="text-xs lg:text-sm font-mono text-slate-400 font-bold block">RETURN_ADDRESS</label>
@@ -155,12 +167,18 @@ const Contact: React.FC<ContactProps> = ({ contact }) => {
                                         name="email"
                                         type="email"
                                         autoComplete="email"
+                                        maxLength={CONTACT_FIELD_LIMITS.email}
                                         value={formData.email}
                                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                         className="w-full bg-[var(--bg-input)] border-2 border-[var(--border-color)] px-3 py-2 lg:py-2.5 text-xs lg:text-sm font-mono text-white focus:border-[#88c0d0] focus:ring-0 outline-none transition-colors rounded-base mt-1.5"
                                         placeholder="Email"
                                         required
                                     />
+                                    {formData.email.length >= CONTACT_FIELD_LIMITS.email && (
+                                        <p className="mt-1 text-right text-[10px] lg:text-xs font-mono uppercase tracking-wider text-[#ebcb8b]">
+                                            Max characters reached
+                                        </p>
+                                    )}
                                 </div>
                             </div>
                             <div>
@@ -169,12 +187,18 @@ const Contact: React.FC<ContactProps> = ({ contact }) => {
                                     id="contact-message"
                                     name="message"
                                     rows={3}
+                                    maxLength={CONTACT_FIELD_LIMITS.message}
                                     value={formData.message}
                                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                                     className="w-full bg-[var(--bg-input)] border-2 border-[var(--border-color)] px-3 py-2 lg:py-2.5 text-xs lg:text-sm font-mono text-white focus:border-[#88c0d0] focus:ring-0 outline-none transition-colors min-h-[100px] rounded-base mt-1.5"
                                     placeholder="Message..."
                                     required
                                 />
+                                {formData.message.length >= CONTACT_FIELD_LIMITS.message && (
+                                    <p className="mt-1 text-right text-[10px] lg:text-xs font-mono uppercase tracking-wider text-[#ebcb8b]">
+                                        Max characters reached
+                                    </p>
+                                )}
                             </div>
 
                             {submitStatus === 'success' && (
