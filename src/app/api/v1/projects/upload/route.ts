@@ -53,11 +53,11 @@ export async function POST(request: Request) {
       : ".png";
     const base = slugify(file.name.replace(/\.[^.]+$/, "")) || "project";
     const uniqueName = `${base}-${Date.now()}${ext}`;
+    const buffer = Buffer.from(await file.arrayBuffer());
 
     const dir = join(process.cwd(), "public", "assets", "projects");
     await mkdir(dir, { recursive: true });
 
-    const buffer = Buffer.from(await file.arrayBuffer());
     await writeFile(join(dir, uniqueName), buffer);
 
     const url = `/assets/projects/${uniqueName}`;

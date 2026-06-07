@@ -3,6 +3,7 @@ import path from "path";
 import {
   getGitHubTextFile,
   isGitHubSyncConfigured,
+  syncFilesToGitHub,
   syncJsonFileToGitHub,
 } from "@/features/admin/server/github-sync";
 
@@ -111,6 +112,44 @@ export async function writeProjectsFile(
     path: GITHUB_PROJECTS_FILE,
     content: serialized,
     message,
+  });
+
+  if (!sync.synced) {
+    throw new Error(sync.reason || "GitHub sync failed for projects");
+  }
+
+  return {
+    projects: normalizedProjects,
+    sync,
+  };
+}
+
+export async function writeProjectsFileWithAssets({
+  projects,
+  assets,
+  message = "Update projects data",
+}: {
+  projects: SiteProject[];
+  assets: { path: string; content: Buffer }[];
+  message?: string;
+}) {
+  const normalizedProjects = projects.map(normalizeProject);
+  const serialized = `${JSON.stringify(normalizedProjects, null, 2)}\n`;
+  if (!isGitHubSyncConfigured()) {
+    throw new Error(
+      "GitHub sync is required for project updates. Configure GITHUB_TOKEN and GITHUB_REPO."
+    );
+  }
+
+  const sync = await syncFilesToGitHub({
+    message,
+    files: [
+      ...assets,
+      {
+        path: GITHUB_PROJECTS_FILE,
+        content: serialized,
+      },
+    ],
   });
 
   if (!sync.synced) {

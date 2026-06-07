@@ -5,7 +5,13 @@ import {
   readProjectsFile,
   type SiteProject,
   writeProjectsFile,
+  writeProjectsFileWithAssets,
 } from "@/lib/content/site-data";
+
+interface PendingProjectAsset {
+  path: string;
+  content: string;
+}
 
 function parseProjectPayload(body: Record<string, unknown>): SiteProject {
   const techStackInput = body.techStack;
@@ -45,6 +51,22 @@ function parseProjectPayload(body: Record<string, unknown>): SiteProject {
       typeof body.rank === "number" && Number.isFinite(body.rank)
         ? body.rank
         : 999,
+  };
+}
+
+function parseAssetPayload(asset: unknown): { path: string; content: Buffer } | null {
+  if (!asset || typeof asset !== "object") return null;
+  const record = asset as PendingProjectAsset;
+  const path = String(record.path || "").trim();
+  const content = String(record.content || "");
+
+  if (!path.startsWith("public/assets/projects/") || !content) {
+    return null;
+  }
+
+  return {
+    path,
+    content: Buffer.from(content, "base64"),
   };
 }
 
@@ -95,6 +117,68 @@ export async function POST(request: Request) {
     console.error("POST projects error:", error);
     return NextResponse.json(
       { error: "Failed to create project" },
+      { status: 400 }
+    );
+  }
+}
+
+export async function PATCH(request: Request) {
+  const auth = await getAuthenticatedUser();
+  if (!auth) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const body = await request.json();
+    const createsInput: unknown[] = Array.isArray(body.creates) ? body.creates : [];
+    const updatesInput: unknown[] = Array.isArray(body.updates) ? body.updates : [];
+    const deletesInput: unknown[] = Array.isArray(body.deletes) ? body.deletes : [];
+    const assetsInput: unknown[] = Array.isArray(body.assets) ? body.assets : [];
+
+    const existingProjects = await readProjectsFile();
+    let nextProjects = [...existingProjects];
+
+    for (const rawProject of createsInput) {
+      nextProjects.push(parseProjectPayload(rawProject as Record<string, unknown>));
+    }
+
+    for (const rawProject of updatesInput) {
+      const project = parseProjectPayload(rawProject as Record<string, unknown>);
+      const projectId = String((rawProject as Record<string, unknown>).id || "").trim();
+      if (!projectId) continue;
+      const projectIndex = nextProjects.findIndex((item) => item.id === projectId);
+      if (projectIndex === -1) continue;
+      nextProjects[projectIndex] = {
+        ...nextProjects[projectIndex],
+        ...project,
+        id: projectId,
+      };
+    }
+
+    const deleteIds = new Set(deletesInput.map((id) => String(id).trim()).filter(Boolean));
+    nextProjects = nextProjects.filter((project) => !deleteIds.has(String(project.id || "")));
+
+    const assets = assetsInput
+      .map(parseAssetPayload)
+      .filter((asset): asset is { path: string; content: Buffer } => Boolean(asset));
+
+    const changeCount = createsInput.length + updatesInput.length + deleteIds.size;
+    const result = await writeProjectsFileWithAssets({
+      projects: nextProjects,
+      assets,
+      message: `Update projects by ${auth.username}: ${changeCount} project change${changeCount === 1 ? "" : "s"}${assets.length ? `, ${assets.length} image upload${assets.length === 1 ? "" : "s"}` : ""}`,
+    });
+
+    revalidatePath("/");
+
+    return NextResponse.json({
+      projects: result.projects,
+      commit: result.sync.commitSha,
+    });
+  } catch (error) {
+    console.error("PATCH projects error:", error);
+    return NextResponse.json(
+      { error: "Failed to save project changes" },
       { status: 400 }
     );
   }

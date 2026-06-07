@@ -21,6 +21,14 @@ import { getCached, setCached } from '@/features/admin/lib/cache';
 import { useLenis } from 'lenis/react';
 
 const CACHE_KEY = 'admin:projects';
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
+const ALLOWED_IMAGE_TYPES = new Set([
+  'image/png',
+  'image/jpeg',
+  'image/webp',
+  'image/gif',
+  'image/svg+xml',
+]);
 
 interface ProjectRecord {
   id: string;
@@ -53,6 +61,13 @@ interface ProjectFormData {
   demoUrl: string;
   visible: boolean;
   featured: boolean;
+}
+
+interface PendingProjectAsset {
+  path: string;
+  url: string;
+  file: File;
+  previewUrl: string;
 }
 
 type PendingState = 'unchanged' | 'created' | 'updated' | 'deleted';
@@ -122,6 +137,31 @@ const normalizeForDiff = (r: ProjectRecord) => ({
 
 const isDifferent = (a: ProjectRecord, b: ProjectRecord) =>
   JSON.stringify(normalizeForDiff(a)) !== JSON.stringify(normalizeForDiff(b));
+
+const slugifyFileName = (name: string): string =>
+  name
+    .replace(/[^a-zA-Z0-9._-]/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
+    .toLowerCase();
+
+const getStaticImageUrl = (file: File, projectName: string) => {
+  const ext = file.name.includes('.')
+    ? `.${file.name.split('.').pop()?.toLowerCase()}`
+    : '.png';
+  const base = slugifyFileName(projectName);
+  return `/assets/projects/${base}${ext}`;
+};
+
+const arrayBufferToBase64 = (buffer: ArrayBuffer) => {
+  let binary = '';
+  const bytes = new Uint8Array(buffer);
+  const chunkSize = 0x8000;
+  for (let index = 0; index < bytes.length; index += chunkSize) {
+    binary += String.fromCharCode(...bytes.subarray(index, index + chunkSize));
+  }
+  return window.btoa(binary);
+};
 
 // ── List‑editor sub‑component (techStack / features) ────────────
 interface ListEditorProps {
@@ -294,6 +334,7 @@ export default function ProjectsPage() {
 
   // image upload
   const [uploading, setUploading] = useState(false);
+  const [pendingAssets, setPendingAssets] = useState<PendingProjectAsset[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const getPendingState = (p: ProjectRecord): PendingState => {
@@ -308,10 +349,10 @@ export default function ProjectsPage() {
     () =>
       projects.reduce(
         (acc, p) => acc + (getPendingState(p) !== 'unchanged' ? 1 : 0),
-        0,
+        pendingAssets.length,
       ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [projects, originalById, deletedIds],
+    [projects, originalById, deletedIds, pendingAssets],
   );
 
   const fetchProjects = async (options: { silent?: boolean } = {}) => {
@@ -450,21 +491,31 @@ export default function ProjectsPage() {
     if (uploading) return;
     setUploading(true);
     try {
-      const body = new FormData();
-      body.append('file', file);
-      const res = await fetch('/api/v1/projects/upload', {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'X-Requested-With': 'XMLHttpRequest' },
-        body,
-      });
-      const data = await res.json();
-      if (res.ok && data.url) {
-        setFormData((prev) => ({ ...prev, imageUrl: data.url }));
-        addToast({ message: 'Image uploaded', status: 'success', action: 'Success' });
-      } else {
-        addToast({ message: data.error || 'Upload failed', status: 'error', action: 'Error' });
+      const projectName = formData.name.trim();
+      if (!projectName) {
+        addToast({ message: 'Enter the project name before uploading an image', status: 'error', action: 'Project Name Required' });
+        return;
       }
+
+      if (!ALLOWED_IMAGE_TYPES.has(file.type)) {
+        addToast({ message: 'Unsupported image type', status: 'error', action: 'Error' });
+        return;
+      }
+
+      if (file.size > MAX_IMAGE_SIZE) {
+        addToast({ message: 'File exceeds 5 MB limit', status: 'error', action: 'Error' });
+        return;
+      }
+
+      const url = getStaticImageUrl(file, projectName);
+      const assetPath = `public${url}`;
+      const previewUrl = URL.createObjectURL(file);
+      setPendingAssets((prev) => [
+        ...prev.filter((asset) => asset.path !== assetPath),
+        { path: assetPath, url, file, previewUrl },
+      ]);
+      setFormData((prev) => ({ ...prev, imageUrl: url }));
+      addToast({ message: 'Image staged. Press Save Changes to commit.', status: 'success', action: 'Staged' });
     } catch {
       addToast({ message: 'Upload failed', status: 'error', action: 'Error' });
     } finally {
@@ -489,56 +540,42 @@ export default function ProjectsPage() {
       if (originalById.has(id)) deletes.push(id);
     });
 
-    let success = 0;
-    let failed = 0;
-
-    const post = async (p: ProjectRecord) => {
-      const { id: _temp, ...payload } = p;
-      void _temp;
-      const res = await fetch('/api/v1/projects', {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
-        body: JSON.stringify(payload),
-      });
-      return res.ok;
-    };
-    const put = async (p: ProjectRecord) => {
-      const res = await fetch('/api/v1/projects', {
-        method: 'PUT',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
-        body: JSON.stringify(p),
-      });
-      return res.ok;
-    };
-    const del = async (id: string) => {
-      const res = await fetch(`/api/v1/projects?id=${id}`, {
-        method: 'DELETE',
-        credentials: 'include',
-        headers: { 'X-Requested-With': 'XMLHttpRequest' },
-      });
-      return res.ok;
-    };
-
     try {
-      for (const p of creates) ((await post(p)) ? success++ : failed++);
-      for (const p of updates) ((await put(p)) ? success++ : failed++);
-      for (const id of deletes) ((await del(id)) ? success++ : failed++);
+      const assets = await Promise.all(
+        pendingAssets.map(async (asset) => ({
+          path: asset.path,
+          content: arrayBufferToBase64(await asset.file.arrayBuffer()),
+        })),
+      );
+      const res = await fetch('/api/v1/projects', {
+        method: 'PATCH',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+        body: JSON.stringify({
+          creates: creates.map(({ id: _temp, ...payload }) => payload),
+          updates,
+          deletes,
+          assets,
+        }),
+      });
 
-      if (failed === 0) {
+      if (!res.ok) {
+        const data = await res.json().catch(() => null) as { error?: string } | null;
         addToast({
-          message: `Committed ${success} change${success === 1 ? '' : 's'} to GitHub`,
-          status: 'success',
-          action: 'Success',
-        });
-      } else {
-        addToast({
-          message: `${success} succeeded, ${failed} failed`,
+          message: data?.error || 'Failed to commit changes',
           status: 'error',
-          action: 'Partial',
+          action: 'Error',
         });
+        return;
       }
+
+      const changeCount = creates.length + updates.length + deletes.length;
+      addToast({
+        message: `Committed ${changeCount} project change${changeCount === 1 ? '' : 's'}${assets.length ? ` and ${assets.length} image${assets.length === 1 ? '' : 's'}` : ''} to GitHub`,
+        status: 'success',
+        action: 'Success',
+      });
+      setPendingAssets([]);
       await fetchProjects({ silent: true });
     } catch {
       addToast({
@@ -882,7 +919,7 @@ export default function ProjectsPage() {
               <div className="mt-2 relative block w-full rounded-lg overflow-hidden border border-neutral-200 bg-neutral-100">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={formData.imageUrl}
+                  src={pendingAssets.find((asset) => asset.url === formData.imageUrl)?.previewUrl || formData.imageUrl}
                   alt="Preview"
                   className="w-full h-auto object-contain"
                   onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}

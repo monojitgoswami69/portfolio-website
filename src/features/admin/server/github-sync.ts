@@ -4,6 +4,11 @@ interface GitHubSyncTarget {
   message: string;
 }
 
+interface GitHubFileChange {
+  path: string;
+  content: string | Buffer;
+}
+
 const GITHUB_API_BASE = "https://api.github.com";
 
 function normalizeRepo(raw: string) {
@@ -66,6 +71,39 @@ async function githubRequest(
   if (response.status === 404 && method === "GET") {
     return null;
   }
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(
+      `GitHub sync failed (${response.status}): ${errorText || response.statusText}`
+    );
+  }
+
+  return response.json();
+}
+
+async function githubRepoRequest(
+  method: "GET" | "POST" | "PATCH",
+  endpoint: string,
+  body?: Record<string, unknown>
+) {
+  const { token, repo } = getGitHubConfig();
+
+  if (!token || !repo) {
+    throw new Error("GitHub sync is not configured");
+  }
+
+  const response = await fetch(`${GITHUB_API_BASE}/repos/${repo}/${endpoint}`, {
+    method,
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/vnd.github+json",
+      "X-GitHub-Api-Version": "2022-11-28",
+      ...(body ? { "Content-Type": "application/json" } : {}),
+    },
+    body: body ? JSON.stringify(body) : undefined,
+    cache: "no-store",
+  });
 
   if (!response.ok) {
     const errorText = await response.text();
@@ -142,6 +180,118 @@ export async function syncJsonFileToGitHub({
     return {
       synced: true,
       commitSha: commitSha ? commitSha.slice(0, 7) : null,
+      reason: null,
+    };
+  } catch (error) {
+    return {
+      synced: false,
+      commitSha: null,
+      reason: error instanceof Error ? error.message : "GitHub sync failed",
+    };
+  }
+}
+
+export async function syncFilesToGitHub({
+  files,
+  message,
+}: {
+  files: GitHubFileChange[];
+  message: string;
+}) {
+  if (!isGitHubSyncConfigured()) {
+    return {
+      synced: false,
+      commitSha: null,
+      reason: "GitHub sync is not configured",
+    };
+  }
+
+  try {
+    const { branch } = getGitHubConfig();
+    const ref = await githubRepoRequest("GET", `git/ref/heads/${branch}`);
+    const baseCommitSha =
+      ref && typeof ref === "object" && "object" in ref
+        ? String((ref.object as { sha?: string }).sha ?? "")
+        : "";
+
+    if (!baseCommitSha) {
+      throw new Error(`Could not read GitHub branch ref for ${branch}`);
+    }
+
+    const baseCommit = await githubRepoRequest(
+      "GET",
+      `git/commits/${baseCommitSha}`
+    );
+    const baseTreeSha =
+      baseCommit && typeof baseCommit === "object" && "tree" in baseCommit
+        ? String((baseCommit.tree as { sha?: string }).sha ?? "")
+        : "";
+
+    if (!baseTreeSha) {
+      throw new Error(`Could not read GitHub base tree for ${branch}`);
+    }
+
+    const tree = await Promise.all(
+      files.map(async (file) => {
+        const buffer = Buffer.isBuffer(file.content)
+          ? file.content
+          : Buffer.from(file.content, "utf8");
+        const blob = await githubRepoRequest("POST", "git/blobs", {
+          content: buffer.toString("base64"),
+          encoding: "base64",
+        });
+        const sha =
+          blob && typeof blob === "object" && "sha" in blob
+            ? String(blob.sha ?? "")
+            : "";
+
+        if (!sha) {
+          throw new Error(`Could not create GitHub blob for ${file.path}`);
+        }
+
+        return {
+          path: file.path,
+          mode: "100644",
+          type: "blob",
+          sha,
+        };
+      })
+    );
+
+    const nextTree = await githubRepoRequest("POST", "git/trees", {
+      base_tree: baseTreeSha,
+      tree,
+    });
+    const nextTreeSha =
+      nextTree && typeof nextTree === "object" && "sha" in nextTree
+        ? String(nextTree.sha ?? "")
+        : "";
+
+    if (!nextTreeSha) {
+      throw new Error("Could not create GitHub tree");
+    }
+
+    const nextCommit = await githubRepoRequest("POST", "git/commits", {
+      message,
+      tree: nextTreeSha,
+      parents: [baseCommitSha],
+    });
+    const nextCommitSha =
+      nextCommit && typeof nextCommit === "object" && "sha" in nextCommit
+        ? String(nextCommit.sha ?? "")
+        : "";
+
+    if (!nextCommitSha) {
+      throw new Error("Could not create GitHub commit");
+    }
+
+    await githubRepoRequest("PATCH", `git/refs/heads/${branch}`, {
+      sha: nextCommitSha,
+    });
+
+    return {
+      synced: true,
+      commitSha: nextCommitSha.slice(0, 7),
       reason: null,
     };
   } catch (error) {
