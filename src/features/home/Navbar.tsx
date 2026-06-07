@@ -4,6 +4,8 @@ import { useLenis } from 'lenis/react';
 import { motion, AnimatePresence } from '@/lib/motion';
 import { HomeSection } from './types';
 
+const NAV_SCROLL_OFFSET = -82;
+
 interface NavbarProps {
     activeSection: HomeSection;
     onSectionChange: (section: HomeSection) => void;
@@ -44,7 +46,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection, onSectionChange }) => {
                         });
                     } else {
                         lenis.scrollTo(target, {
-                            offset: sectionId === HomeSection.SKILLS ? 12 : 0,
+                            offset: NAV_SCROLL_OFFSET,
                             duration: 1.5,
                             easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
                         });

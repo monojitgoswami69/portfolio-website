@@ -34,6 +34,9 @@ const sectionOrder = [
   HomeSection.CONTACT,
 ];
 
+const NAV_ANCHOR_OFFSET = 90;
+const ACTIVE_SECTION_VIEWPORT_OFFSET = 0.38;
+
 interface HomePageProps {
   projects: SiteProject[];
   contact: SiteContact;
@@ -56,49 +59,61 @@ export default function HomePage({ projects, contact }: HomePageProps) {
   }, []);
 
   useEffect(() => {
-    const elements = sectionOrder
-      .map((section) => document.getElementById(section))
-      .filter((element): element is HTMLElement => element !== null);
+    let frameId = 0;
 
-    if (elements.length === 0) {
-      return;
-    }
-
-    const ratios = new Map<string, number>();
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (scrollMuteCounter.current > 0) {
-          return;
-        }
-
-        entries.forEach((entry) => {
-          ratios.set(entry.target.id, entry.intersectionRatio);
-        });
-
-        let maxRatio = 0;
-        let mostVisible = "";
-
-        ratios.forEach((ratio, id) => {
-          if (ratio > maxRatio) {
-            maxRatio = ratio;
-            mostVisible = id;
-          }
-        });
-
-        if (maxRatio > 0 && mostVisible) {
-          setActiveSection(mostVisible as HomeSection);
-        }
-      },
-      {
-        rootMargin: "-10% 0px -10% 0px",
-        threshold: [0, 0.25, 0.5, 0.75, 1],
+    const updateActiveSection = () => {
+      if (scrollMuteCounter.current > 0) {
+        return;
       }
-    );
 
-    elements.forEach((element) => observer.observe(element));
+      const sections = sectionOrder
+        .map((section) => {
+          const element = document.getElementById(section);
+          return element
+            ? {
+                id: section,
+                top: element.getBoundingClientRect().top + window.scrollY,
+              }
+            : null;
+        })
+        .filter((section): section is { id: HomeSection; top: number } => section !== null);
 
-    return () => observer.disconnect();
+      if (sections.length === 0) {
+        return;
+      }
+
+      const scrollPosition =
+        window.scrollY +
+        Math.max(NAV_ANCHOR_OFFSET, window.innerHeight * ACTIVE_SECTION_VIEWPORT_OFFSET);
+      const isAtBottom =
+        window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
+
+      if (isAtBottom) {
+        setActiveSection(sections[sections.length - 1].id);
+        return;
+      }
+
+      const current = sections.reduce((active, section) => {
+        return section.top <= scrollPosition ? section : active;
+      }, sections[0]);
+
+      setActiveSection(current.id);
+    };
+
+    const scheduleUpdate = () => {
+      window.cancelAnimationFrame(frameId);
+      frameId = window.requestAnimationFrame(updateActiveSection);
+    };
+
+    scheduleUpdate();
+    window.addEventListener("scroll", scheduleUpdate, { passive: true });
+    window.addEventListener("resize", scheduleUpdate);
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+      window.removeEventListener("scroll", scheduleUpdate);
+      window.removeEventListener("resize", scheduleUpdate);
+    };
   }, []);
 
   const handleSectionChange = (section: HomeSection) => {
