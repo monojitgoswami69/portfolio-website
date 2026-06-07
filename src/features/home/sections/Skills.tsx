@@ -45,7 +45,7 @@ const Skills: React.FC = () => {
                     Technical Capabilities &amp; Core Architecture
                 </motion.p>
 
-                <div className="flex flex-col lg:flex-row items-stretch justify-center w-full gap-0 lg:gap-6 mt-5 lg:mt-6">
+                <div className="flex flex-col lg:flex-row items-stretch justify-center w-full gap-0 lg:gap-4 mt-4 lg:mt-5">
                     {/* Left - Profile Image */}
                     <motion.div
                         initial={{ opacity: 0, x: -30 }}
@@ -107,7 +107,7 @@ const Skills: React.FC = () => {
                         transition={{ delay: 0.3 }}
                         className="w-full lg:w-[380px] border-2 border-t-0 lg:border-t-2 border-[var(--border-color)] bg-[var(--bg-card)] overflow-hidden z-20 shadow-[var(--shadow-offset)] rounded-none lg:rounded-base"
                     >
-                        <div className="py-5 px-6 lg:py-6 lg:px-6 xl:py-8 xl:px-8 flex flex-col justify-center">
+                        <div className="py-4 px-5 lg:py-5 lg:px-5 xl:py-6 xl:px-6 flex flex-col justify-center">
                             <div>
                                 <h3 className="text-[#88c0d0] font-mono text-sm tracking-wider mb-3 text-center font-bold">
                                     2.1 // SKILLS
@@ -140,7 +140,7 @@ const Skills: React.FC = () => {
                             </div>
 
                             {/* Tools Section */}
-                            <div className="mt-6">
+                            <div className="mt-5 lg:mt-6">
                                 <h3 className="text-[#b48ead] font-mono text-sm tracking-wider mb-3 text-center font-bold">
                                     2.2 // TOOLS
                                 </h3>
@@ -170,7 +170,7 @@ const Skills: React.FC = () => {
                         transition={{ delay: 0.4 }}
                         className="w-full lg:w-[380px] border-2 border-t-0 lg:border-t-2 border-[var(--border-color)] bg-[var(--bg-card)] overflow-hidden z-20 shadow-[var(--shadow-offset)] rounded-t-none rounded-b-base lg:rounded-base"
                     >
-                        <div className="py-5 px-6 lg:py-6 lg:px-8 xl:py-8 xl:px-10 flex flex-col justify-center space-y-4 lg:space-y-5 text-slate-300 leading-relaxed text-[13px] md:text-sm lg:text-[15px] xl:text-base font-mono">
+                        <div className="py-4 px-6 lg:py-5 lg:px-8 xl:py-6 xl:px-10 flex flex-col justify-center space-y-3 lg:space-y-4 text-slate-300 leading-relaxed text-[13px] md:text-sm lg:text-[15px] xl:text-base font-mono">
                             <p>
                                 I am <span className="text-[#88c0d0] font-bold">Monojit Goswami</span>, a backend engineer driven by the potential of autonomous systems. My architecture philosophy focuses on <span className="text-white font-bold">efficiency</span>, <span className="text-white font-bold">modularity</span>, <span className="text-white font-bold">security</span>, and <span className="text-white font-bold">scalability</span>, building high-performance engines that bridge the gap between architectural stability and artificial intelligence.
                             </p>
@@ -187,7 +187,7 @@ const Skills: React.FC = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={isMetricsInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
                     transition={{ duration: 0.5 }}
-                    className="relative mt-5 lg:mt-6 w-full hidden lg:block"
+                    className="relative mt-4 lg:mt-5 w-full hidden lg:block"
                 >
                     <div className="border-2 border-[var(--border-color)] bg-[var(--bg-card)] p-6 shadow-[var(--shadow-offset)] rounded-base">
                         {/* Specs Flex Row */}

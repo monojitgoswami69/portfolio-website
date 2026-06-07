@@ -1,3 +1,4 @@
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import { motion } from '@/lib/motion';
 import { ExternalLink, Star, Maximize2 } from 'lucide-react';
@@ -11,7 +12,164 @@ export interface ProjectCardProps {
     onSelect: (project: ProjectData) => void;
 }
 
+const TECH_STACK_MAX_ROWS = 2;
+const TECH_STACK_GAP_PX = 8;
+const TECH_STACK_CHIP_X_PADDING_PX = 16;
+const TECH_STACK_CHIP_BORDER_PX = 4;
+const TECH_STACK_CHIP_EXTRA_WIDTH_PX = TECH_STACK_CHIP_X_PADDING_PX + TECH_STACK_CHIP_BORDER_PX;
+const TECH_STACK_MORE_LABEL_RESERVE = '+99 more';
+const MONO_FONT_STACK = 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace';
+
+function getTextWidth(text: string, fontSize: number) {
+    if (typeof document === 'undefined') {
+        return text.length * fontSize * 0.65;
+    }
+
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+
+    if (!context) {
+        return text.length * fontSize * 0.65;
+    }
+
+    context.font = `600 ${fontSize}px ${MONO_FONT_STACK}`;
+    return context.measureText(text).width;
+}
+
+function canPackInRows(widths: number[], containerWidth: number) {
+    let rowsUsed = 1;
+    let currentRowWidth = 0;
+
+    for (const width of widths) {
+        const nextWidth = currentRowWidth === 0 ? width : currentRowWidth + TECH_STACK_GAP_PX + width;
+
+        if (nextWidth <= containerWidth) {
+            currentRowWidth = nextWidth;
+            continue;
+        }
+
+        rowsUsed += 1;
+        currentRowWidth = width;
+
+        if (rowsUsed > TECH_STACK_MAX_ROWS || width > containerWidth) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+function chooseVisibleTechStack(techStack: string[], containerWidth: number, fontSize: number) {
+    if (containerWidth <= 0 || techStack.length <= 0) {
+        return { visibleTech: techStack, hiddenCount: 0 };
+    }
+
+    const chipWidths = techStack.map((tech) =>
+        Math.ceil(getTextWidth(tech, fontSize) + TECH_STACK_CHIP_EXTRA_WIDTH_PX)
+    );
+
+    if (canPackInRows(chipWidths, containerWidth)) {
+        return { visibleTech: techStack, hiddenCount: 0 };
+    }
+
+    const maxExactItems = 18;
+
+    if (techStack.length > maxExactItems) {
+        for (let count = techStack.length - 1; count >= 0; count -= 1) {
+            const hiddenCount = techStack.length - count;
+            const moreLabel = `+${hiddenCount} more`;
+            const moreWidth = Math.ceil(getTextWidth(moreLabel, fontSize) + TECH_STACK_CHIP_EXTRA_WIDTH_PX);
+            const widthsWithMore = [...chipWidths.slice(0, count), moreWidth];
+
+            if (canPackInRows(widthsWithMore, containerWidth)) {
+                return {
+                    visibleTech: techStack.slice(0, count),
+                    hiddenCount,
+                };
+            }
+        }
+
+        return { visibleTech: [], hiddenCount: techStack.length };
+    }
+
+    let bestIndexes: number[] = [];
+    const combinations = 2 ** techStack.length;
+
+    for (let mask = 1; mask < combinations; mask += 1) {
+        const selectedIndexes: number[] = [];
+
+        for (let index = 0; index < techStack.length; index += 1) {
+            if ((mask & (1 << index)) !== 0) {
+                selectedIndexes.push(index);
+            }
+        }
+
+        const hiddenCount = techStack.length - selectedIndexes.length;
+        const moreLabel = hiddenCount > 0 ? `+${hiddenCount} more` : TECH_STACK_MORE_LABEL_RESERVE;
+        const moreWidth = Math.ceil(getTextWidth(moreLabel, fontSize) + TECH_STACK_CHIP_EXTRA_WIDTH_PX);
+        const widthsWithMore = [...selectedIndexes.map((index) => chipWidths[index]), moreWidth];
+
+        if (!canPackInRows(widthsWithMore, containerWidth)) {
+            continue;
+        }
+
+        const selectedCount = selectedIndexes.length;
+        const bestCount = bestIndexes.length;
+        const selectedOrderScore = selectedIndexes.reduce((score, itemIndex) => score + itemIndex, 0);
+        const bestOrderScore = bestIndexes.reduce((score, itemIndex) => score + itemIndex, 0);
+
+        if (
+            selectedCount > bestCount ||
+            (selectedCount === bestCount && selectedOrderScore < bestOrderScore)
+        ) {
+            bestIndexes = selectedIndexes;
+        }
+    }
+
+    if (bestIndexes.length === 0) {
+        return { visibleTech: [], hiddenCount: techStack.length };
+    }
+
+    return {
+        visibleTech: bestIndexes.map((index) => techStack[index]),
+        hiddenCount: techStack.length - bestIndexes.length,
+    };
+}
+
 const ProjectCard: React.FC<ProjectCardProps> = ({ project, index, onSelect }) => {
+    const techStackRef = useRef<HTMLDivElement | null>(null);
+    const [techStackWidth, setTechStackWidth] = useState(0);
+    const [techStackFontSize, setTechStackFontSize] = useState(12);
+
+    useEffect(() => {
+        const element = techStackRef.current;
+        if (!element) return;
+
+        const updateMeasurements = () => {
+            const rect = element.getBoundingClientRect();
+            const fontSize = window.matchMedia('(min-width: 768px)').matches ? 12 : 10;
+
+            setTechStackWidth(Math.floor(rect.width));
+            setTechStackFontSize(fontSize);
+        };
+
+        updateMeasurements();
+
+        const resizeObserver = new ResizeObserver(updateMeasurements);
+        resizeObserver.observe(element);
+        window.addEventListener('resize', updateMeasurements);
+
+        return () => {
+            resizeObserver.disconnect();
+            window.removeEventListener('resize', updateMeasurements);
+        };
+    }, []);
+
+    const { visibleTech, hiddenCount } = useMemo(
+        () => chooseVisibleTechStack(project.techStack, techStackWidth, techStackFontSize),
+        [project.techStack, techStackFontSize, techStackWidth]
+    );
+
     const handleSelect = () => onSelect(project);
     const handleKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
         if (e.key === 'Enter' || e.key === ' ') {
@@ -79,7 +237,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, index, onSelect }) =
                      {project.name}
                 </h3>
 
-                <p className="text-slate-400 text-[13px] md:text-sm mb-4 line-clamp-2">
+                <p className="text-slate-300/95 text-[13px] md:text-sm mb-4 line-clamp-2 leading-relaxed">
                     {project.description}
                 </p>
 
@@ -92,12 +250,12 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, index, onSelect }) =
                     )}
                     {project.features && project.features.length > 0 && (
                         <>
-                            <h4>Key features of {project.name}</h4>
-                            <ul>
-                                {project.features.map((feature, idx) => (
-                                    <li key={idx}>{feature}</li>
-                                ))}
-                            </ul>
+                             <h4>Key features of {project.name}</h4>
+                             <ul>
+                                 {project.features.map((feature, idx) => (
+                                     <li key={idx}>{feature}</li>
+                                 ))}
+                             </ul>
                         </>
                     )}
                     {project.techStack && project.techStack.length > 0 && (
@@ -117,16 +275,24 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, index, onSelect }) =
                     )}
                 </div>
 
-                {/* Tech Stack - CSS-based wrapping */}
-                <div className="flex flex-wrap gap-2 mb-4">
-                    {project.techStack.map((tech) => (
+                {/* Tech Stack */}
+                <div ref={techStackRef} className="flex flex-wrap content-start gap-2 mb-4 min-h-[4.25rem] overflow-hidden">
+                    {visibleTech.map((tech) => (
                         <span
                             key={tech}
-                            className="px-2 py-1 text-[10px] md:text-xs font-mono bg-[var(--bg-card-alt)] border-2 border-[var(--border-color)] text-[#88c0d0]/80 rounded-base"
+                            className="px-2 py-1 text-[10px] md:text-xs font-mono bg-[var(--bg-card-alt)] border-2 border-[var(--border-color)] text-[#88c0d0] font-semibold rounded-base"
                         >
                             {tech}
                         </span>
                     ))}
+                    {hiddenCount > 0 && (
+                        <span
+                            aria-label={`${hiddenCount} more technologies in ${project.name}`}
+                            className="px-2 py-1 text-[10px] md:text-xs font-mono bg-[#ebcb8b]/15 border-2 border-[var(--border-color)] text-[#ebcb8b] font-semibold rounded-base"
+                        >
+                            +{hiddenCount} more
+                        </span>
+                    )}
                 </div>
 
                 <div className="flex-grow" />

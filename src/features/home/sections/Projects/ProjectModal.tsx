@@ -5,7 +5,7 @@ import { motion } from '@/lib/motion';
 import { ExternalLink, X, Zap, Star, Check } from 'lucide-react';
 import { Github } from '@/lib/icons';
 import { sanitizeUrl } from '@/utils/security';
-import { useLenis } from 'lenis/react';
+import { ReactLenis, useLenis } from 'lenis/react';
 import { ProjectData, isValidLink, getStatusColor } from './projectUtils';
 
 interface ProjectModalProps {
@@ -15,7 +15,6 @@ interface ProjectModalProps {
 
 const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
     const modalRef = useRef<HTMLDivElement>(null);
-    const scrollRef = useRef<HTMLDivElement>(null);
     const lenis = useLenis();
 
     // Trap focus inside modal
@@ -116,7 +115,10 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
                 </button>
 
                 {/* Scrollable Content */}
-                <div ref={scrollRef} className="overflow-y-auto flex-1 no-scrollbar" data-lenis-prevent>
+                <ReactLenis
+                    className="overflow-y-auto flex-1 min-h-0 no-scrollbar"
+                    options={{ autoRaf: true, lerp: 0.1, duration: 1.1 }}
+                >
                     <div className="flex flex-col">
                         {/* Header Image */}
                     <div className="relative h-40 md:h-72 overflow-hidden flex-shrink-0 rounded-t-[calc(12px-2px)]">
@@ -176,7 +178,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
                                     {project.techStack.map((tech: string) => (
                                         <span
                                             key={tech}
-                                            className="px-2 py-1 text-[10px] md:text-xs font-mono bg-[var(--bg-card-alt)] border-2 border-[var(--border-color)] text-[#88c0d0]/80 rounded-base"
+                                            className="px-2 py-1 text-[10px] md:text-xs font-mono bg-[var(--bg-card-alt)] border-2 border-[var(--border-color)] text-[#88c0d0] font-semibold rounded-base"
                                         >
                                             {tech}
                                         </span>
@@ -186,7 +188,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
 
                             {/* Long Description */}
                             <div className="prose prose-invert max-w-none">
-                                <p className="text-slate-300 text-xs md:text-[14px] leading-relaxed whitespace-pre-line">
+                                <p className="text-slate-200/95 text-xs md:text-[14px] leading-relaxed whitespace-pre-line">
                                     {project.longDescription || project.description}
                                 </p>
                             </div>
@@ -217,8 +219,8 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
                             )}
                         </div>
                     </div>
-                </div>
-            </div>
+                    </div>
+                </ReactLenis>
 
                 {/* Sticky Action Buttons */}
                 {(isValidLink(project.demoUrl) || isValidLink(project.githubUrl)) && (
