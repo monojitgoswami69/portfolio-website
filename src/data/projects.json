@@ -184,5 +184,42 @@
     "id": "certify-6",
     "visible": true,
     "rank": 994
+  },
+  {
+    "id": "collabify-7",
+    "name": "Collabify",
+    "description": "A real-time collaborative code editor with Monaco, Yjs CRDT synchronization, room management, chat, and GitHub repository import",
+    "longDescription": "Collabify is a browser-based collaborative coding platform designed for lightweight, zero-install team coding sessions. The app combines a Next.js frontend with a dedicated Node.js WebSocket collaboration server. Users can create host-controlled rooms, share short room codes, approve collaborators, and edit shared files together in real time using Monaco Editor. Document synchronization is powered by Yjs CRDTs, enabling conflict-free concurrent editing with live cursor and selection awareness. The backend separates room control traffic from binary document sync traffic, using dedicated WebSocket channels for room lifecycle events, chat, file sharing, and per-file Yjs synchronization. Collabify also includes GitHub OAuth integration, allowing users to browse repositories and import files directly into the editor, including private repositories with the required scopes.",
+    "status": "Under Development",
+    "category": "Full Stack",
+    "techStack": [
+      "Next.js",
+      "Node.js",
+      "React TS",
+      "Websockets",
+      "CRDTs",
+      "Monaco Editor",
+      "Github API"
+    ],
+    "features": [
+      "Real-time collaborative code editing with Yjs CRDTs",
+      "Monaco Editor with VS Code-class editing experience",
+      "Live remote cursors and selection awareness",
+      "Host-controlled rooms with join request and approval workflow",
+      "Room-wide file sharing with per-file synchronization",
+      "Dedicated WebSocket channels for room control and document sync",
+      "Real-time room chat with peer identity and timestamps",
+      "GitHub OAuth authentication and repository file import",
+      "Support for private repository browsing with appropriate scopes",
+      "Local file persistence and language detection"
+    ],
+    "imageUrl": "/assets/projects/collabify.png",
+    "githubUrl": "https://github.com/monojitgoswami69/collabify",
+    "demoUrl": "https://collabify.mgbuilds.in/",
+    "challenges": "",
+    "learnings": "",
+    "visible": true,
+    "featured": true,
+    "rank": 999
   }
 ]
