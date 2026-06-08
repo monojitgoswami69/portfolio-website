@@ -171,6 +171,16 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, index, onSelect }) =
     );
 
     const handleSelect = () => onSelect(project);
+    const handleDemoClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+        e.stopPropagation();
+
+        if (!project.demoUrl?.startsWith('#')) return;
+
+        e.preventDefault();
+        const target = document.querySelector(project.demoUrl);
+        target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+
     const handleKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
         if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
@@ -317,10 +327,10 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, index, onSelect }) =
                             {isValidLink(project.demoUrl) && (
                                 <a
                                     href={sanitizeUrl(project.demoUrl)}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
+                                    target={project.demoUrl?.startsWith('#') ? undefined : "_blank"}
+                                    rel={project.demoUrl?.startsWith('#') ? undefined : "noopener noreferrer"}
                                     aria-label={`Live demo of ${project.name}`}
-                                    onClick={(e) => e.stopPropagation()}
+                                    onClick={handleDemoClick}
                                     className={`flex-1 flex items-center justify-center gap-2 py-2.5 bg-[#88c0d0] text-[#1b2234] border-2 border-transparent font-mono font-bold leading-none shadow-[3px_3px_0px_0px_var(--shadow-color)] hover:translate-x-[3px] hover:translate-y-[3px] hover:shadow-none active:translate-x-[3px] active:translate-y-[3px] active:shadow-none active:transition-none transition-all duration-200 whitespace-nowrap rounded-base ${isValidLink(project.demoUrl) && isValidLink(project.githubUrl)
                                         ? 'text-xs px-2.5 md:text-sm md:px-4'
                                         : 'text-xs px-4 md:text-sm'

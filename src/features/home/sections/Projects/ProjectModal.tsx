@@ -17,6 +17,19 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
     const modalRef = useRef<HTMLDivElement>(null);
     const lenis = useLenis();
 
+    const handleDemoClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+        if (!project.demoUrl?.startsWith('#')) return;
+
+        e.preventDefault();
+        const targetSelector = project.demoUrl;
+        onClose();
+
+        window.requestAnimationFrame(() => {
+            const target = document.querySelector(targetSelector);
+            target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    };
+
     // Trap focus inside modal
     useEffect(() => {
         const handleTab = (e: KeyboardEvent) => {
@@ -229,9 +242,10 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
                             {isValidLink(project.demoUrl) && (
                                 <a
                                     href={sanitizeUrl(project.demoUrl)}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
+                                    target={project.demoUrl?.startsWith('#') ? undefined : "_blank"}
+                                    rel={project.demoUrl?.startsWith('#') ? undefined : "noopener noreferrer"}
                                     aria-label={`Live demo of ${project.name}`}
+                                    onClick={handleDemoClick}
                                     className={`flex-1 flex items-center justify-center gap-1.5 py-3 bg-[#88c0d0] text-[#1b2234] font-bold border-2 border-transparent shadow-[2px_2px_0px_0px_var(--shadow-color)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none active:translate-x-[2px] active:translate-y-[2px] active:shadow-none active:transition-none transition-all duration-200 rounded-base whitespace-nowrap outline-none focus:outline-none ${isValidLink(project.demoUrl) && isValidLink(project.githubUrl)
                                         ? 'text-[10px] px-2 md:text-base md:px-6'
                                         : 'text-sm px-6 md:text-base'

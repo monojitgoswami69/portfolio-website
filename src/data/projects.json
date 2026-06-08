@@ -107,8 +107,8 @@
       "Vercel"
     ],
     "imageUrl": "/assets/projects/nexus.webp",
-    "githubUrl": "https://github.com/monojitgoswami69/nexus-backend",
-    "demoUrl": "",
+    "githubUrl": "",
+    "demoUrl": "#chat",
     "status": "Completed",
     "features": [
       "Terminal-style conversational interface",
