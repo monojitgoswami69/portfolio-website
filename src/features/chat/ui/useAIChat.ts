@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { ChatMessage } from './types';
 import { makeMessageId } from './messageId';
-import { sendMessageStream } from '@/features/chat/client/chatService';
+import { RateLimitUpdate, sendMessageStream } from '@/features/chat/client/chatService';
 import {
     helpCommand,
     whoamiCommand,
@@ -46,16 +46,74 @@ export const useAIChat = ({ projects, contact }: UseAIChatOptions) => {
 
     const { addToHistory, navigateHistory } = useCommandHistory();
     const { isBooting, hasBooted, setHasBooted, runBootSequence } = useBootSequence();
-    const hasInitFailed = useRef(false);
+    const [hasInitFailed, setHasInitFailed] = useState(false);
+    const commandOnlyNoticeShown = useRef(false);
+    const pendingCommandOnlyNotice = useRef<RateLimitUpdate | null>(null);
 
-    const handleLimitUpdate = useCallback((limits: { userRequestsLeft: string; globalRequestsLeft: string }) => {
+    const getRemainingCount = (value: string) => {
+        const match = value.match(/^\s*(\d+)/);
+        return match ? Number(match[1]) : Number.NaN;
+    };
+
+    const formatResetAt = (resetAt?: string | null) => {
+        if (!resetAt) return 'next reset';
+        const date = new Date(resetAt);
+        if (Number.isNaN(date.getTime())) return 'next reset';
+        return date.toLocaleString(undefined, {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    };
+
+    const getLimitNoticeDetails = useCallback((limits: RateLimitUpdate) => {
+        const userRemaining = getRemainingCount(limits.userRequestsLeft);
+        const globalRemaining = getRemainingCount(limits.globalRequestsLeft);
+        const exhaustedUser = userRemaining === 0;
+        const exhaustedGlobal = globalRemaining === 0;
+
+        if (!exhaustedUser && !exhaustedGlobal) return null;
+
+        return {
+            limitType: exhaustedUser
+                ? `user request limit reached (${limits.userRequestsLeft})`
+                : `global request limit reached (${limits.globalRequestsLeft})`,
+            resetAt: limits.resetAt
+        };
+    }, []);
+
+    const appendCommandOnlyNotice = useCallback((limits: RateLimitUpdate) => {
+        if (commandOnlyNoticeShown.current) return;
+
+        const details = getLimitNoticeDetails(limits);
+        if (!details) return;
+
+        commandOnlyNoticeShown.current = true;
+        pendingCommandOnlyNotice.current = null;
+
+        setHistory(prev => [...prev, {
+            id: makeMessageId(),
+            role: 'model',
+            text: `**ACCESS RESTRICTED**\n\n${details.limitType}.\n\nResets at ${formatResetAt(details.resetAt)}.\n\n**ENTERING COMMAND-ONLY MODE**`,
+            timestamp: new Date(),
+            isError: true
+        }]);
+    }, [getLimitNoticeDetails]);
+
+    const handleLimitUpdate = useCallback((limits: RateLimitUpdate) => {
         setSessionInfo(limits);
 
-        const userRemaining = parseInt(limits.userRequestsLeft.split('/')[0] ?? '0');
-        const globalRemaining = parseInt(limits.globalRequestsLeft.split('/')[0] ?? '0');
+        const userRemaining = getRemainingCount(limits.userRequestsLeft);
+        const globalRemaining = getRemainingCount(limits.globalRequestsLeft);
 
         if (!Number.isNaN(userRemaining) && !Number.isNaN(globalRemaining)) {
-            setIsRateLimited(userRemaining === 0 || globalRemaining === 0);
+            const limited = userRemaining === 0 || globalRemaining === 0;
+            setIsRateLimited(limited);
+            if (limited) {
+                pendingCommandOnlyNotice.current = limits;
+            }
         }
     }, []);
 
@@ -71,7 +129,7 @@ export const useAIChat = ({ projects, contact }: UseAIChatOptions) => {
                         const result = await runBootSequence(setHistory);
                         setSessionInfo(result.sessionInfo);
                         setIsRateLimited(result.isRateLimited);
-                        hasInitFailed.current = result.hasInitFailed;
+                        setHasInitFailed(result.hasInitFailed);
                     })();
                     observer.disconnect();
                 }
@@ -89,28 +147,37 @@ export const useAIChat = ({ projects, contact }: UseAIChatOptions) => {
     const handleReconnect = () => {
         setIsTerminated(false);
         setIsMatrixActive(false);
+        setHasInitFailed(false);
+        commandOnlyNoticeShown.current = false;
+        pendingCommandOnlyNotice.current = null;
         setHasBooted(false);
         setHistory([]);
         void (async () => {
             const result = await runBootSequence(setHistory);
             setSessionInfo(result.sessionInfo);
             setIsRateLimited(result.isRateLimited);
-            hasInitFailed.current = result.hasInitFailed;
+            setHasInitFailed(result.hasInitFailed);
         })();
     };
 
-    // Auto-scroll to bottom
+    // Keep live output pinned only while the user is already reading the bottom.
     useEffect(() => {
-        if (scrollRef.current) {
-            setTimeout(() => {
-                if (scrollRef.current) {
-                    scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-                }
-            }, 50);
-        }
+        const el = scrollRef.current;
+        if (!el) return;
+
+        const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
+        if (distanceFromBottom > 80) return;
+
+        requestAnimationFrame(() => {
+            el.scrollTop = el.scrollHeight;
+        });
     }, [history, isLoading]);
 
-    const handleTerminalClick = () => {
+    const handleTerminalClick = (event: React.MouseEvent) => {
+        const selection = window.getSelection();
+        if (selection && selection.toString().length > 0) return;
+        if (event.detail > 1) return;
+
         inputRef.current?.focus();
     };
 
@@ -264,6 +331,10 @@ export const useAIChat = ({ projects, contact }: UseAIChatOptions) => {
                 });
             },
             () => {
+                const pendingNotice = pendingCommandOnlyNotice.current;
+                if (pendingNotice) {
+                    appendCommandOnlyNotice(pendingNotice);
+                }
                 setIsLoading(false);
             },
             (err: Error) => {
@@ -275,13 +346,11 @@ export const useAIChat = ({ projects, contact }: UseAIChatOptions) => {
                     const timeMatch = resetDetails.match(/(.*) \((.*)\)/);
                     const timeAt = timeMatch?.[2]?.replace(/^at\s+/, '') ?? '';
 
-                    let displayLimit = limitDetails;
-                    if (limitDetails.includes('Global')) displayLimit = 'global request limit reached (1,000/day)';
-                    else displayLimit = 'user request limit reached (50/day)';
-
-                    const formattedError = `\`ACCESS RESTRICTED\`\n\n${displayLimit}.\n\nresets at \`${timeAt}\`\n\n## ENTERING COMMAND-ONLY MODE`;
+                    const formattedError = `**ACCESS RESTRICTED**\n\n${limitDetails}.\n\nResets at ${timeAt || 'next reset'}.\n\n**ENTERING COMMAND-ONLY MODE**`;
 
                     setIsRateLimited(true);
+                    commandOnlyNoticeShown.current = true;
+                    pendingCommandOnlyNotice.current = null;
                     setHistory(prev => [...prev, {
                         id: makeMessageId(),
                         role: 'model',
@@ -316,7 +385,7 @@ export const useAIChat = ({ projects, contact }: UseAIChatOptions) => {
         isLoading,
         isBooting,
         hasBooted,
-        hasInitFailed: hasInitFailed.current,
+        hasInitFailed,
         isMatrixActive,
         isTerminated,
         error,

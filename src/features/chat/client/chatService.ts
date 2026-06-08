@@ -7,6 +7,20 @@ const MAX_MESSAGE_LENGTH = 1000;
 
 // Callback for receiving streaming chunks with full text
 export type StreamCallback = (chunk: string) => void;
+export interface RateLimitUpdate {
+  userRequestsLeft: string;
+  globalRequestsLeft: string;
+  resetAt?: string | null;
+}
+
+const decodeStreamData = (rawData: string) => {
+  try {
+    const parsed = JSON.parse(rawData);
+    return typeof parsed === 'string' ? parsed : rawData;
+  } catch {
+    return rawData;
+  }
+};
 
 // Initialize session and get user info
 export const initializeSession = async (): Promise<{ userId: string; userRequestsLeft: string; globalRequestsLeft: string; resetAt?: string } | null> => {
@@ -59,7 +73,7 @@ export const sendMessageStream = async (
   onComplete: () => void,
   onError: (error: Error) => void,
   history: Array<{ role: string; text: string }> = [],
-  onUpdateLimits?: (limits: { userRequestsLeft: string; globalRequestsLeft: string }) => void
+  onUpdateLimits?: (limits: RateLimitUpdate) => void
 ): Promise<void> => {
   try {
     if (!isNonEmpty(message)) {
@@ -127,7 +141,7 @@ export const sendMessageStream = async (
             if (line.startsWith('data: ')) {
               const rawData = line.slice(6);
               if (rawData.trim() && rawData.trim() !== '[DONE]' && rawData.trim() !== '[ERROR]') {
-                accumulatedResponse += rawData;
+                accumulatedResponse += decodeStreamData(rawData);
                 onChunk(accumulatedResponse);
               }
             }
@@ -164,11 +178,7 @@ export const sendMessageStream = async (
             return;
           }
 
-          // New backend sends raw text in data field
-          // It's not valid JSON anymore, so we take it as string
-          // Only weird case is if the backend sends newlines, they might be split
-
-          accumulatedResponse += rawData;
+          accumulatedResponse += decodeStreamData(rawData);
           onChunk(accumulatedResponse);
         }
       }
@@ -224,7 +234,7 @@ const getOfflineResponse = (message: string): string => {
 };
 
 // Helper function to handle 429 rate limit responses
-const handleRateLimitError = async (response: Response, onUpdateLimits?: (limits: { userRequestsLeft: string; globalRequestsLeft: string }) => void): Promise<never> => {
+const handleRateLimitError = async (response: Response, onUpdateLimits?: (limits: RateLimitUpdate) => void): Promise<never> => {
   let resetAt: string | null = null;
   let limit: string = 'Unknown';
   let errorType = 'unknown';
@@ -244,7 +254,11 @@ const handleRateLimitError = async (response: Response, onUpdateLimits?: (limits
   }
 
   if (!resetAt) resetAt = response.headers.get('X-RateLimit-Reset');
-  if (limit === 'Unknown') limit = response.headers.get('X-RateLimit-Limit') || response.headers.get('X-RateLimit-Global-Limit') || 'Unknown';
+  const userLimit = response.headers.get('X-RateLimit-Limit') || 'Unknown';
+  const globalLimit = response.headers.get('X-RateLimit-Global-Limit') || 'Unknown';
+  const userRemainingHeader = response.headers.get('X-RateLimit-Remaining');
+  const globalRemainingHeader = response.headers.get('X-RateLimit-Global-Remaining');
+  if (limit === 'Unknown') limit = errorType === 'global_limit' ? globalLimit : userLimit;
 
   const resetTime = resetAt ? new Date(resetAt) : new Date(Date.now() + 60000);
   const now = new Date();
@@ -270,13 +284,21 @@ const handleRateLimitError = async (response: Response, onUpdateLimits?: (limits
     ? `Global system limit reached (${limit}/day).`
     : `Daily limit reached (${limit}/day).`;
 
-  sessionStorage.setItem('nexus_user_requests', '0/50');
-  sessionStorage.setItem('nexus_global_requests', '0/1000');
+  const userRequestsLeft = userRemainingHeader?.includes('/')
+    ? userRemainingHeader
+    : `${userRemainingHeader || 0}/${userLimit}`;
+  const globalRequestsLeft = globalRemainingHeader?.includes('/')
+    ? globalRemainingHeader
+    : `${globalRemainingHeader || 0}/${globalLimit}`;
+
+  sessionStorage.setItem('nexus_user_requests', userRequestsLeft);
+  sessionStorage.setItem('nexus_global_requests', globalRequestsLeft);
 
   if (onUpdateLimits) {
     onUpdateLimits({
-      userRequestsLeft: '0/50',
-      globalRequestsLeft: '0/1000'
+      userRequestsLeft,
+      globalRequestsLeft,
+      resetAt
     });
   }
 
@@ -285,9 +307,10 @@ const handleRateLimitError = async (response: Response, onUpdateLimits?: (limits
 };
 
 // Helper function to update rate limits from headers
-const updateRateLimitsFromHeaders = (response: Response, onUpdateLimits?: (limits: { userRequestsLeft: string; globalRequestsLeft: string }) => void) => {
+const updateRateLimitsFromHeaders = (response: Response, onUpdateLimits?: (limits: RateLimitUpdate) => void) => {
   const userRemaining = response.headers.get('X-RateLimit-Remaining');
   const globalRemaining = response.headers.get('X-RateLimit-Global-Remaining');
+  const resetAt = response.headers.get('X-RateLimit-Reset');
 
   if (userRemaining) sessionStorage.setItem('nexus_user_requests', userRemaining);
   if (globalRemaining) sessionStorage.setItem('nexus_global_requests', globalRemaining);
@@ -295,7 +318,8 @@ const updateRateLimitsFromHeaders = (response: Response, onUpdateLimits?: (limit
   if (onUpdateLimits && userRemaining && globalRemaining) {
     onUpdateLimits({
       userRequestsLeft: userRemaining,
-      globalRequestsLeft: globalRemaining
+      globalRequestsLeft: globalRemaining,
+      resetAt
     });
   }
 };

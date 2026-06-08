@@ -39,9 +39,7 @@ export async function POST(request: Request) {
             payload.message,
             payload.history || []
           )) {
-            const lines = chunk.split("\n");
-            const encoded = lines.map((line) => `data: ${line}`).join("\n") + "\n\n";
-            controller.enqueue(encoder.encode(encoded));
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify(chunk)}\n\n`));
           }
 
           controller.enqueue(encoder.encode("data: [DONE]\n\n"));

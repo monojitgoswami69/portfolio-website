@@ -89,7 +89,9 @@ export const useBootSequence = () => {
             const globalRemaining = parseInt(initData.globalRequestsLeft.split('/')[0] ?? '0');
 
             if (userRemaining === 0 || globalRemaining === 0) {
-                const limitType = userRemaining === 0 ? 'user request limit reached (50/day)' : 'global request limit reached (1,000/day)';
+                const limitType = userRemaining === 0
+                    ? `user request limit reached (${initData.userRequestsLeft})`
+                    : `global request limit reached (${initData.globalRequestsLeft})`;
                 isRateLimited = true;
 
                 const resetAt = initData.resetAt ? new Date(initData.resetAt).toLocaleString(undefined, {
@@ -100,7 +102,7 @@ export const useBootSequence = () => {
                     setHistory(prev => [...prev, {
                         id: makeMessageId(),
                         role: 'model',
-                        text: `\`ACCESS RESTRICTED\`\n\n${limitType}.\n\nresets at \`${resetAt}\`\n\n## ENTERING COMMAND-ONLY MODE`,
+                        text: `**ACCESS RESTRICTED**\n\n${limitType}.\n\nResets at ${resetAt}.\n\n**ENTERING COMMAND-ONLY MODE**`,
                         timestamp: new Date(),
                         isError: true
                     }]);
@@ -128,7 +130,7 @@ export const useBootSequence = () => {
                 setHistory(prev => [...prev, {
                     id: makeMessageId(),
                     role: 'model',
-                    text: `\`AI CORE OFFLINE\`\n\nlocal chat service unreachable.\n\n## ENTERING COMMAND-ONLY MODE`,
+                    text: `**AI CORE OFFLINE**\n\nlocal chat service unreachable.\n\n**ENTERING COMMAND-ONLY MODE**`,
                     timestamp: new Date(),
                     isError: true
                 }]);
