@@ -166,7 +166,7 @@
       "Web Workers",
       "Vercel"
     ],
-    "imageUrl": "/assets/projects/certify.webp",
+    "imageUrl": "/assets/projects/certify.png",
     "githubUrl": "https://github.com/monojitgoswami69/certify",
     "demoUrl": "https://certify.mgbuilds.in",
     "status": "completed",
@@ -183,7 +183,9 @@
     "featured": false,
     "id": "certify-6",
     "visible": true,
-    "rank": 994
+    "rank": 999,
+    "challenges": "",
+    "learnings": ""
   },
   {
     "id": "collabify-7",
