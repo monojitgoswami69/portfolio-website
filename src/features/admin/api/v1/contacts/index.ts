@@ -38,7 +38,7 @@ export async function POST(request: Request) {
           twitter: String(body.socials?.twitter || "").trim(),
         },
       },
-      `Update contact data by ${auth.username}`
+      "update via admin"
     );
 
     revalidatePath("/");

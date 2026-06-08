@@ -102,7 +102,7 @@ export async function POST(request: Request) {
     const nextProject = parseProjectPayload(body);
     const result = await writeProjectsFile(
       [...existingProjects, nextProject],
-      `Create project by ${auth.username}: ${nextProject.name || "untitled"}`
+      "update via admin"
     );
 
     revalidatePath("/");
@@ -166,7 +166,7 @@ export async function PATCH(request: Request) {
     const result = await writeProjectsFileWithAssets({
       projects: nextProjects,
       assets,
-      message: `Update projects by ${auth.username}: ${changeCount} project change${changeCount === 1 ? "" : "s"}${assets.length ? `, ${assets.length} image upload${assets.length === 1 ? "" : "s"}` : ""}`,
+      message: "update via admin",
     });
 
     revalidatePath("/");
@@ -217,7 +217,7 @@ export async function PUT(request: Request) {
 
     const result = await writeProjectsFile(
       updatedProjects,
-      `Update project by ${auth.username}: ${updatedProjects[projectIndex].name}`
+      "update via admin"
     );
 
     revalidatePath("/");
@@ -257,7 +257,7 @@ export async function DELETE(request: Request) {
 
     const result = await writeProjectsFile(
       existingProjects.filter((project) => project.id !== id),
-      `Delete project by ${auth.username}: ${projectToDelete.name}`
+      "update via admin"
     );
 
     revalidatePath("/");

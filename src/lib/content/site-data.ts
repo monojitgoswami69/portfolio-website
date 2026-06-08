@@ -84,7 +84,7 @@ export async function readProjectsFile() {
 
 export async function writeProjectsFile(
   projects: SiteProject[],
-  message = "Update projects data"
+  message = "update via admin"
 ) {
   const normalizedProjects = projects.map(normalizeProject);
   const serialized = `${JSON.stringify(normalizedProjects, null, 2)}\n`;
@@ -113,7 +113,7 @@ export async function writeProjectsFile(
 export async function writeProjectsFileWithAssets({
   projects,
   assets,
-  message = "Update projects data",
+  message = "update via admin",
 }: {
   projects: SiteProject[];
   assets: { path: string; content: Buffer }[];
@@ -170,7 +170,7 @@ export async function readContactFile() {
 
 export async function writeContactFile(
   contact: SiteContact,
-  message = "Update contact data"
+  message = "update via admin"
 ) {
   const normalizedContact: SiteContactFile = {
     contact: {
