@@ -1,7 +1,6 @@
 import { promises as fs } from "fs";
 import path from "path";
 import {
-  getGitHubTextFile,
   isGitHubSyncConfigured,
   syncFilesToGitHub,
   syncJsonFileToGitHub,
@@ -74,19 +73,6 @@ function normalizeProject(project: SiteProject, index: number): SiteProject {
 }
 
 async function readJsonSource(githubPath: string, localPath: string) {
-  if (isGitHubSyncConfigured()) {
-    try {
-      const remote = await getGitHubTextFile(githubPath);
-      if (remote.content) {
-        return remote.content;
-      }
-    } catch (error) {
-      console.warn(
-        `Falling back to local file for ${githubPath}; GitHub read failed:`,
-        error
-      );
-    }
-  }
   return fs.readFile(localPath, "utf8");
 }
 

@@ -166,7 +166,7 @@
       "Web Workers",
       "Vercel"
     ],
-    "imageUrl": "/assets/projects/certify.png",
+    "imageUrl": "/assets/projects/certify.webp",
     "githubUrl": "https://github.com/monojitgoswami69/certify",
     "demoUrl": "https://certify.mgbuilds.in",
     "status": "completed",
@@ -215,7 +215,7 @@
       "Support for private repository browsing with appropriate scopes",
       "Local file persistence and language detection"
     ],
-    "imageUrl": "/assets/projects/collabify.png",
+    "imageUrl": "/assets/projects/collabify.webp",
     "githubUrl": "https://github.com/monojitgoswami69/collabify",
     "demoUrl": "https://collabify.mgbuilds.in/",
     "challenges": "",
