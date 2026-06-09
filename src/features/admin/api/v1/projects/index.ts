@@ -2,10 +2,12 @@ import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { getAuthenticatedUser } from "@/features/admin/server/auth";
 import {
-  readProjectsFile,
-  type SiteProject,
   writeProjectsFile,
   writeProjectsFileWithAssets,
+} from "@/features/admin/server/content-writes";
+import {
+  readProjectsFile,
+  type SiteProject,
 } from "@/lib/content/site-data";
 
 interface PendingProjectAsset {
@@ -162,7 +164,6 @@ export async function PATCH(request: Request) {
       .map(parseAssetPayload)
       .filter((asset): asset is { path: string; content: Buffer } => Boolean(asset));
 
-    const changeCount = createsInput.length + updatesInput.length + deleteIds.size;
     const result = await writeProjectsFileWithAssets({
       projects: nextProjects,
       assets,

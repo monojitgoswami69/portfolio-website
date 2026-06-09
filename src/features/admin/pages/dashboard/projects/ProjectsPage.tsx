@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from '@/lib/motion';
 import {
   Folder,
@@ -355,6 +355,28 @@ export default function ProjectsPage() {
     [projects, originalById, deletedIds, pendingAssets],
   );
 
+  const fetchInitialProjects = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await fetch('/api/v1/projects', { cache: 'no-store' });
+      const data = await res.json();
+      if (res.ok) {
+        const next: ProjectRecord[] = data.projects || [];
+        setProjects(next);
+        setOriginalById(new Map(next.map((project) => [project.id, project])));
+        setDeletedIds(new Set());
+        setCached(CACHE_KEY, next);
+      } else {
+        setProjects([]);
+      }
+    } catch {
+      console.error('Failed to fetch projects');
+      setProjects([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   const fetchProjects = async (options: { silent?: boolean } = {}) => {
     if (!options.silent) setLoading(true);
     try {
@@ -446,10 +468,10 @@ export default function ProjectsPage() {
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
-      void fetchProjects();
+      void fetchInitialProjects();
     }, 0);
     return () => window.clearTimeout(timer);
-  }, []);
+  }, [fetchInitialProjects]);
 
   const handleOpenModal = (project: ProjectRecord | null = null) => {
     if (project) {
@@ -552,7 +574,11 @@ export default function ProjectsPage() {
         credentials: 'include',
         headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
         body: JSON.stringify({
-          creates: creates.map(({ id: _temp, ...payload }) => payload),
+          creates: creates.map((project) => {
+            const { id, ...payload } = project;
+            void id;
+            return payload;
+          }),
           updates,
           deletes,
           assets,

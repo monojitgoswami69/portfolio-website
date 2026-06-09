@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { getAuthenticatedUser } from "@/features/admin/server/auth";
-import { readContactFile, writeContactFile } from "@/lib/content/site-data";
+import { writeContactFile } from "@/features/admin/server/content-writes";
+import { readContactFile } from "@/lib/content/site-data";
 
 export async function GET() {
   const auth = await getAuthenticatedUser();

@@ -26,6 +26,10 @@ interface CustomCanvasElement extends HTMLCanvasElement {
   cleanupFuzzyText?: () => void;
 }
 
+interface ExtendedTextMetrics extends TextMetrics {
+  blackBoxDescent?: number;
+}
+
 // Helper function to safely parse CSS unit values to numbers (pixels)
 const parseUnitValue = (val: string): number => {
   const num = parseFloat(val);
@@ -72,8 +76,8 @@ const resolveFontSize = (fontSize: number | string): number => {
           return resolved;
         }
       }
-    } catch (e) {
-      console.error("Failed to parse clamp font size:", e);
+    } catch (error) {
+      console.error("Failed to parse clamp font size:", error);
     }
   }
 
@@ -88,7 +92,7 @@ const resolveFontSize = (fontSize: number | string): number => {
     if (resolved && resolved > 2) {
       return resolved;
     }
-  } catch (e) {
+  } catch {
     // Ignore
   }
 
@@ -185,7 +189,7 @@ const FuzzyText: React.FC<FuzzyTextProps> = ({
       const actualLeft = metrics.actualBoundingBoxLeft ?? 0;
       const actualRight = letterSpacing !== 0 ? totalWidth : (metrics.actualBoundingBoxRight ?? metrics.width);
       const actualAscent = metrics.actualBoundingBoxAscent ?? numericFontSize;
-      const actualDescent = (metrics as any).blackBoxDescent ?? metrics.actualBoundingBoxDescent ?? numericFontSize * 0.2;
+      const actualDescent = (metrics as ExtendedTextMetrics).blackBoxDescent ?? metrics.actualBoundingBoxDescent ?? numericFontSize * 0.2;
 
       const textBoundingWidth = Math.ceil(letterSpacing !== 0 ? totalWidth : actualLeft + actualRight);
       const tightHeight = Math.ceil(actualAscent + actualDescent);

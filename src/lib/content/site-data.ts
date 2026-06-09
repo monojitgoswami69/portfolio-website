@@ -1,10 +1,5 @@
 import { promises as fs } from "fs";
 import path from "path";
-import {
-  isGitHubSyncConfigured,
-  syncFilesToGitHub,
-  syncJsonFileToGitHub,
-} from "@/features/admin/server/github-sync";
 
 export interface SiteContact {
   email: string;
@@ -42,9 +37,6 @@ const DATA_DIR = path.join(process.cwd(), "src", "data");
 const PROJECTS_FILE = path.join(DATA_DIR, "projects.json");
 const CONTACT_FILE = path.join(DATA_DIR, "contact.json");
 
-const GITHUB_PROJECTS_FILE = process.env.GITHUB_PROJECTS_FILE || "src/data/projects.json";
-const GITHUB_CONTACT_FILE = process.env.GITHUB_CONTACT_FILE || "src/data/contact.json";
-
 function normalizeSocialValue(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
 }
@@ -57,7 +49,7 @@ function slugify(value: string) {
     .replace(/^-+|-+$/g, "");
 }
 
-function normalizeProject(project: SiteProject, index: number): SiteProject {
+export function normalizeProject(project: SiteProject, index: number): SiteProject {
   return {
     ...project,
     id: project.id || `${slugify(project.name || `project-${index + 1}`)}-${index + 1}`,
@@ -72,84 +64,29 @@ function normalizeProject(project: SiteProject, index: number): SiteProject {
   };
 }
 
-async function readJsonSource(githubPath: string, localPath: string) {
-  return fs.readFile(localPath, "utf8");
+export function normalizeProjects(projects: SiteProject[]) {
+  return projects.map(normalizeProject);
+}
+
+export function normalizeSiteContact(contact: Partial<SiteContact> | undefined): SiteContact {
+  return {
+    email: normalizeSocialValue(contact?.email),
+    socials: {
+      github: normalizeSocialValue(contact?.socials?.github),
+      linkedin: normalizeSocialValue(contact?.socials?.linkedin),
+      twitter: normalizeSocialValue(contact?.socials?.twitter),
+    },
+  };
 }
 
 export async function readProjectsFile() {
-  const content = await readJsonSource(GITHUB_PROJECTS_FILE, PROJECTS_FILE);
+  const content = await fs.readFile(PROJECTS_FILE, "utf8");
   const parsed = JSON.parse(content) as SiteProject[];
-  return parsed.map(normalizeProject);
-}
-
-export async function writeProjectsFile(
-  projects: SiteProject[],
-  message = "update via admin"
-) {
-  const normalizedProjects = projects.map(normalizeProject);
-  const serialized = `${JSON.stringify(normalizedProjects, null, 2)}\n`;
-  if (!isGitHubSyncConfigured()) {
-    throw new Error(
-      "GitHub sync is required for project updates. Configure GITHUB_TOKEN and GITHUB_REPO."
-    );
-  }
-
-  const sync = await syncJsonFileToGitHub({
-    path: GITHUB_PROJECTS_FILE,
-    content: serialized,
-    message,
-  });
-
-  if (!sync.synced) {
-    throw new Error(sync.reason || "GitHub sync failed for projects");
-  }
-
-  return {
-    projects: normalizedProjects,
-    sync,
-  };
-}
-
-export async function writeProjectsFileWithAssets({
-  projects,
-  assets,
-  message = "update via admin",
-}: {
-  projects: SiteProject[];
-  assets: { path: string; content: Buffer }[];
-  message?: string;
-}) {
-  const normalizedProjects = projects.map(normalizeProject);
-  const serialized = `${JSON.stringify(normalizedProjects, null, 2)}\n`;
-  if (!isGitHubSyncConfigured()) {
-    throw new Error(
-      "GitHub sync is required for project updates. Configure GITHUB_TOKEN and GITHUB_REPO."
-    );
-  }
-
-  const sync = await syncFilesToGitHub({
-    message,
-    files: [
-      ...assets,
-      {
-        path: GITHUB_PROJECTS_FILE,
-        content: serialized,
-      },
-    ],
-  });
-
-  if (!sync.synced) {
-    throw new Error(sync.reason || "GitHub sync failed for projects");
-  }
-
-  return {
-    projects: normalizedProjects,
-    sync,
-  };
+  return normalizeProjects(parsed);
 }
 
 export async function readContactFile() {
-  const content = await readJsonSource(GITHUB_CONTACT_FILE, CONTACT_FILE);
+  const content = await fs.readFile(CONTACT_FILE, "utf8");
   const parsed = JSON.parse(content) as Partial<SiteContactFile> | SiteContact;
   const contact =
     parsed && typeof parsed === "object" && "contact" in parsed
@@ -157,51 +94,6 @@ export async function readContactFile() {
       : (parsed as SiteContact);
 
   return {
-    contact: {
-      email: normalizeSocialValue(contact?.email),
-      socials: {
-        github: normalizeSocialValue(contact?.socials?.github),
-        linkedin: normalizeSocialValue(contact?.socials?.linkedin),
-        twitter: normalizeSocialValue(contact?.socials?.twitter),
-      },
-    },
-  };
-}
-
-export async function writeContactFile(
-  contact: SiteContact,
-  message = "update via admin"
-) {
-  const normalizedContact: SiteContactFile = {
-    contact: {
-      email: normalizeSocialValue(contact.email),
-      socials: {
-        github: normalizeSocialValue(contact.socials?.github),
-        linkedin: normalizeSocialValue(contact.socials?.linkedin),
-        twitter: normalizeSocialValue(contact.socials?.twitter),
-      },
-    },
-  };
-
-  const serialized = `${JSON.stringify(normalizedContact, null, 2)}\n`;
-  if (!isGitHubSyncConfigured()) {
-    throw new Error(
-      "GitHub sync is required for contact updates. Configure GITHUB_TOKEN and GITHUB_REPO."
-    );
-  }
-
-  const sync = await syncJsonFileToGitHub({
-    path: GITHUB_CONTACT_FILE,
-    content: serialized,
-    message,
-  });
-
-  if (!sync.synced) {
-    throw new Error(sync.reason || "GitHub sync failed for contacts");
-  }
-
-  return {
-    contact: normalizedContact.contact,
-    sync,
+    contact: normalizeSiteContact(contact),
   };
 }

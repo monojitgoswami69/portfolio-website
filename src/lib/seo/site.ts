@@ -13,8 +13,8 @@ export const SITE_DESCRIPTION =
 export const SITE_TITLE_DEFAULT = `${SITE_NAME} - ${SITE_TAGLINE}`;
 export const SITE_TITLE_TEMPLATE = `%s | ${SITE_NAME}`;
 
-export const SITE_OG_IMAGE = `${SITE_URL}/og_image/og-image.webp`;
-export const SITE_OG_IMAGE_TYPE = "image/webp";
+export const SITE_OG_IMAGE = `${SITE_URL}/og_image/og-image.png`;
+export const SITE_OG_IMAGE_TYPE = "image/png";
 export const SITE_OG_IMAGE_WIDTH = 1200;
 export const SITE_OG_IMAGE_HEIGHT = 630;
 export const SITE_OG_IMAGE_ALT = `${SITE_NAME} - ${SITE_TAGLINE}`;

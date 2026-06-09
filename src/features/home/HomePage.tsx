@@ -14,9 +14,6 @@ import { LazyMotion, domMax } from "@/lib/motion";
 import type { SiteContact, SiteProject } from "@/lib/content/site-data";
 import NativeParticles from "@/features/home/NativeParticles";
 
-const BackgroundGrid = dynamic(() => import("@/features/home/BackgroundGrid"), {
-  ssr: false,
-});
 const Particles = dynamic(() => import("@/features/home/Particles"), {
   ssr: false,
 });
@@ -50,7 +47,7 @@ export default function HomePage({ projects, contact }: HomePageProps) {
   const scrollMuteCounter = useRef(0);
 
   // Toggle between native and OGL particles for comparison
-  const [useNativeParticles, setUseNativeParticles] = useState(true);
+  const useNativeParticles = true;
 
   // Mobile gets fewer particles — same look, much cheaper to render.
   const particleCount = useMemo(() => {

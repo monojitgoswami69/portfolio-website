@@ -33,30 +33,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const hydrateSession = useCallback(async () => {
-    try {
-      const response = await fetch('/api/v1/auth/session', {
-        credentials: 'include',
-        cache: 'no-store',
-      });
-
-      if (!response.ok) {
-        setUser(null);
-        return;
-      }
-
-      const data = await response.json();
-      setUser(data.user ?? null);
-    } catch {
-      setUser(null);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
   useEffect(() => {
+    let cancelled = false;
+
+    const hydrateSession = async () => {
+      try {
+        const response = await fetch('/api/v1/auth/session', {
+          credentials: 'include',
+          cache: 'no-store',
+        });
+
+        if (!response.ok) {
+          if (!cancelled) setUser(null);
+          return;
+        }
+
+        const data = await response.json();
+        if (!cancelled) setUser(data.user ?? null);
+      } catch {
+        if (!cancelled) setUser(null);
+      } finally {
+        if (!cancelled) setIsLoading(false);
+      }
+    };
+
     void hydrateSession();
-  }, [hydrateSession]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const login = useCallback(async (username: string, password: string, rememberMe = false) => {
     setIsLoading(true);

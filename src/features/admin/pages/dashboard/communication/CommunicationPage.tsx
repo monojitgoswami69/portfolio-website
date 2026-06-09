@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, Suspense } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from '@/lib/motion';
-import { Mail, Trash2, RefreshCw, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { Mail, Trash2, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import { useToast } from '@/features/admin/components/context/ToastContext';
 import { getCached, setCached } from '@/features/admin/lib/cache';
@@ -15,18 +15,14 @@ const pageVariants = {
   animate: { opacity: 1, transition: { duration: 0.3 } }
 };
 
-const statusConfig = {
-  new: { label: 'New', color: 'blue', icon: Clock },
-  done: { label: 'Done', color: 'green', icon: CheckCircle },
-  dismissed: { label: 'Dismissed', color: 'gray', icon: XCircle }
-};
+type SubmissionStatus = 'new' | 'done' | 'dismissed';
 
 interface SubmissionRecord {
   id: string;
   name: string;
   email: string;
   message: string;
-  status: keyof typeof statusConfig;
+  status: SubmissionStatus;
   createdAt: string;
 }
 
@@ -44,18 +40,8 @@ function CommunicationPageContent() {
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
-  const handleRefresh = async () => {
-    setRefreshing(true);
-    const minDelay = new Promise((resolve) => setTimeout(resolve, 800));
-    try {
-      await Promise.all([loadSubmissions({ silent: true }), minDelay]);
-    } finally {
-      setRefreshing(false);
-    }
-  };
-
   // Fetch all submissions once, filtering is handled reactively on the client
-  const loadSubmissions = useCallback(async (options: { silent?: boolean } = {}) => {
+  const loadSubmissions = async (options: { silent?: boolean } = {}) => {
     const cached = getCached<SubmissionRecord[]>(cacheKey('all'));
     if (cached && !options.silent) {
       setSubmissions(cached);
@@ -86,15 +72,57 @@ function CommunicationPageContent() {
     } finally {
       if (!options.silent) setLoading(false);
     }
-  }, [addToast]);
+  };
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    const minDelay = new Promise((resolve) => setTimeout(resolve, 800));
+    try {
+      await Promise.all([loadSubmissions({ silent: true }), minDelay]);
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   useEffect(() => {
+    const loadInitialSubmissions = async () => {
+      const cached = getCached<SubmissionRecord[]>(cacheKey('all'));
+      if (cached) {
+        setSubmissions(cached);
+        setLoading(false);
+      } else {
+        setLoading(true);
+      }
+
+      try {
+        const res = await fetch(`/api/v1/communication`, {
+          cache: 'no-store',
+        });
+        const data = await res.json();
+        const records: SubmissionRecord[] = data.records || [];
+        setSubmissions(records);
+        setStatusMessage(data.message || null);
+        setCached(cacheKey('all'), records);
+      } catch {
+        console.error('Failed to load submissions');
+        setSubmissions([]);
+        setStatusMessage(null);
+        addToast({
+          message: 'Failed to load submissions',
+          status: 'error',
+          action: 'Error',
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
     const timer = window.setTimeout(() => {
-      void loadSubmissions();
+      void loadInitialSubmissions();
     }, 0);
 
     return () => window.clearTimeout(timer);
-  }, [loadSubmissions]);
+  }, [addToast]);
 
   const setFilter = (nextStatus: string) => {
     const params = new URLSearchParams(searchParams ? Array.from(searchParams.entries()) : []);
